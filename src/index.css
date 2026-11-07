@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/* Grayscale UI; red is reserved for safety flags (DESIGN.md §7). */
+@theme {
+  --color-flag: #dc2626;
+  --color-flag-soft: #fef2f2;
+}
+
+body {
+  @apply bg-neutral-50 text-neutral-900 antialiased;
+}

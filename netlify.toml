@@ -1,0 +1,13 @@
+# Netlify reads this on every deploy.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Single-page app: send every path (e.g. /u/<token> owner links) to index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
