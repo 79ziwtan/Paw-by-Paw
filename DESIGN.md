@@ -56,7 +56,7 @@ Interviewee A's main request: one screen with **dog, owner, payment dot, goal, a
 
 ### F5. Owner updates with homework  **[changed: optional, lighter]**
 - From a saved log, the trainer can optionally send an update: what we worked on (pre-filled from **external** notes), plan progress, and 2–3 homework tasks (US7).
-- The owner opens an SMS link: no app, no login. They see the update and can check off tasks, and completion shows up on the trainer's profile (US8).
+- The owner opens a private link (for now staff share it by hand; SMS later): no app, no login. They see the update and can check off tasks, and completion shows up on the trainer's profile (US8).
 - Deprioritized because Interviewee A said clients skew older and less tech-savvy, homework is usually given verbally, and his existing tool already sends reminders. A no-login link is still the lowest-friction option, so it stays in the MVP, but it is **skippable** and is not the key success metric.
 
 ### Deferred
@@ -83,7 +83,7 @@ Interviewee A's main request: one screen with **dog, owner, payment dot, goal, a
 | Styling | Tailwind CSS | Grayscale UI; **red is reserved for safety flags** (per the wireframes) |
 | Backend | **Supabase** | Postgres, Auth, Row-Level Security, Storage (dog photos), Edge Functions |
 | Types | `supabase gen types typescript` | Types generated from the database schema |
-| SMS | Twilio (or similar), called from a Supabase Edge Function | API key stays server-side |
+| SMS | Not built yet (owner links are opened and shared by hand). Later: Twilio or similar from a Supabase Edge Function, API key server-side. Twilio trial accounts can only send Twilio's predefined templates, so a paid account and A2P 10DLC / toll-free registration are needed. | |
 | Local dev | Supabase CLI (`supabase start`, which runs in Docker) | Migrations live in `supabase/migrations/` and are checked into git |
 | Hosting | Vercel or Netlify for the frontend; Supabase cloud for the backend | Free tiers are fine for the MVP |
 
@@ -187,7 +187,7 @@ Child tables (sessions, flags, …) check access through their `dog_id`. Only `o
 - Links expire after 14 days (configurable). The expired state shows **Request New Link**, which sets `link_requested_at` so the trainer sees a prompt.
 
 ### Edge Functions
-- `send-owner-update`: validates that the caller can access the dog, creates the token, sends the SMS via Twilio, and sets `sent_at`.
+- `send-owner-update` (removed for now): will text the owner's profile link. Today `create_owner_link` makes the link and the app opens it.
 - (Next phase) `summarize-sessions`: AI summary of the last 2 sessions, using **external and internal notes for the trainer only**.
 
 ---
@@ -231,7 +231,6 @@ src/
   components/ui/
 supabase/
   migrations/
-  functions/send-owner-update/
   seed.sql                 # demo org, dogs from the wireframes (Biscuit, Juno, ...)
 ```
 
@@ -260,7 +259,7 @@ Each feature folder owns its query hooks (`useDog(id)`, `useLogSession()`), buil
 3. **F2:** plan editor, stage events and history, templates.
 4. **F3:** session log with 3 Ds, internal/external notes, flags; `dog_summary` view; Dog Profile summary card.
 5. **F4:** Today list.
-6. **F5:** owner update composer, Edge Function and SMS, public owner page, expiry and new-link request.
+6. **F5:** owner profile links (all of a household's dogs, opening on one), expiry; SMS delivery later.
 7. **Test with trainers:** measure log time and logging consistency; decide on offline support and the AI summary.
 
 ## 11. Open questions

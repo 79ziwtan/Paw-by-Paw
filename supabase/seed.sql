@@ -32,8 +32,7 @@ insert into plan_templates (org_id, name, stages) values
   ('aaaaaaaa-0000-0000-0000-000000000001', 'Leash Manners',
    '[{"name":"Foundations"},{"name":"Loose-Leash Walking"},{"name":"Calm Greetings"},{"name":"Public Spaces"}]');
 
--- Demo owners are the team (first names only). Phones are fictional 555-01xx numbers: in test mode
--- (SMS_LIVE=false) every text goes to the SMS_TEST_TO secret instead, so no real number lives in the repo.
+-- Demo owners are the team (first names only). Phones are fictional 555-01xx numbers.
 insert into households (id, org_id, location_id, owner_name, phone, payment_status) values
   ('cccccccc-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001', 'bbbbbbbb-0000-0000-0000-000000000001', 'Quintin', '+15550100101', 'current'),
   ('cccccccc-0000-0000-0000-000000000002', 'aaaaaaaa-0000-0000-0000-000000000001', 'bbbbbbbb-0000-0000-0000-000000000001', 'V',       '+15550100102', 'overdue'),

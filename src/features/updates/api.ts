@@ -83,36 +83,17 @@ export function useSentItems() {
 }
 
 /**
- * What "Send" does, set by VITE_OWNER_LINKS at build time (.env.local locally, Netlify env vars live):
- *   open (default) — make the link and open it in a new tab; nothing is texted
- *   text           — text the link through the send-owner-update function (Twilio)
- */
-export const OWNER_LINK_MODE: 'open' | 'text' = import.meta.env.VITE_OWNER_LINKS === 'text' ? 'text' : 'open'
-
-export type ShareResult = { sent: true; to: 'owner' | 'test number'; link: string } | { sent: false; link: string; reason?: string }
-
-/**
- * Makes a fresh 14-day profile link for a household (opening on `dogId` if given) and texts it to
- * the household's phone via the send-owner-update function. If texting isn't set up, the link
- * comes back unsent so the app can open it instead.
+ * Makes a fresh 14-day owner profile link for a household (opening on `dogId` if given) and
+ * returns its URL. (Texting the link is not implemented yet; the app opens it instead.)
  */
 export function useShareProfile() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ householdId, dogId }: { householdId: string; dogId?: string | null }): Promise<ShareResult> => {
-      if (OWNER_LINK_MODE === 'open') {
-        const { data, error } = await supabase.rpc('create_owner_link', { p_household_id: householdId, p_dog_id: dogId ?? undefined })
-        if (error) throw error
-        return { sent: false, link: `${window.location.origin}/o/${data}`, reason: 'open' }
-      }
-      const { data, error } = await supabase.functions.invoke('send-owner-update', { body: { household_id: householdId, dog_id: dogId ?? null } })
-      if (error) {
-        const body = await (error as { context?: Response }).context?.json?.().catch(() => null)
-        throw new Error(body?.error ?? error.message)
-      }
-      return data as ShareResult
+    mutationFn: async ({ householdId, dogId }: { householdId: string; dogId?: string | null }) => {
+      const { data, error } = await supabase.rpc('create_owner_link', { p_household_id: householdId, p_dog_id: dogId ?? undefined })
+      if (error) throw error
+      return `${window.location.origin}/o/${data}`
     },
-    // ['unsent_sessions'] is refreshed by the button once its confirmation has been seen (see ShareProfileButton).
     onSettled: () => Promise.all([['owner_links'], ['activity']].map((queryKey) => qc.invalidateQueries({ queryKey }))),
   })
 }

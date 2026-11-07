@@ -38,3 +38,6 @@ Paw by Paw/
 
 # Personal deployment notes (local only)
 DEPLOYMENT.md
+
+# Database backups (contain real data)
+backup-*.sql

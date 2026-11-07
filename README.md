@@ -18,7 +18,7 @@ Production build: `npm run build` (output in `dist/`).
 
 To wipe the database back to the demo data: `npm run db:reset`.
 
-**Send** (owner profile links) opens the link in a new tab by default. Set `VITE_OWNER_LINKS=text` (in `.env.local`, or Netlify's environment variables, then redeploy) to text it through Twilio instead.
+**Send** (owner profile links) opens the owner's link in a new tab so you can share it. Texting it to the owner isn't built yet.
 
 ## Logging in
 
