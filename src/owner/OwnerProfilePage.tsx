@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useParams } from 'react-router'
-import { supabase } from '../lib/supabase'
+import { publicSupabase as supabase } from '../lib/publicSupabase'
 
 type Stage = { name: string; status: 'not_started' | 'in_progress' | 'complete' }
 type Task = { id: string; text: string; done: boolean }

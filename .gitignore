@@ -32,3 +32,9 @@ supabase/.temp
 
 # Team research docs (interview notes, pitch deck, wireframes) stay out of the public repo
 Paw by Paw/
+
+# Local Netlify folder
+.netlify
+
+# Personal deployment notes (local only)
+DEPLOYMENT.md

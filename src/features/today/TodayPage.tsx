@@ -94,7 +94,7 @@ function HomeworkBlock({ block: b }: { block: TodayHomeworkBlock }) {
               <span className={t.completed_at ? 'text-neutral-500 line-through' : ''}>{t.text}</span>
               {t.completed_at && (
                 <span className="ml-1 text-xs text-neutral-400">
-                  {sameDay(t.completed_at) ? time(t.completed_at) : day(t.completed_at)} · {t.completer?.display_name ?? (t.update_id ? 'owner' : 'staff')}
+                  {sameDay(t.completed_at) ? time(t.completed_at) : day(t.completed_at)} · {t.completer?.display_name ?? 'owner'}
                 </span>
               )}
             </span>

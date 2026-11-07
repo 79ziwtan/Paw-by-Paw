@@ -31,8 +31,8 @@ export function HouseholdDetailsCard({ household: h, packageLine }: { household:
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="font-semibold">{h.owner_name}</div>
-          <div className="text-sm text-neutral-500">{formatPhone(h.phone)}</div>
-          {h.email && <div className="text-sm text-neutral-500">{h.email}</div>}
+          <div className="text-sm text-neutral-500 select-text">{formatPhone(h.phone)}</div>
+          {h.email && <div className="text-sm text-neutral-500 select-text">{h.email}</div>}
           {locationName(h.location_id) && <div className="text-sm text-neutral-500">📍 {locationName(h.location_id)}</div>}
           <div className="mt-1 flex items-center gap-2 text-sm">
             <PaymentDot status={h.payment_status} />

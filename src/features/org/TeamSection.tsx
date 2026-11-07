@@ -115,7 +115,7 @@ function MemberCard({ member: t, isMe, isOwner, canTeam, myLocations, myPermissi
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="font-semibold">{t.display_name}{isMe && <span className="font-normal text-neutral-500"> (you)</span>}</div>
-          <div className="truncate text-sm text-neutral-500">{t.email}</div>
+          <div className="truncate text-sm text-neutral-500 select-text">{t.email}</div>
           <div className="text-xs text-neutral-400">
             {t.last_sign_in_at ? `Last active ${new Date(t.last_sign_in_at).toLocaleDateString()}` : 'Invite pending'}
           </div>

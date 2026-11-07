@@ -11,7 +11,7 @@ export function useActivity(tables?: string[] | null) {
     queryFn: async ({ pageParam }) => {
       let q = supabase
         .from('activity_log')
-        .select('id, table_name, action, record_id, label, dog_id, dog_name, changes, created_at, actor:staff ( display_name )')
+        .select('id, table_name, action, record_id, label, dog_id, dog_name, changes, created_at, actor_label, actor:staff ( display_name )')
         .order('created_at', { ascending: false })
         .range(pageParam, pageParam + PAGE - 1)
       if (tables) q = q.in('table_name', tables)

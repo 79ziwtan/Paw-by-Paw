@@ -25,14 +25,14 @@ export type Database = {
           Tables: {
             "activity_log": {
                   Row: {
-                    "action": string,"actor_id": string | null,"changes": (string)[] | null,"created_at": string,"dog_id": string | null,"dog_name": string | null,"id": string,"label": string | null,"location_id": string | null,"org_id": string,"record_id": string | null,"table_name": string
+                    "action": string,"actor_id": string | null,"actor_label": string | null,"changes": (string)[] | null,"created_at": string,"dog_id": string | null,"dog_name": string | null,"id": string,"label": string | null,"location_id": string | null,"org_id": string,"record_id": string | null,"table_name": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "action": string,"actor_id"?: string | null,"changes"?: (string)[] | null,"created_at"?: string,"dog_id"?: string | null,"dog_name"?: string | null,"id"?: string,"label"?: string | null,"location_id"?: string | null,"org_id": string,"record_id"?: string | null,"table_name": string
+                    "action": string,"actor_id"?: string | null,"actor_label"?: string | null,"changes"?: (string)[] | null,"created_at"?: string,"dog_id"?: string | null,"dog_name"?: string | null,"id"?: string,"label"?: string | null,"location_id"?: string | null,"org_id": string,"record_id"?: string | null,"table_name": string
                   }
                   Update: {
-                    "action"?: string,"actor_id"?: string | null,"changes"?: (string)[] | null,"created_at"?: string,"dog_id"?: string | null,"dog_name"?: string | null,"id"?: string,"label"?: string | null,"location_id"?: string | null,"org_id"?: string,"record_id"?: string | null,"table_name"?: string
+                    "action"?: string,"actor_id"?: string | null,"actor_label"?: string | null,"changes"?: (string)[] | null,"created_at"?: string,"dog_id"?: string | null,"dog_name"?: string | null,"id"?: string,"label"?: string | null,"location_id"?: string | null,"org_id"?: string,"record_id"?: string | null,"table_name"?: string
                   }
                   Relationships: [
                     {

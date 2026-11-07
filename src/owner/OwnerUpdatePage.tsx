@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router'
-import { supabase } from '../lib/supabase'
+import { publicSupabase as supabase } from '../lib/publicSupabase'
 
 type OwnerUpdate =
   | { status: 'not_found' | 'expired' }

@@ -150,6 +150,7 @@ function source(t: HomeworkRow) {
 }
 
 function completion(t: HomeworkRow) {
-  const by = t.completer?.display_name ? `marked by ${t.completer.display_name}` : t.update_id ? 'checked off by owner' : ''
+  // completed_by is only ever empty when the owner ticked it from their link
+  const by = t.completer?.display_name ? `marked by ${t.completer.display_name}` : 'checked off by owner'
   return `Done ${day(t.completed_at!)}${by ? ` · ${by}` : ''}`
 }

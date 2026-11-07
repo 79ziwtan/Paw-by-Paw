@@ -54,7 +54,8 @@ export function ActivityFeed() {
 function ActivityLine({ row: r }: { row: ActivityRow }) {
   const noun = ACTIVITY_TABLES[r.table_name]?.noun ?? r.table_name.replace(/_/g, ' ')
   const verb = VERB[r.action as keyof typeof VERB] ?? r.action
-  const who = r.actor?.display_name ?? (r.table_name === 'homework_tasks' && r.action === 'update' ? 'Owner' : 'System')
+  // actor_label = the household owner, for changes made through their link
+  const who = r.actor?.display_name ?? (r.actor_label ? `${r.actor_label} (owner)` : 'System')
   const changed = r.action === 'update' ? describeChanges(r.changes) : ''
   const label = r.label && r.table_name !== 'sessions' ? r.label : null
 

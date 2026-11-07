@@ -9,3 +9,22 @@
 body {
   @apply bg-neutral-50 text-neutral-900 antialiased;
 }
+
+/* View-only text can't be selected and never shows a text caret (even with the browser's
+   caret browsing / F7 on). Anything you can type into keeps normal selection and its caret.
+   Add `select-text` to a view-only element that people need to copy (phone numbers, emails). */
+@layer base {
+  body {
+    user-select: none;
+    -webkit-user-select: none;
+    caret-color: transparent;
+  }
+  input,
+  textarea,
+  select,
+  [contenteditable]:not([contenteditable='false']) {
+    user-select: text;
+    -webkit-user-select: text;
+    caret-color: auto;
+  }
+}
