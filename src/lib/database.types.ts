@@ -525,14 +525,14 @@ isOneToOne: false
                   ]
                 },"sessions": {
                   Row: {
-                    "created_at": string,"dog_id": string,"external_notes": string,"id": string,"internal_notes": string,"occurred_at": string,"package_id": string | null,"rating": number | null,"staff_id": string | null,"takes_food": boolean | null
+                    "created_at": string,"dog_id": string,"external_notes": string,"id": string,"internal_notes": string,"next_step": string,"occurred_at": string,"package_id": string | null,"rating": number | null,"staff_id": string | null,"takes_food": boolean | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"dog_id": string,"external_notes"?: string,"id"?: string,"internal_notes"?: string,"occurred_at"?: string,"package_id"?: string | null,"rating"?: number | null,"staff_id"?: string | null,"takes_food"?: boolean | null
+                    "created_at"?: string,"dog_id": string,"external_notes"?: string,"id"?: string,"internal_notes"?: string,"next_step"?: string,"occurred_at"?: string,"package_id"?: string | null,"rating"?: number | null,"staff_id"?: string | null,"takes_food"?: boolean | null
                   }
                   Update: {
-                    "created_at"?: string,"dog_id"?: string,"external_notes"?: string,"id"?: string,"internal_notes"?: string,"occurred_at"?: string,"package_id"?: string | null,"rating"?: number | null,"staff_id"?: string | null,"takes_food"?: boolean | null
+                    "created_at"?: string,"dog_id"?: string,"external_notes"?: string,"id"?: string,"internal_notes"?: string,"next_step"?: string,"occurred_at"?: string,"package_id"?: string | null,"rating"?: number | null,"staff_id"?: string | null,"takes_food"?: boolean | null
                   }
                   Relationships: [
                     {

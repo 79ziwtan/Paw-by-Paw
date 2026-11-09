@@ -34,7 +34,7 @@ export function LocationsSection() {
       <p className="text-sm text-neutral-500">
         Each household belongs to one location. Trainers and admins only see clients at the locations you give them in Team.
       </p>
-      {mutationError && <p className="rounded-lg bg-flag-soft p-3 text-sm text-flag">{mutationError.message}</p>}
+      {mutationError && <p className="rounded-md bg-flag-soft p-3 text-sm text-flag">{mutationError.message}</p>}
 
       <ul className="flex flex-col gap-2">
         {locations.map((l) => (

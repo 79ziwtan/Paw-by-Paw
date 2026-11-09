@@ -39,7 +39,7 @@ export function OrgLayout() {
               <NavLink
                 to={s.to}
                 className={({ isActive }) =>
-                  `flex min-h-11 items-center whitespace-nowrap rounded-full px-4 text-sm ${isActive ? 'bg-neutral-900 font-medium text-white' : 'border border-neutral-300 bg-white text-neutral-700'}`
+                  `flex min-h-11 items-center whitespace-nowrap rounded-full px-4 text-sm ${isActive ? 'bg-gold-400 font-semibold text-neutral-900' : 'border border-neutral-300 bg-white text-neutral-700'}`
                 }
               >
                 {s.label}

@@ -1,25 +1,17 @@
-import { useState } from 'react'
 import { Link } from 'react-router'
 import { Card } from '../../components/ui'
-import { useAuth } from '../auth/AuthProvider'
 import { SessionCard } from '../sessions/SessionCard'
 import { useTodayHomework, useTodaySessions, type TodayHomeworkBlock } from './api'
 
 const time = (iso: string) => new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
 
-/** Today: only what happened today — sessions logged and homework assigned or completed. */
-export function TodayPage() {
-  const { staff } = useAuth()
+/** What happened today — sessions logged and homework assigned or completed (shown under the calendar). */
+export function TodayActivity() {
   const sessions = useTodaySessions()
   const homework = useTodayHomework()
-  const [dateLabel] = useState(() => new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }))
 
   return (
     <section className="flex flex-col gap-6">
-      <header>
-        <h1 className="text-xl font-semibold">Hi {staff?.display_name.split(' ')[0]}</h1>
-        <p className="text-sm text-neutral-500">{dateLabel}</p>
-      </header>
 
       <div className="flex flex-col gap-3">
         <h2 className="font-semibold">Sessions today{sessions.data && ` (${sessions.data.length})`}</h2>
@@ -86,7 +78,7 @@ function HomeworkBlock({ block: b }: { block: TodayHomeworkBlock }) {
           <li key={t.id} className="flex items-start gap-2 text-sm">
             <span
               aria-label={t.completed_at ? 'Done' : 'Not done'}
-              className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded border text-[10px] ${t.completed_at ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-400'}`}
+              className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded border text-[10px] ${t.completed_at ? 'border-gold-500 bg-gold-400 text-neutral-900' : 'border-neutral-400'}`}
             >
               {t.completed_at && '✓'}
             </span>

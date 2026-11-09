@@ -1,4 +1,4 @@
--- Paw by Paw: full database schema (all earlier migrations squashed into one, 2026-11-07).
+-- Waffle: full database schema (all earlier migrations squashed into one, 2026-11-07).
 -- Tables, row-level security, roles & admin permissions, activity log, session/homework/owner-update
 -- functions. Add future changes as new migration files after this one; never edit this file once
 -- it has been pushed to a live database.

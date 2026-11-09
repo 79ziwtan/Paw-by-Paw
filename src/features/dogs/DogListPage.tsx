@@ -12,7 +12,7 @@ export function DogListPage() {
     <section className="flex flex-col gap-4">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Dogs</h1>
-        <Link to="/households/new" className="rounded-lg border border-neutral-900 bg-neutral-900 px-3 py-2 text-sm font-medium text-white shadow-sm">
+        <Link to="/households/new" className="rounded-md border border-gold-500 bg-gold-400 px-3 py-2 text-sm font-semibold text-neutral-900">
           + New Household
         </Link>
       </header>

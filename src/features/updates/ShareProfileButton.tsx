@@ -33,7 +33,7 @@ export function ShareProfileButton({ householdId, dogId, label = 'Send', classNa
         type="button"
         onClick={send}
         disabled={share.isPending}
-        className={className ?? 'flex min-h-9 items-center rounded-lg border border-neutral-900 bg-neutral-900 px-3 text-sm font-medium text-white shadow-sm disabled:opacity-50'}
+        className={className ?? 'flex min-h-9 items-center rounded-md border border-gold-500 bg-gold-400 px-3 text-sm font-semibold text-neutral-900 disabled:opacity-50'}
       >
         {share.isPending ? 'Opening…' : label}
       </button>

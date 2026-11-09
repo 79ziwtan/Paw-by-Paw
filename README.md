@@ -1,4 +1,4 @@
-# Paw by Paw
+# Waffle
 
 **Live demo:** https://pawbypaw.netlify.app · **Source:** https://github.com/79ziwtan/Paw-by-Paw
 
@@ -18,6 +18,9 @@ Production build: `npm run build` (output in `dist/`).
 
 To wipe the database back to the demo data: `npm run db:reset`.
 
+**Trainer flow (mid-fidelity prototype):** Calendar → tap appointment → Dog summary card → Log session (about a minute) → (optional) share update.
+The calendar is a **mockup**: appointments are generated from your dogs (`src/features/calendar/mock.ts`); there is no real Google Calendar sync yet.
+
 **Send** (owner profile links) opens the owner's link in a new tab so you can share it. Texting it to the owner isn't built yet.
 
 ## Logging in
@@ -26,6 +29,6 @@ All accounts use the password `password123`.
 
 | Email | Name | Role |
 |---|---|---|
-| `owner@pawbypaw.test` | OrgOwner | Business owner: sees everything, including the Org tab and Activity |
-| `admin@pawbypaw.test` | OrgAdmin | Admin at the Main location: clients, packages and session counts, Activity for their location |
-| `trainer@pawbypaw.test` | OrgTrainer | Trainer at the Main location: dogs, plans, session logs, homework and owner updates |
+| `owner@waffle.test` | OrgOwner | Business owner: sees everything, including the Org tab and Activity |
+| `admin@waffle.test` | OrgAdmin | Admin at the Main location: clients, packages and session counts, Activity for their location |
+| `trainer@waffle.test` | OrgTrainer | Trainer at the Main location: dogs, plans, session logs, homework and owner updates |

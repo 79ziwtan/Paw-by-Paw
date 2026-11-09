@@ -29,7 +29,7 @@ export function PackagesCard({ householdId, packages, canEdit }: { householdId: 
               <PackageForm householdId={householdId} pkg={p} onDone={() => setEditing(null)} />
             </li>
           ) : (
-            <li key={p.id} className="flex items-center justify-between gap-2 rounded-lg bg-neutral-50 p-3 text-sm">
+            <li key={p.id} className="flex items-center justify-between gap-2 rounded-md bg-neutral-50 p-3 text-sm">
               <div className="min-w-0">
                 <div className="font-medium">
                   {p.name}
@@ -64,7 +64,7 @@ function Meter({ used, total }: { used: number; total: number }) {
   return (
     <div className="mt-1.5 flex gap-0.5" aria-hidden>
       {Array.from({ length: Math.min(total, 30) }, (_, i) => (
-        <span key={i} className={`h-1.5 flex-1 rounded-full ${i < used ? 'bg-neutral-900' : 'bg-neutral-200'}`} />
+        <span key={i} className={`h-1.5 flex-1 rounded-full ${i < used ? 'bg-gold-500' : 'bg-neutral-200'}`} />
       ))}
     </div>
   )
@@ -86,7 +86,7 @@ function PackageForm({ householdId, pkg, onDone }: { householdId: string; pkg?: 
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-3 rounded-lg border border-neutral-300 p-3">
+    <form onSubmit={submit} className="flex flex-col gap-3 rounded-md border border-neutral-300 p-3">
       <Field label="Name">
         <input className={inputClass} placeholder={`${form.sessions_total}-session package`} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
       </Field>
@@ -113,7 +113,7 @@ function Stepper({ label, value, min, max = 999, onChange }: { label: string; va
     <div className="flex flex-col gap-1.5 text-sm font-medium text-neutral-700">
       {label}
       <div className="flex items-center gap-1">
-        <button type="button" className="size-11 rounded-lg border border-neutral-300 bg-white text-lg disabled:opacity-40" aria-label={`Decrease ${label}`} disabled={value <= min} onClick={() => onChange(clamp(value - 1))}>−</button>
+        <button type="button" className="size-11 rounded-md border border-neutral-300 bg-white text-lg disabled:opacity-40" aria-label={`Decrease ${label}`} disabled={value <= min} onClick={() => onChange(clamp(value - 1))}>−</button>
         <input
           type="number"
           inputMode="numeric"
@@ -124,7 +124,7 @@ function Stepper({ label, value, min, max = 999, onChange }: { label: string; va
           value={value}
           onChange={(e) => onChange(clamp(Number(e.target.value) || 0))}
         />
-        <button type="button" className="size-11 rounded-lg border border-neutral-300 bg-white text-lg disabled:opacity-40" aria-label={`Increase ${label}`} disabled={value >= max} onClick={() => onChange(clamp(value + 1))}>+</button>
+        <button type="button" className="size-11 rounded-md border border-neutral-300 bg-white text-lg disabled:opacity-40" aria-label={`Increase ${label}`} disabled={value >= max} onClick={() => onChange(clamp(value + 1))}>+</button>
       </div>
     </div>
   )

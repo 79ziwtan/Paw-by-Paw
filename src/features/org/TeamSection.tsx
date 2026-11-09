@@ -47,7 +47,7 @@ export function TeamSection() {
       </div>
 
       {showInvite && <InviteForm ownerMode={isOwner} myLocations={myLocations} onDone={() => setShowInvite(false)} />}
-      {mutationError && <p className="rounded-lg bg-flag-soft p-3 text-sm text-flag">{mutationError.message}</p>}
+      {mutationError && <p className="rounded-md bg-flag-soft p-3 text-sm text-flag">{mutationError.message}</p>}
 
       <ul className="flex flex-col gap-3">
         {active.map((t) => (
@@ -75,7 +75,7 @@ export function TeamSection() {
           <h2 className="mb-2 text-sm font-semibold text-neutral-500">Removed</h2>
           <ul className="flex flex-col gap-2">
             {removed.map((t) => (
-              <li key={t.id} className="flex items-center justify-between rounded-lg bg-neutral-100 px-3 py-1 text-sm">
+              <li key={t.id} className="flex items-center justify-between rounded-md bg-neutral-100 px-3 py-1 text-sm">
                 <span className="text-neutral-600">{t.display_name} · {t.email}</span>
                 {canToggleActive(t) && (
                   <button className={actionClass} onClick={() => setDeactivated.mutate({ staffId: t.id, deactivated: false })}>Restore</button>
@@ -123,7 +123,7 @@ function MemberCard({ member: t, isMe, isOwner, canTeam, myLocations, myPermissi
         {isOwner ? (
           <select
             aria-label={`Role for ${t.display_name}`}
-            className="cursor-pointer rounded-lg border border-neutral-400 bg-white px-2 py-2 text-sm shadow-sm"
+            className="cursor-pointer rounded-md border border-neutral-400 bg-white px-2 py-2 text-sm"
             value={t.role}
             disabled={updateRole.isPending}
             onChange={(e) => {
@@ -152,7 +152,7 @@ function MemberCard({ member: t, isMe, isOwner, canTeam, myLocations, myPermissi
               return (
                 <label
                   key={l.id}
-                  className={`flex min-h-11 items-center gap-2 rounded-lg border px-3 text-sm ${on ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-300'} ${editable ? 'cursor-pointer' : 'opacity-60'}`}
+                  className={`flex min-h-11 items-center gap-2 rounded-md border px-3 text-sm ${on ? 'border-gold-500 bg-gold-400 text-neutral-900' : 'border-neutral-300'} ${editable ? 'cursor-pointer' : 'opacity-60'}`}
                 >
                   <input
                     type="checkbox"
@@ -177,7 +177,7 @@ function MemberCard({ member: t, isMe, isOwner, canTeam, myLocations, myPermissi
               Permissions <span className="font-normal text-neutral-500">({perms.length} of {PERMISSIONS.length})</span>
               {isMe && !isOwner && <span className="font-normal text-neutral-500"> · only someone else can change yours</span>}
             </span>
-            <span className="text-neutral-400 transition-transform group-open:rotate-180" aria-hidden>▾</span>
+            <span className="text-neutral-400 group-open:rotate-180" aria-hidden>▾</span>
           </summary>
           <ul className="flex flex-col gap-1 border-t border-neutral-200 px-3 py-2">
             {PERMISSIONS.map(({ key, label }) => {
@@ -257,7 +257,7 @@ function InviteForm({ ownerMode, myLocations, onDone }: { ownerMode: boolean; my
           <fieldset className="flex flex-wrap gap-2">
             <legend className="mb-1 text-sm font-medium text-neutral-700">Locations</legend>
             {locations.map((l) => (
-              <label key={l.id} className="flex min-h-11 items-center gap-2 rounded-lg border border-neutral-300 px-3 text-sm">
+              <label key={l.id} className="flex min-h-11 items-center gap-2 rounded-md border border-neutral-300 px-3 text-sm">
                 <input
                   type="checkbox"
                   checked={selected.includes(l.id)}

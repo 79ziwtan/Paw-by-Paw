@@ -33,7 +33,7 @@ export function HouseholdDetailsCard({ household: h, packageLine }: { household:
           <div className="font-semibold">{h.owner_name}</div>
           <div className="text-sm text-neutral-500 select-text">{formatPhone(h.phone)}</div>
           {h.email && <div className="text-sm text-neutral-500 select-text">{h.email}</div>}
-          {locationName(h.location_id) && <div className="text-sm text-neutral-500">📍 {locationName(h.location_id)}</div>}
+          {locationName(h.location_id) && <div className="text-sm text-neutral-500">Location: {locationName(h.location_id)}</div>}
           <div className="mt-1 flex items-center gap-2 text-sm">
             <PaymentDot status={h.payment_status} />
             {packageLine}
@@ -45,7 +45,7 @@ export function HouseholdDetailsCard({ household: h, packageLine }: { household:
         </div>
       </div>
       {h.internal_notes && (
-        <div className="rounded-lg bg-neutral-100 p-2 text-sm">
+        <div className="rounded-md bg-neutral-100 p-2 text-sm">
           <div className="text-xs font-medium tracking-wide text-neutral-500 uppercase">Internal</div>
           <p className="whitespace-pre-wrap">{h.internal_notes}</p>
         </div>

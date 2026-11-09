@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 import { BackLink } from '../../components/BackLink'
 import { LoadMore } from '../../components/LoadMore'
-import { Card, PaymentDot } from '../../components/ui'
+import { Card, PaymentDot, primaryLinkClass } from '../../components/ui'
 import { formatAge } from '../../lib/format'
 import { useDogSessions, usePlanStages } from '../sessions/api'
 import { SessionCard } from '../sessions/SessionCard'
@@ -10,6 +10,7 @@ import { HomeworkTab } from '../homework/HomeworkTab'
 import { useLocationName } from '../households/api'
 import { useActiveFlags, useDogSummary } from './api'
 import { DogDetails } from './DogDetails'
+import { SafetyFlag } from './SafetyFlag'
 
 type Tab = 'sessions' | 'plan' | 'homework'
 
@@ -34,20 +35,16 @@ export function DogProfilePage() {
           {[dog.breed, formatAge(dog.birth_date)].filter(Boolean).join(' · ')} · Owner:{' '}
           <Link to={`/households/${dog.household_id}`} className="underline">{dog.owner_name}</Link>
         </p>
-        {locationName(dog.location_id) && <p className="text-sm text-neutral-500">📍 {locationName(dog.location_id)}</p>}
+        {locationName(dog.location_id) && <p className="text-sm text-neutral-500">Location: {locationName(dog.location_id)}</p>}
       </header>
 
       {dog.archived_at && (
-        <p className="rounded-lg bg-neutral-100 p-3 text-sm">
+        <p className="rounded-md bg-neutral-100 p-3 text-sm">
           This dog was removed. <Link to={`/households/${dog.household_id}`} className="underline">Restore from household</Link>
         </p>
       )}
 
-      {flags?.map((f) => (
-        <div key={f.id} className="rounded-xl border-2 border-flag bg-flag-soft p-3 text-sm">
-          <strong className="text-flag">⚑ Safety flag ({f.severity}):</strong> {f.note}
-        </div>
-      ))}
+      {flags?.map((f) => <SafetyFlag key={f.id} flag={f} readOnly={!!dog.archived_at} />)}
 
       <Card className="grid grid-cols-2 gap-3 text-sm">
         <div>
@@ -69,14 +66,14 @@ export function DogProfilePage() {
 
       <DogDetails dogId={dogId} readOnly={!!dog.archived_at} />
 
-      <div role="tablist" className="flex rounded-lg bg-neutral-100 p-1">
+      <div role="tablist" className="flex rounded-md bg-neutral-100 p-1">
         {(['sessions', 'plan', 'homework'] as const).map((t) => (
           <button
             key={t}
             role="tab"
             aria-selected={tab === t}
             onClick={() => setTab(t)}
-            className={`min-h-10 flex-1 rounded-md text-sm font-medium capitalize ${tab === t ? 'bg-white shadow-sm' : 'text-neutral-500'}`}
+            className={`min-h-10 flex-1 rounded-md text-sm font-medium capitalize ${tab === t ? 'bg-white' : 'text-neutral-500'}`}
           >
             {t}
           </button>
@@ -88,11 +85,16 @@ export function DogProfilePage() {
       {tab === 'homework' && <HomeworkTab dogId={dogId} readOnly={!!dog.archived_at} />}
 
       {!dog.archived_at && (
-        <div className="fixed inset-x-0 bottom-14 border-t border-neutral-200 bg-white/95 p-3 backdrop-blur">
+        <div className="fixed inset-x-0 bottom-14 border-t border-neutral-200 bg-white p-3">
           <div className="mx-auto max-w-3xl">
-            <Link to="log" className="flex min-h-11 items-center justify-center rounded-lg border border-neutral-900 bg-neutral-900 font-medium text-white shadow-sm">
-              Log session
-            </Link>
+            <div className="flex gap-2">
+              <Link to="summary" className="flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-neutral-600">
+                Summary card
+              </Link>
+              <Link to="log" className={`${primaryLinkClass} flex-1`}>
+                Log session
+              </Link>
+            </div>
           </div>
         </div>
       )}
@@ -132,7 +134,7 @@ function SessionList({ dogId }: { dogId: string }) {
 
 const statusStyle = {
   complete: 'bg-neutral-300 text-neutral-800',
-  in_progress: 'bg-neutral-900 text-white',
+  in_progress: 'bg-gold-400 text-neutral-900',
   not_started: 'bg-neutral-100 text-neutral-500',
 } as const
 const statusText = { complete: 'Complete', in_progress: 'In progress', not_started: 'Not started' } as const
@@ -161,7 +163,7 @@ function PlanSummary({ dogId }: { dogId: string }) {
       ) : (
         <p className="text-sm text-neutral-500">No plan yet.</p>
       )}
-      <Link to="plan" className="rounded-lg border border-neutral-300 bg-white py-3 text-center font-medium">
+      <Link to="plan" className="rounded-md border border-neutral-300 bg-white py-3 text-center font-medium">
         {stages?.length ? 'Edit plan' : 'Build plan'}
       </Link>
     </div>

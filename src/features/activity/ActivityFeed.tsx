@@ -27,7 +27,7 @@ export function ActivityFeed() {
             key={f ?? 'all'}
             aria-pressed={filter === f}
             onClick={() => setFilter(f)}
-            className={`min-h-9 rounded-full border px-3 text-sm ${filter === f ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-300 bg-white'}`}
+            className={`min-h-9 rounded-full border px-3 text-sm ${filter === f ? 'border-gold-500 bg-gold-400 text-neutral-900' : 'border-neutral-300 bg-white'}`}
           >
             {f ?? 'All'}
           </button>

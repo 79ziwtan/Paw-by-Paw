@@ -94,7 +94,7 @@ function EditForm({ session: s, dogId, dogName }: { session: NonNullable<ReturnT
                 type="button"
                 aria-pressed={on}
                 onClick={() => toggle(t.id)}
-                className={`min-h-11 rounded-full border px-4 text-sm ${on ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-300 bg-white'}`}
+                className={`min-h-11 rounded-full border px-4 text-sm ${on ? 'border-gold-500 bg-gold-400 text-neutral-900' : 'border-neutral-300 bg-white'}`}
               >
                 {t.label}
               </button>
@@ -109,10 +109,10 @@ function EditForm({ session: s, dogId, dogName }: { session: NonNullable<ReturnT
               const summary = [Object.keys(b.measures).length && `${Object.keys(b.measures).length} of 3 Ds`, b.note.trim() && 'note'].filter(Boolean).join(' + ')
               return (
                 <li key={tagId}>
-                  <Card className="border-neutral-400 p-3 shadow-sm">
+                  <Card className="border-neutral-400 p-3">
                     <button type="button" className="flex min-h-11 w-full items-center justify-between text-left" onClick={() => setExpanded(open ? null : tagId)}>
                       <span className="font-medium">{label}</span>
-                      <span className="text-sm text-neutral-500">{summary || '+ 3 Ds or a note'} {open ? '▴' : '▾'}</span>
+                      <span className="text-sm text-neutral-500">{summary || '+ 3 Ds or a note'} ({open ? 'hide' : 'show'})</span>
                     </button>
                     {open && (
                       <>
@@ -147,7 +147,7 @@ function EditForm({ session: s, dogId, dogName }: { session: NonNullable<ReturnT
               type="button"
               aria-pressed={rating === n}
               onClick={() => setRating(rating === n ? null : n)}
-              className={`size-11 rounded-full border text-sm font-medium ${rating === n ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-neutral-300 bg-white'}`}
+              className={`size-11 rounded-full border text-sm font-medium ${rating === n ? 'border-gold-500 bg-gold-400 text-neutral-900' : 'border-neutral-300 bg-white'}`}
             >
               {n}
             </button>
@@ -171,9 +171,9 @@ function EditForm({ session: s, dogId, dogName }: { session: NonNullable<ReturnT
         <HomeworkInput value={newHomework} onChange={setNewHomework} />
       </Section>
 
-      {(error || update.error) && <p className="rounded-lg bg-flag-soft p-3 text-sm text-flag">{error ?? update.error?.message}</p>}
+      {(error || update.error) && <p className="rounded-md bg-flag-soft p-3 text-sm text-flag">{error ?? update.error?.message}</p>}
 
-      <div className="fixed inset-x-0 bottom-14 border-t border-neutral-200 bg-white/95 p-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-14 border-t border-neutral-200 bg-white p-3">
         <div className="mx-auto flex max-w-3xl gap-2">
           <Button type="submit" className="flex-1" disabled={update.isPending}>{update.isPending ? 'Saving…' : 'Save changes'}</Button>
           <Button type="button" variant="secondary" onClick={goBack}>Cancel</Button>

@@ -1,4 +1,4 @@
-# Paw by Paw — Design Outline
+# Waffle — Design Outline
 
 A trainer-first CRM built around the **dog**, not the sale. It replaces scattered notes, GHL-style tabs, and hand-written texts with one structured record of each dog's training, and turns that record into clear updates for owners.
 

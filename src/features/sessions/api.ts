@@ -7,7 +7,7 @@ const PAGE = 10
 
 /** Columns for a session card. Shared so every list of sessions has the same shape. */
 export const SESSION_SELECT = `
-          id, dog_id, occurred_at, rating, takes_food, internal_notes, external_notes, package_id,
+          id, dog_id, occurred_at, rating, takes_food, internal_notes, external_notes, next_step, package_id,
           dogs ( id, name, household_id ),
           staff ( display_name ),
           session_behaviors ( id, measures, note, behavior_tags ( label ) ),
@@ -95,6 +95,8 @@ export type LogSessionInput = {
   stage: StageAction | null
   countPackage: boolean
   homework: string[]
+  /** "Next step" for the following lesson (shown on the summary card). */
+  nextStep?: string
 }
 
 export function useLogSession() {
@@ -115,6 +117,11 @@ export function useLogSession() {
         p_homework: i.homework,
       })
       if (error) throw error
+      // Prototype: next_step is set right after the RPC rather than inside it.
+      if (i.nextStep?.trim()) {
+        const { error: e2 } = await supabase.from('sessions').update({ next_step: i.nextStep.trim() }).eq('id', data)
+        if (e2) throw e2
+      }
       return data
     },
     onSuccess: (_id, i) =>

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase, type Tables } from '../../lib/supabase'
+import { useAuth } from '../auth/AuthProvider'
 
 /** One row per dog with stage, flags, payment and last 2 sessions (view: dog_summary). */
 export function useDogSummaries(search = '') {
@@ -77,5 +78,22 @@ export function useUpdateDog(dogId: string) {
     },
     onSettled: () =>
       Promise.all([['dog', dogId], ['dog_summary'], ['household'], ['unsent_sessions'], ['activity']].map((queryKey) => qc.invalidateQueries({ queryKey }))),
+  })
+}
+
+/** Resolve a safety flag: it leaves the dog's card and list but stays in history (the session that raised it still shows it). */
+export function useResolveFlag(dogId: string) {
+  const qc = useQueryClient()
+  const { staff } = useAuth()
+  return useMutation({
+    mutationFn: async ({ flagId, note }: { flagId: string; note: string }) => {
+      const { error } = await supabase
+        .from('flags')
+        .update({ resolved_at: new Date().toISOString(), resolved_by: staff?.id ?? null, resolution_note: note.trim() || null })
+        .eq('id', flagId)
+      if (error) throw error
+    },
+    onSettled: () =>
+      Promise.all([['flags', dogId], ['dog_summary'], ['sessions'], ['activity']].map((queryKey) => qc.invalidateQueries({ queryKey }))),
   })
 }

@@ -60,7 +60,7 @@ export function OwnerUpdatePage() {
           (requestLink.isSuccess ? (
             <p className="text-sm">Your trainer has been notified.</p>
           ) : (
-            <button onClick={() => requestLink.mutate()} className="min-h-11 rounded-lg bg-neutral-900 px-4 font-medium text-white">
+            <button onClick={() => requestLink.mutate()} className="min-h-11 rounded-md bg-gold-400 px-4 font-semibold text-neutral-900">
               Request New Link
             </button>
           ))}
@@ -87,7 +87,7 @@ export function OwnerUpdatePage() {
           {data.stages.map((s) => (
             <li
               key={s.name}
-              className={`rounded-full px-2.5 py-1 text-xs ${s.status === 'in_progress' ? 'bg-neutral-900 text-white' : s.status === 'complete' ? 'bg-neutral-300' : 'bg-neutral-100 text-neutral-500'}`}
+              className={`rounded-full px-2.5 py-1 text-xs ${s.status === 'in_progress' ? 'bg-gold-400 text-neutral-900' : s.status === 'complete' ? 'bg-neutral-300' : 'bg-neutral-100 text-neutral-500'}`}
             >
               {s.status === 'complete' && '✓ '}
               {s.name}
@@ -101,7 +101,7 @@ export function OwnerUpdatePage() {
         <ul className="flex flex-col gap-2">
           {data.homework.map((h) => (
             <li key={h.id}>
-              <label className="flex min-h-11 items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3">
+              <label className="flex min-h-11 items-center gap-3 rounded-md border border-neutral-200 bg-white px-3">
                 <input type="checkbox" className="size-5" checked={h.done} onChange={(e) => toggle.mutate({ id: h.id, done: e.target.checked })} />
                 <span className={h.done ? 'text-neutral-400 line-through' : ''}>{h.text}</span>
               </label>

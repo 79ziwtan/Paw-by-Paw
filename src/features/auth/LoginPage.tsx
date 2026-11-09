@@ -25,7 +25,7 @@ export function LoginPage() {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-6 p-4">
-      <h1 className="text-2xl font-semibold">Paw by Paw</h1>
+      <h1 className="text-2xl font-semibold">Waffle</h1>
       <form onSubmit={submit} className="flex flex-col gap-4">
         <Field label="Email">
           <input className={inputClass} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -39,7 +39,6 @@ export function LoginPage() {
       <button className="text-sm text-neutral-600 underline" onClick={() => setMode(mode === 'signIn' ? 'signUp' : 'signIn')}>
         {mode === 'signIn' ? 'New here? Create an account' : 'Have an account? Sign in'}
       </button>
-      {import.meta.env.DEV && <p className="text-xs text-neutral-500">Local demo: owner@pawbypaw.test / password123</p>}
     </main>
   )
 }

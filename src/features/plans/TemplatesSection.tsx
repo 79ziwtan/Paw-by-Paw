@@ -120,7 +120,7 @@ function TemplateForm({ id, initialName, initialStages, onDone }: { id?: string;
             </li>
           ))}
         </ol>
-        <button type="button" className="min-h-11 rounded-lg border border-dashed border-neutral-400 text-sm" onClick={() => setStages([...stages, { name: '' }])}>
+        <button type="button" className="min-h-11 rounded-md border border-dashed border-neutral-400 text-sm" onClick={() => setStages([...stages, { name: '' }])}>
           + Add stage
         </button>
         {(error || save.error) && <p className="text-sm text-flag">{error ?? save.error?.message}</p>}

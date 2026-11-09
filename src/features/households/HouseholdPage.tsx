@@ -60,7 +60,6 @@ export function HouseholdPage() {
           <li key={d.id}>
             <Card className="flex items-center gap-3">
               <Link to={`/dogs/${d.id}`} className="flex min-w-0 flex-1 items-center gap-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-100">🐾</div>
                 <div className="min-w-0">
                   <div className="font-semibold">{d.name}</div>
                   <div className="truncate text-sm text-neutral-500">{[d.breed, formatAge(d.birth_date)].filter(Boolean).join(' · ') || '—'}</div>
@@ -74,7 +73,7 @@ export function HouseholdPage() {
         ))}
       </ul>
 
-      <Link to={`/households/${householdId}/dogs/new`} className="rounded-lg border border-dashed border-neutral-400 py-3 text-center font-medium">
+      <Link to={`/households/${householdId}/dogs/new`} className="rounded-md border border-dashed border-neutral-400 py-3 text-center font-medium">
         + Add Another Dog
       </Link>
 
@@ -86,7 +85,7 @@ export function HouseholdPage() {
           {showArchived && (
             <ul className="mt-2 flex flex-col gap-2">
               {archived.map((d) => (
-                <li key={d.id} className="flex items-center justify-between rounded-lg bg-neutral-100 px-3 py-2 text-sm">
+                <li key={d.id} className="flex items-center justify-between rounded-md bg-neutral-100 px-3 py-2 text-sm">
                   <Link to={`/dogs/${d.id}`} className="text-neutral-600">{d.name}</Link>
                   <button className={actionClass} onClick={() => setArchived.mutate({ dogId: d.id, archived: false })}>
                     Restore

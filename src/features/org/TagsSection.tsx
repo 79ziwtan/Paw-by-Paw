@@ -28,7 +28,7 @@ export function TagsSection() {
   return (
     <div className="flex flex-col gap-5">
       <p className="text-sm text-neutral-500">These appear as quick-tap chips when logging a session. Trainers can also add tags while logging.</p>
-      {mutationError && <p className="rounded-lg bg-flag-soft p-3 text-sm text-flag">{mutationError.message}</p>}
+      {mutationError && <p className="rounded-md bg-flag-soft p-3 text-sm text-flag">{mutationError.message}</p>}
 
       <div>
         <h2 className="mb-2 font-semibold">Your tags</h2>

@@ -63,8 +63,8 @@ export function SessionCard({ session: s, showDog = false, hideHomework = false 
       </div>
 
       {s.flags.map((f) => (
-        <div key={f.id} className={`rounded-lg p-2 text-sm ${f.resolved_at ? 'bg-neutral-100 text-neutral-600' : 'border border-flag bg-flag-soft'}`}>
-          <strong className={f.resolved_at ? '' : 'text-flag'}>⚑ Flag raised ({f.severity})</strong>
+        <div key={f.id} className={`rounded-md p-2 text-sm ${f.resolved_at ? 'bg-neutral-100 text-neutral-600' : 'border border-flag bg-flag-soft'}`}>
+          <strong className={f.resolved_at ? '' : 'text-flag'}>Flag raised ({f.severity})</strong>
           {f.resolved_at && ' · resolved'}: {f.note}
         </div>
       ))}
@@ -96,6 +96,13 @@ export function SessionCard({ session: s, showDog = false, hideHomework = false 
         </ul>
       )}
 
+      {s.next_step && (
+        <div className="text-sm">
+          <span className="font-medium">Next step: </span>
+          {s.next_step}
+        </div>
+      )}
+
       {s.external_notes && (
         <div className="text-sm">
           <div className="text-xs font-medium tracking-wide text-neutral-500 uppercase">For owner</div>
@@ -115,7 +122,7 @@ export function SessionCard({ session: s, showDog = false, hideHomework = false 
         </div>
       )}
       {s.internal_notes && (
-        <div className="rounded-lg bg-neutral-100 p-2 text-sm">
+        <div className="rounded-md bg-neutral-100 p-2 text-sm">
           <div className="text-xs font-medium tracking-wide text-neutral-500 uppercase">Internal</div>
           <p className="whitespace-pre-wrap">{s.internal_notes}</p>
         </div>

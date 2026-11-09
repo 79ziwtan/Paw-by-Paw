@@ -1,5 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router'
 import { AppShell } from './components/AppShell'
+import { CalendarPage } from './features/calendar/CalendarPage'
+import { DogSummaryPage } from './features/dogs/DogSummaryPage'
 import { LoginPage } from './features/auth/LoginPage'
 import { OnboardingPage } from './features/auth/OnboardingPage'
 import { RequireStaff } from './features/auth/RequireStaff'
@@ -16,7 +18,6 @@ import { BusinessSection } from './features/org/BusinessSection'
 import { OrgIndex, OrgLayout } from './features/org/OrgLayout'
 import { TagsSection } from './features/org/TagsSection'
 import { TeamSection } from './features/org/TeamSection'
-import { TodayPage } from './features/today/TodayPage'
 import { UpdatesPage } from './features/updates/UpdatesPage'
 import { OwnerProfilePage } from './owner/OwnerProfilePage'
 import { OwnerUpdatePage } from './owner/OwnerUpdatePage'
@@ -36,9 +37,10 @@ export const router = createBrowserRouter([
       </RequireStaff>
     ),
     children: [
-      { index: true, element: <TodayPage /> },
+      { index: true, element: <CalendarPage /> },
       { path: 'dogs', element: <DogListPage /> },
       { path: 'dogs/:dogId', element: <DogProfilePage /> },
+      { path: 'dogs/:dogId/summary', element: <DogSummaryPage /> },
       { path: 'dogs/:dogId/plan', element: <PlanEditorPage /> },
       { path: 'dogs/:dogId/log', element: <LogSessionPage /> },
       { path: 'dogs/:dogId/sessions/:sessionId/edit', element: <EditSessionPage /> },

@@ -64,7 +64,7 @@ export function AddDogPage() {
           <p className="text-sm text-neutral-500">Already in this household: {existing.map((d) => d.name).join(', ')}</p>
         )}
       </header>
-      {justAdded && <p className="rounded-lg bg-neutral-100 p-3 text-sm">✓ {justAdded} added. Add the next dog below.</p>}
+      {justAdded && <p className="rounded-md bg-neutral-100 p-3 text-sm">✓ {justAdded} added. Add the next dog below.</p>}
       <form onSubmit={save} className="flex flex-col gap-4">
         <Field label="Dog name">
           <input ref={nameRef} className={inputClass} required value={form.name} onChange={set('name')} autoComplete="off" />

@@ -1,7 +1,23 @@
 @import "tailwindcss";
 
-/* Grayscale UI; red is reserved for safety flags (DESIGN.md §7). */
+/*
+ * Waffle (mid-fidelity): plain gray UI with a basic gold accent for primary actions and selections.
+ * Red stays reserved for safety flags (and the unpaid dot).
+ */
 @theme {
+  --color-gold-50: #fff8e6;
+  --color-gold-100: #fdedc2;
+  --color-gold-200: #fadb8a;
+  --color-gold-300: #f6c653;
+  --color-gold-400: #f0b12e;
+  --color-gold-500: #de9614;
+  --color-gold-600: #b9760c;
+  --color-gold-700: #925a0e;
+  --color-gold-800: #774912;
+  --color-gold-900: #643d14;
+
+  --color-paid: #16a34a;
+  --color-unpaid: #dc2626;
   --color-flag: #dc2626;
   --color-flag-soft: #fef2f2;
 }

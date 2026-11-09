@@ -17,14 +17,14 @@ export function UpdatesPage() {
     <section className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold">Updates</h1>
       {canSeeActivity && (
-        <div role="tablist" className="flex rounded-lg bg-neutral-100 p-1">
+        <div role="tablist" className="flex rounded-md bg-neutral-100 p-1">
           {([['owner', 'Owner updates'], ['activity', 'Activity']] as const).map(([t, label]) => (
             <button
               key={t}
               role="tab"
               aria-selected={tab === t}
               onClick={() => setTab(t)}
-              className={`min-h-10 flex-1 rounded-md text-sm font-medium ${tab === t ? 'bg-white shadow-sm' : 'text-neutral-500'}`}
+              className={`min-h-10 flex-1 rounded-md text-sm font-medium ${tab === t ? 'bg-white' : 'text-neutral-500'}`}
             >
               {label}
             </button>
@@ -73,7 +73,7 @@ function OwnerUpdates() {
                   householdId={item.householdId}
                   dogId={item.dogId}
                   label="New link"
-                  className="flex min-h-9 items-center rounded-lg border border-neutral-300 bg-white px-3 text-sm font-medium disabled:opacity-50"
+                  className="flex min-h-9 items-center rounded-md border border-neutral-300 bg-white px-3 text-sm font-medium disabled:opacity-50"
                 />
               )}
             </Card>

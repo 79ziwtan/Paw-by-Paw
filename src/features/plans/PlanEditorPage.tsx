@@ -18,7 +18,7 @@ import {
 
 const STATUS: Record<StageStatus, { label: string; pill: string }> = {
   not_started: { label: 'Not started', pill: 'bg-neutral-100 text-neutral-500' },
-  in_progress: { label: 'In progress', pill: 'bg-neutral-900 text-white' },
+  in_progress: { label: 'In progress', pill: 'bg-gold-400 text-neutral-900' },
   complete: { label: 'Complete', pill: 'bg-neutral-300 text-neutral-800' },
 }
 const RANK: Record<StageStatus, number> = { not_started: 0, in_progress: 1, complete: 2 }
@@ -167,7 +167,7 @@ function StageRow({ dogId, stage, stages, index }: { dogId: string; stage: Stage
 
       {!editing && (
         <form onSubmit={saveStatus} className="flex flex-col gap-2">
-          <div role="radiogroup" aria-label={`Status of ${stage.name}`} className="flex rounded-lg bg-neutral-100 p-1">
+          <div role="radiogroup" aria-label={`Status of ${stage.name}`} className="flex rounded-md bg-neutral-100 p-1">
             {(Object.keys(STATUS) as StageStatus[]).map((st) => {
               const active = (pending ?? stage.status) === st
               return (
@@ -177,7 +177,7 @@ function StageRow({ dogId, stage, stages, index }: { dogId: string; stage: Stage
                   role="radio"
                   aria-checked={active}
                   onClick={() => setPending(st === stage.status ? null : st)}
-                  className={`min-h-10 flex-1 rounded-md text-xs font-medium ${active ? 'bg-white shadow-sm' : 'text-neutral-500'}`}
+                  className={`min-h-10 flex-1 rounded-md text-xs font-medium ${active ? 'bg-white' : 'text-neutral-500'}`}
                 >
                   {STATUS[st].label}
                 </button>
@@ -247,7 +247,7 @@ function TemplatePicker({ dogId, startAt, appending, onDone }: { dogId: string; 
         {templates?.map((t) => (
           <li key={t.id}>
             <button
-              className="w-full rounded-lg border border-neutral-300 bg-white p-3 text-left hover:bg-neutral-50 disabled:opacity-50"
+              className="w-full rounded-md border border-neutral-300 bg-white p-3 text-left hover:bg-neutral-50 disabled:opacity-50"
               disabled={apply.isPending}
               onClick={async () => {
                 await apply.mutateAsync({ templateId: t.id, stages: t.stages, startAt })

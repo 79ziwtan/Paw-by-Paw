@@ -77,16 +77,16 @@ export function OwnerProfilePage() {
             <div className="flex flex-col gap-2">
               <h2 className="font-semibold text-neutral-500">Your other {others.length === 1 ? 'dog' : 'dogs'}</h2>
               {others.map((d) => (
-                <details key={d.id} className="group rounded-2xl border border-neutral-400 bg-white shadow-sm">
+                <details key={d.id} className="group rounded-md border border-neutral-400 bg-white">
                   <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-2 px-4 [&::-webkit-details-marker]:hidden">
                     <span>
-                      <span className="font-semibold">🐾 {d.name}</span>
+                      <span className="font-semibold">{d.name}</span>
                       <span className="text-sm text-neutral-500">
                         {d.stages.find((st) => st.status === 'in_progress') && ` · ${d.stages.find((st) => st.status === 'in_progress')!.name}`}
                         {d.pending.length > 0 && ` · ${d.pending.length} to do`}
                       </span>
                     </span>
-                    <span className="text-neutral-400 transition-transform group-open:rotate-180" aria-hidden>▾</span>
+                    <span className="text-neutral-400 group-open:rotate-180" aria-hidden>▾</span>
                   </summary>
                   <div className="border-t border-neutral-100">
                     <DogSection dog={d} isDone={isDone} tick={tick} bare />
@@ -116,15 +116,15 @@ function DogSection({ dog: d, isDone, tick, bare = false }: {
 }) {
   const [last, ...history] = d.sessions
   return (
-    <section className={bare ? 'flex flex-col gap-4 p-4' : 'flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-4'}>
-      {!bare && <h2 className="text-xl font-semibold">🐾 {d.name}</h2>}
+    <section className={bare ? 'flex flex-col gap-4 p-4' : 'flex flex-col gap-4 rounded-md border border-neutral-200 bg-white p-4'}>
+      {!bare && <h2 className="text-xl font-semibold">{d.name}</h2>}
 
       {d.stages.length > 0 && (
         <ol className="flex flex-wrap gap-1" aria-label="Training plan">
           {d.stages.map((s) => (
             <li
               key={s.name}
-              className={`rounded-full px-2.5 py-1 text-xs ${s.status === 'in_progress' ? 'bg-neutral-900 text-white' : s.status === 'complete' ? 'bg-neutral-300' : 'bg-neutral-100 text-neutral-500'}`}
+              className={`rounded-full px-2.5 py-1 text-xs ${s.status === 'in_progress' ? 'bg-gold-400 text-neutral-900' : s.status === 'complete' ? 'bg-neutral-300' : 'bg-neutral-100 text-neutral-500'}`}
             >
               {s.status === 'complete' && '✓ '}
               {s.name}
@@ -148,12 +148,12 @@ function DogSection({ dog: d, isDone, tick, bare = false }: {
       <div>
         <h3 className="mb-2 font-semibold">To do {d.pending.length > 0 && <span className="font-normal text-neutral-500">({d.pending.length})</span>}</h3>
         {d.pending.length === 0 ? (
-          <p className="text-sm text-neutral-500">All caught up 🎉</p>
+          <p className="text-sm text-neutral-500">All caught up.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {d.pending.map((t) => (
               <li key={t.id}>
-                <label className="flex min-h-11 items-center gap-3 rounded-lg border border-neutral-200 bg-white px-3">
+                <label className="flex min-h-11 items-center gap-3 rounded-md border border-neutral-200 bg-white px-3">
                   <input type="checkbox" className="size-5" checked={isDone(t.id, false)} onChange={(e) => tick(t.id, e.target.checked)} />
                   <span className={isDone(t.id, false) ? 'text-neutral-400 line-through' : ''}>{t.text}</span>
                 </label>
@@ -164,10 +164,10 @@ function DogSection({ dog: d, isDone, tick, bare = false }: {
       </div>
 
       {history.length > 0 && (
-        <details className="group rounded-lg border border-neutral-400 shadow-sm">
+        <details className="group rounded-md border border-neutral-400">
           <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-3 font-semibold [&::-webkit-details-marker]:hidden">
             History ({history.length})
-            <span className="text-neutral-400 transition-transform group-open:rotate-180" aria-hidden>▾</span>
+            <span className="text-neutral-400 group-open:rotate-180" aria-hidden>▾</span>
           </summary>
           <ol className="mx-3 mb-3 mt-1 flex flex-col gap-3 border-l-2 border-neutral-200 pl-3">
             {history.map((s) => (

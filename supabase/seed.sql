@@ -1,5 +1,5 @@
 -- Local dev seed (runs on `npm run db:reset`). Dogs match the wireframes.
--- Test accounts (password123): owner@pawbypaw.test, admin@pawbypaw.test, trainer@pawbypaw.test
+-- Test accounts (password123): owner@waffle.test, admin@waffle.test, trainer@waffle.test
 
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -7,14 +7,14 @@ insert into auth.users (
   confirmation_token, recovery_token, email_change_token_new, email_change
 ) values (
   '00000000-0000-0000-0000-000000000000', '11111111-1111-1111-1111-111111111111',
-  'authenticated', 'authenticated', 'owner@pawbypaw.test',
+  'authenticated', 'authenticated', 'owner@waffle.test',
   extensions.crypt('password123', extensions.gen_salt('bf')), now(),
   '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''
 );
 
 insert into auth.identities (id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
 values (gen_random_uuid(), '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111',
-        '{"sub":"11111111-1111-1111-1111-111111111111","email":"owner@pawbypaw.test"}', 'email', now(), now(), now());
+        '{"sub":"11111111-1111-1111-1111-111111111111","email":"owner@waffle.test"}', 'email', now(), now(), now());
 
 insert into organizations (id, name) values ('aaaaaaaa-0000-0000-0000-000000000001', 'Sam Rivera Training');
 insert into locations (id, org_id, name, city)
@@ -83,7 +83,7 @@ cross join (values
 ) as m(label, measures)
 join behavior_tags t on t.label = m.label and t.org_id is null;
 
--- Second location + a trainer (for the Team tab). Sign in: trainer@pawbypaw.test / password123
+-- Second location + a trainer (for the Team tab). Sign in: trainer@waffle.test / password123
 insert into locations (id, org_id, name, city)
 values ('bbbbbbbb-0000-0000-0000-000000000002', 'aaaaaaaa-0000-0000-0000-000000000001', 'Chattanooga', 'Chattanooga');
 
@@ -93,33 +93,33 @@ insert into auth.users (
   confirmation_token, recovery_token, email_change_token_new, email_change
 ) values (
   '00000000-0000-0000-0000-000000000000', '22222222-2222-2222-2222-222222222222',
-  'authenticated', 'authenticated', 'trainer@pawbypaw.test',
+  'authenticated', 'authenticated', 'trainer@waffle.test',
   extensions.crypt('password123', extensions.gen_salt('bf')), now(), now() - interval '1 day',
   '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''
 );
 insert into auth.identities (id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
 values (gen_random_uuid(), '22222222-2222-2222-2222-222222222222', '22222222-2222-2222-2222-222222222222',
-        '{"sub":"22222222-2222-2222-2222-222222222222","email":"trainer@pawbypaw.test"}', 'email', now(), now(), now());
+        '{"sub":"22222222-2222-2222-2222-222222222222","email":"trainer@waffle.test"}', 'email', now(), now(), now());
 
 insert into staff (id, org_id, role, display_name)
 values ('22222222-2222-2222-2222-222222222222', 'aaaaaaaa-0000-0000-0000-000000000001', 'trainer', 'OrgTrainer');
 insert into staff_locations (staff_id, location_id)
 values ('22222222-2222-2222-2222-222222222222', 'bbbbbbbb-0000-0000-0000-000000000001');
 
--- An admin at the Main location. Sign in: admin@pawbypaw.test / password123
+-- An admin at the Main location. Sign in: admin@waffle.test / password123
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
   raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
   confirmation_token, recovery_token, email_change_token_new, email_change
 ) values (
   '00000000-0000-0000-0000-000000000000', '33333333-3333-3333-3333-333333333333',
-  'authenticated', 'authenticated', 'admin@pawbypaw.test',
+  'authenticated', 'authenticated', 'admin@waffle.test',
   extensions.crypt('password123', extensions.gen_salt('bf')), now(),
   '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''
 );
 insert into auth.identities (id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
 values (gen_random_uuid(), '33333333-3333-3333-3333-333333333333', '33333333-3333-3333-3333-333333333333',
-        '{"sub":"33333333-3333-3333-3333-333333333333","email":"admin@pawbypaw.test"}', 'email', now(), now(), now());
+        '{"sub":"33333333-3333-3333-3333-333333333333","email":"admin@waffle.test"}', 'email', now(), now(), now());
 
 insert into staff (id, org_id, role, display_name, permissions)
 values ('33333333-3333-3333-3333-333333333333', 'aaaaaaaa-0000-0000-0000-000000000001', 'admin', 'OrgAdmin',
