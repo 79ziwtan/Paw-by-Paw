@@ -1,6 +1,6 @@
 # Waffle
 
-**Live demo:** https://pawbypaw.netlify.app · **Source:** https://github.com/79ziwtan/Paw-by-Paw
+**Live demo:** https://trainwithwaffle.netlify.app · **Source:** https://github.com/79ziwtan/Paw-by-Paw
 
 ## Build guide
 
