@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waffle: the CRM built around the dog</title>
+<meta name="description" content="Waffle is a CRM for dog trainers. One record of every dog's training, logged in about a minute, turned into clear updates for owners.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23f0b12e'/%3E%3Cpath d='M5.5 1v14M10.5 1v14M1 5.5h14M1 10.5h14' stroke='%23b9760c' stroke-width='1.2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold-50:#fff8e6;--gold-100:#fdedc2;--gold-200:#fadb8a;--gold-400:#f0b12e;--gold-500:#de9614;--gold-600:#b9760c;--gold-800:#774912;--gold-900:#643d14;
+    --ink:#1f1a14;--muted:#5d554b;--line:#ece4d6;--paper:#fffcf5;--red:#dc2626;--green:#16a34a;
+    --display:"Fraunces",Georgia,serif;--body:"DM Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--body);color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased}
+  img,svg{display:block;max-width:100%}
+  a{color:inherit}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0;letter-spacing:-.01em}
+  h2{font-size:clamp(2rem,4vw,2.9rem)}
+  .eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-600);margin:0 0 14px}
+  .lede{font-size:1.15rem;color:var(--muted);max-width:640px}
+  section{padding:96px 0}
+  .btn{display:inline-flex;align-items:center;gap:8px;font:700 1rem var(--body);padding:15px 26px;border-radius:999px;border:0;cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .15s,background .15s}
+  .btn-primary{background:var(--ink);color:#fff;box-shadow:0 6px 0 var(--gold-400)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 0 var(--gold-400)}
+  .btn-ghost{color:var(--ink);padding-left:4px}
+  .btn-ghost:hover{text-decoration:underline}
+
+  /* waffle grid motif */
+  .grid-bg{background-image:linear-gradient(var(--gold-200) 2px,transparent 2px),linear-gradient(90deg,var(--gold-200) 2px,transparent 2px);background-size:44px 44px}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:10;background:rgba(255,252,245,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:1.45rem;text-decoration:none}
+  .logo-mark{width:30px;height:30px}
+  nav ul{display:flex;gap:28px;list-style:none;margin:0;padding:0;font-size:.95rem;font-weight:500}
+  nav ul a{text-decoration:none;color:var(--muted)}
+  nav ul a:hover{color:var(--ink)}
+  .nav-cta{padding:10px 18px;font-size:.9rem;box-shadow:0 4px 0 var(--gold-400)}
+
+  /* hero */
+  .hero{position:relative;overflow:hidden;padding:88px 0 110px;background:var(--gold-50)}
+  .hero .grid-bg{position:absolute;inset:0;opacity:.55;mask-image:radial-gradient(ellipse at 75% 40%,#000 0%,transparent 65%);-webkit-mask-image:radial-gradient(ellipse at 75% 40%,#000 0%,transparent 65%)}
+  .hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+  .hero h1{font-size:clamp(2.7rem,6vw,4.6rem);font-weight:700}
+  .hero h1 em{font-style:italic;color:var(--gold-600)}
+  .hero .lede{margin:22px 0 34px}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .hero-note{margin-top:22px;font-size:.9rem;color:var(--muted)}
+
+  /* product mock */
+  .mock{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 60px -25px rgba(100,61,20,.35);padding:22px;transform:rotate(1.2deg)}
+  .mock-head{display:flex;gap:14px;align-items:center;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .avatar{width:54px;height:54px;border-radius:14px;background:var(--gold-100);display:grid;place-items:center;font-size:1.6rem}
+  .mock-head b{font-size:1.15rem;display:block}
+  .mock-head small{color:var(--muted)}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:999px;background:#f4f1ea;color:var(--muted)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+  .flag{background:#fef2f2;color:var(--red)}
+  .mock-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .stages{display:flex;gap:6px;margin:6px 0 16px}
+  .stage{flex:1;height:8px;border-radius:4px;background:#efe9df}
+  .stage.done{background:var(--gold-400)}
+  .stage.now{background:repeating-linear-gradient(45deg,var(--gold-400) 0 6px,var(--gold-200) 6px 12px)}
+  .mock label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+  .ds div{background:var(--gold-50);border:1px solid var(--gold-100);border-radius:12px;padding:10px;text-align:center}
+  .ds strong{display:block;font-family:var(--display);font-size:1.3rem}
+  .ds span{font-size:.75rem;color:var(--muted)}
+  .note{margin-top:14px;font-size:.9rem;background:#faf8f3;border-radius:12px;padding:12px 14px;color:var(--muted)}
+
+  /* problem */
+  .problem .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:start}
+  .pains{display:grid;gap:16px;margin-top:8px}
+  .pain{display:flex;gap:16px;padding:20px;border:1px solid var(--line);border-radius:16px;background:#fff}
+  .pain-icon{flex:none;width:44px;height:44px;border-radius:12px;background:var(--gold-50);display:grid;place-items:center}
+  .pain h3{font-family:var(--body);font-size:1.05rem;font-weight:700;margin-bottom:4px}
+  .pain p{margin:0;color:var(--muted);font-size:.97rem}
+  blockquote{margin:36px 0 0;padding:26px 28px;background:var(--ink);color:#fff;border-radius:18px;position:relative}
+  blockquote p{font-family:var(--display);font-size:1.35rem;line-height:1.35;margin:0 0 12px}
+  blockquote cite{font-style:normal;font-size:.85rem;color:var(--gold-200)}
+  .evidence{margin-top:18px;font-size:.9rem;color:var(--muted)}
+
+  /* solution */
+  .solution{background:var(--ink);color:#fff;position:relative;overflow:hidden}
+  .solution .grid-bg{position:absolute;inset:0;opacity:.06}
+  .solution .wrap{position:relative}
+  .solution .lede{color:#cfc6b8}
+  .solution .eyebrow{color:var(--gold-400)}
+  .loop{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px;counter-reset:step}
+  .loop li{list-style:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px;counter-increment:step}
+  .loop li::before{content:counter(step);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--gold-400);color:var(--ink);font-weight:700;margin-bottom:14px}
+  .loop h3{font-family:var(--body);font-size:1.05rem;margin-bottom:6px}
+  .loop p{margin:0;color:#cfc6b8;font-size:.93rem}
+  .loop{padding:0}
+  .vs{margin-top:44px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .vs div{border-radius:18px;padding:24px}
+  .vs .old{border:1px dashed rgba(255,255,255,.25);color:#cfc6b8}
+  .vs .new{background:var(--gold-400);color:var(--ink)}
+  .vs h3{font-family:var(--body);font-size:1rem;margin-bottom:10px}
+  .vs ul{margin:0;padding-left:18px}
+  .vs li{margin:4px 0}
+
+  /* audience */
+  .who{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;margin-top:44px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px}
+  .card.primary{background:var(--gold-50);border-color:var(--gold-200)}
+  .tag{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:999px;background:var(--ink);color:#fff;margin-bottom:16px}
+  .card.secondary .tag{background:#efe9df;color:var(--muted)}
+  .card h3{font-size:1.6rem;margin-bottom:10px}
+  .card p{color:var(--muted);margin:0 0 16px}
+  .traits{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px;margin:0;padding:0;list-style:none;font-size:.95rem}
+  .traits li{display:flex;gap:10px;align-items:flex-start}
+  .traits li::before{content:"";flex:none;width:10px;height:10px;margin-top:8px;border-radius:2px;background:var(--gold-400)}
+  .card.secondary .traits{grid-template-columns:1fr}
+
+  /* features */
+  .features{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+  .feat{border-radius:22px;padding:30px;background:var(--paper);border:1px solid var(--line);transition:transform .2s,box-shadow .2s}
+  .feat:hover{transform:translateY(-4px);box-shadow:0 18px 40px -22px rgba(100,61,20,.4)}
+  .feat-icon{width:58px;height:58px;border-radius:16px;background:var(--gold-400);display:grid;place-items:center;margin-bottom:22px}
+  .feat h3{font-size:1.45rem;margin-bottom:10px}
+  .feat p{color:var(--muted);margin:0 0 14px}
+  .feat .stat{font-size:.85rem;font-weight:700;color:var(--gold-600)}
+
+  /* cta */
+  .cta{position:relative;overflow:hidden;background:var(--gold-400)}
+  .cta .grid-bg{position:absolute;inset:0;opacity:.4;background-image:linear-gradient(var(--gold-500) 2px,transparent 2px),linear-gradient(90deg,var(--gold-500) 2px,transparent 2px)}
+  .cta .wrap{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+  .cta .eyebrow{color:var(--gold-900)}
+  .cta .lede{color:var(--gold-900)}
+  form{background:#fff;border-radius:24px;padding:30px;box-shadow:0 30px 60px -30px rgba(100,61,20,.6)}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+  .field label{font-size:.88rem;font-weight:700}
+  input,select{font:inherit;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink)}
+  input:focus,select:focus{outline:none;border-color:var(--gold-500);box-shadow:0 0 0 3px var(--gold-100)}
+  form .btn{width:100%;justify-content:center;margin-top:6px}
+  .fine{font-size:.82rem;color:var(--muted);margin:14px 0 0;text-align:center}
+  .hidden{display:none}
+  .success{text-align:center;padding:20px 0}
+  .success h3{font-size:1.6rem;margin:14px 0 8px}
+  .success p{color:var(--muted);margin:0}
+  .err{color:var(--red);font-size:.9rem;margin:10px 0 0;text-align:center}
+
+  footer{padding:36px 0;font-size:.9rem;color:var(--muted)}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+  /* reveal */
+  .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .js .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+
+  @media (max-width:900px){
+    nav ul{display:none}
+    .hero .wrap,.problem .wrap,.cta .wrap,.who,.vs{grid-template-columns:1fr}
+    .loop{grid-template-columns:1fr 1fr}
+    .feat-grid{grid-template-columns:1fr}
+    .mock{transform:none}
+    section{padding:72px 0}
+  }
+  @media (max-width:520px){.loop,.traits{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Waffle home">
+      <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#f0b12e"/><path d="M11 3v26M21 3v26M3 11h26M3 21h26" stroke="#b9760c" stroke-width="2.4"/></svg>
+      Waffle
+    </a>
+    <ul>
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#solution">How it works</a></li>
+      <li><a href="#who">Who it's for</a></li>
+      <li><a href="#features">Features</a></li>
+    </ul>
+    <a class="btn btn-primary nav-cta" href="#join">Join the pilot</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">A CRM for dog trainers</p>
+      <h1>Built around the <em>dog</em>, not the sale.</h1>
+      <p class="lede">Waffle keeps every dog's training in one record. You log a session in about a minute, and Waffle turns it into a clear update the owner can actually follow.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#join">Join the pilot program</a>
+        <a class="btn btn-ghost" href="#solution">See how it works →</a>
+      </div>
+      <p class="hero-note">Free for our first pilot trainers · Works on your phone</p>
+    </div>
+
+    <div class="mock reveal" aria-label="Example Waffle dog summary card">
+      <div class="mock-head">
+        <div class="avatar" aria-hidden="true">🐕</div>
+        <div>
+          <b>Biscuit</b>
+          <small>Lab mix · Owner: Dana R.</small>
+        </div>
+      </div>
+      <div class="mock-row">
+        <span class="pill"><span class="dot"></span>Paid · 4 of 6 sessions</span>
+        <span class="pill flag">⚑ Reactive to bikes</span>
+      </div>
+      <label>Plan · Foundations 2</label>
+      <div class="stages" aria-hidden="true"><span class="stage done"></span><span class="stage done"></span><span class="stage now"></span><span class="stage"></span><span class="stage"></span></div>
+      <label>Last session · Loose-leash walk · with Sam</label>
+      <div class="ds">
+        <div><strong>45s</strong><span>Duration</span></div>
+        <div><strong>20ft</strong><span>Distance</span></div>
+        <div><strong>3/5</strong><span>Distraction</span></div>
+      </div>
+      <div class="note"><b>Homework:</b> 2× daily, 5 min "watch me" on walks. Reward before bikes get close.</div>
+    </div>
+  </div>
+</header>
+
+<section class="problem" id="problem">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="eyebrow">The problem</p>
+      <h2>Training isn't a sales pipeline. Trainers' tools think it is.</h2>
+      <p class="lede" style="margin-top:20px">Training is specific to each behavior, often covers several dogs in one household, and doesn't move in a straight line. Generic CRMs are built for a linear sales funnel, so trainers work around them.</p>
+      <blockquote>
+        <p>“Finding payment info, consult notes, or even a dog's name takes too many steps.”</p>
+        <cite>— John Hayes, Dog Wizard</cite>
+      </blockquote>
+      <p class="evidence">Grounded in our customer discovery: interviews with dog trainers, including Dog Wizard, a multi-location training business, plus pet owners, shelters, and rescues.</p>
+    </div>
+    <div class="pains reveal">
+      <div class="pain">
+        <div class="pain-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b9760c" stroke-width="2" stroke-linecap="round"><path d="M4 8h12l-3-3M20 16H8l3 3"/></svg></div>
+        <div><h3>Dogs switch trainers mid-program</h3><p>On a team, one dog can work with several trainers. If a dog is halfway through leash walking and its next lesson is with someone new, that trainer has to find out fast where things left off.</p></div>
+      </div>
+      <div class="pain">
+        <div class="pain-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b9760c" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7"/></svg></div>
+        <div><h3>Dog history is scattered</h3><p>It lives in trainers' heads, in Word and PDF files, and across separate tabs in tools that weren't made for training.</p></div>
+      </div>
+      <div class="pain">
+        <div class="pain-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b9760c" stroke-width="2" stroke-linecap="round"><path d="M4 12h4l3-7 4 14 3-7h2"/></svg></div>
+        <div><h3>Progress is hard to see</h3><p>Goals change mid-program and dogs regress. A pipeline stage can't show that a dog held a stay for 45 seconds at 20 feet near other dogs.</p></div>
+      </div>
+      <div class="pain">
+        <div class="pain-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b9760c" stroke-width="2" stroke-linecap="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/><path d="M9 11h6M9 14h3"/></svg></div>
+        <div><h3>Owners get "report cards" they can't use</h3><p>Hand-typed texts after each session don't tell owners what to practice, so progress stalls between sessions.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="solution" id="solution">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="eyebrow reveal">The solution</p>
+    <h2 class="reveal">One structured record per dog,<br>from first consult to graduation.</h2>
+    <p class="lede reveal" style="margin-top:20px">Waffle models the way training actually works: flexible plans, behavior-by-behavior progress, and households with more than one dog. Everything else (scheduling, POS, payroll) stays in the tools you already use.</p>
+    <ol class="loop">
+      <li class="reveal"><h3>Set up the household</h3><p>Owner, phone, payment status, and every dog with its own goal and safety flags.</p></li>
+      <li class="reveal"><h3>Build the plan</h3><p>Start from your own curriculum template, then reorder or rename stages for this dog.</p></li>
+      <li class="reveal"><h3>Log the session</h3><p>Tap behaviors, record the 3 Ds, dictate notes. About a minute, right from the field.</p></li>
+      <li class="reveal"><h3>Update the owner</h3><p>Send a no-login link with what you worked on and 2–3 homework tasks they can check off.</p></li>
+    </ol>
+    <div class="vs reveal">
+      <div class="old"><h3>Generic CRM</h3><ul><li>Built around leads and deals</li><li>One linear pipeline per client</li><li>Free-text notes</li><li>Unstructured updates for owners</li></ul></div>
+      <div class="new"><h3>Waffle</h3><ul><li>Built around each dog</li><li>Flexible, reopenable stages per dog</li><li>Duration, Distance, Distraction</li><li>Clear updates with homework</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="who">
+  <div class="wrap">
+    <p class="eyebrow reveal">Who it's for</p>
+    <h2 class="reveal">Made for trainers running<br>multi-session programs.</h2>
+    <div class="who">
+      <div class="card primary reveal">
+        <span class="tag">Primary customer</span>
+        <h3>Independent trainers &amp; small teams</h3>
+        <p>Solo trainers and businesses with 1–10 trainers who coach dogs through packages of sessions. On a team, the same dog often works with more than one trainer.</p>
+        <ul class="traits">
+          <li>Sell multi-session training packages</li>
+          <li>Work from their phone between visits</li>
+          <li>Hand dogs off between trainers mid-program</li>
+          <li>Juggle several dogs per household</li>
+          <li>Short on admin time; want logging done in the field</li>
+          <li>Already use separate tools for scheduling and payments</li>
+        </ul>
+      </div>
+      <div class="card secondary reveal">
+        <span class="tag">Also serves</span>
+        <h3>Dog owners</h3>
+        <p>The trainer's clients. They receive updates and homework through a simple link, with no app to download and no account to create.</p>
+        <ul class="traits">
+          <li>Often less tech-savvy</li>
+          <li>Want to understand their dog, not just "fix" it</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <p class="eyebrow reveal">Core features</p>
+    <h2 class="reveal">Three things that make Waffle different.</h2>
+    <div class="feat-grid">
+      <article class="feat reveal">
+        <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1f1a14" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/><circle cx="15.5" cy="16.5" r="2"/></svg></div>
+        <h3>The at-a-glance dog card</h3>
+        <p>Dog, owner, payment dot, goal, safety flags, current stage, and the last two sessions on one screen. Any trainer can pick up exactly where the last one left off.</p>
+        <span class="stat">Top request from a training-business owner we interviewed</span>
+      </article>
+      <article class="feat reveal">
+        <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1f1a14" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3>One-minute session logs</h3>
+        <p>Track Duration, Distance, and Distraction per behavior, keep internal notes private, and dictate instead of typing.</p>
+        <span class="stat">Designed to be logged in about a minute</span>
+      </article>
+      <article class="feat reveal">
+        <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1f1a14" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></div>
+        <h3>No-login owner updates</h3>
+        <p>Turn a session into a private link with progress and homework. Owners tick off tasks, and you see what got done.</p>
+        <span class="stat">No app or account for owners</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="join">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="reveal">
+      <p class="eyebrow">Join the pilot</p>
+      <h2>Help us shape Waffle.</h2>
+      <p class="lede" style="margin-top:18px">We're looking for a small group of dog trainers to try Waffle with real clients and tell us what's missing. Pilot trainers get free access and a direct line to the team.</p>
+    </div>
+    <form name="pilot" method="POST" data-netlify="true" netlify-honeypot="company-website" id="pilot-form" class="reveal">
+      <input type="hidden" name="form-name" value="pilot">
+      <p class="hidden"><label>Leave this empty <input name="company-website"></label></p>
+      <div id="form-fields">
+        <div class="field"><label for="name">Your name</label><input id="name" name="name" required autocomplete="name"></div>
+        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="email"></div>
+        <div class="field"><label for="size">How many trainers on your team?</label>
+          <select id="size" name="team-size" required>
+            <option value="">Choose one</option>
+            <option>Just me</option>
+            <option>2–5</option>
+            <option>6–10</option>
+            <option>More than 10</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Request a pilot spot</button>
+        <p class="err hidden" id="form-error">Something went wrong. Please try again.</p>
+        <p class="fine">We'll only email you about the pilot.</p>
+      </div>
+      <div class="success hidden" id="form-success" role="status">
+        <svg width="54" height="54" viewBox="0 0 32 32" style="margin:0 auto" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#f0b12e"/><path d="M9 16.5l4.5 4.5L23 11" fill="none" stroke="#1f1a14" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>You're on the list!</h3>
+        <p>We'll be in touch soon about getting you set up.</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Waffle · Georgia Tech CS 4803</span>
+    <a href="#top">Back to top ↑</a>
+  </div>
+</footer>
+
+<script>
+  // Reveal on scroll (content stays visible if this script never runs)
+  if ('IntersectionObserver' in window) document.documentElement.classList.add('js')
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) } })
+  }, { threshold: 0.12 }) : null
+  document.querySelectorAll('.reveal').forEach((el) => io ? io.observe(el) : el.classList.add('in'))
+
+  // Pilot form: submits to Netlify Forms without leaving the page
+  const form = document.getElementById('pilot-form')
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const err = document.getElementById('form-error')
+    err.classList.add('hidden')
+    try {
+      const res = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form)).toString(),
+      })
+      if (!res.ok) throw new Error(res.status)
+      document.getElementById('form-fields').classList.add('hidden')
+      document.getElementById('form-success').classList.remove('hidden')
+    } catch {
+      err.classList.remove('hidden')
+    }
+  })
+</script>
+</body>
+</html>
