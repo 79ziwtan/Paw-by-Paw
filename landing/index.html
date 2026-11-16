@@ -3,188 +3,270 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Waffle: the CRM built around the dog</title>
-<meta name="description" content="Waffle is a CRM for dog trainers. One record of every dog's training, logged in about a minute, turned into clear updates for owners.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23f0b12e'/%3E%3Cpath d='M5.5 1v14M10.5 1v14M1 5.5h14M1 10.5h14' stroke='%23b9760c' stroke-width='1.2'/%3E%3C/svg%3E">
+<title>Train with Waffle: customer success for dog trainers</title>
+<meta name="description" content="Waffle helps dog trainers keep every client on track: each dog at a glance, sessions logged in a minute, and updates owners actually follow.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23f0b12e'/%3E%3Cpath d='M11 3v26M21 3v26M3 11h26M3 21h26' stroke='%23b9760c' stroke-width='2.4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  /*
+   * Product snippets below copy the app's own styles (src/index.css + src/components/ui.tsx):
+   * same palette, radii, pills, stage bars and 3D tiles. Keep them in step.
+   */
   :root{
-    --gold-50:#fff8e6;--gold-100:#fdedc2;--gold-200:#fadb8a;--gold-400:#f0b12e;--gold-500:#de9614;--gold-600:#b9760c;--gold-800:#774912;--gold-900:#643d14;
-    --ink:#1f1a14;--muted:#5d554b;--line:#ece4d6;--paper:#fffcf5;--red:#dc2626;--green:#16a34a;
+    --gold-50:#fff8e6;--gold-100:#fdedc2;--gold-200:#fadb8a;--gold-300:#f6c653;--gold-400:#f0b12e;--gold-500:#de9614;--gold-600:#b9760c;--gold-700:#925a0e;--gold-800:#774912;--gold-900:#643d14;
+    --ink:#1f1a14;--paper:#fffcf5;--n100:#f4f1ea;--line:#ece4d6;--n300:#ddd2bf;--n500:#8a7f70;--muted:#5d554b;
+    --red:#dc2626;--red-soft:#fef2f2;--red-line:#fecaca;--green:#16a34a;
     --display:"Fraunces",Georgia,serif;--body:"DM Sans",system-ui,sans-serif;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{margin:0;font-family:var(--body);color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased}
-  img,svg{display:block;max-width:100%}
+  body{margin:0;font-family:var(--body);color:var(--ink);background:var(--paper);line-height:1.55;-webkit-font-smoothing:antialiased}
+  svg{display:block}
   a{color:inherit}
-  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-  h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0;letter-spacing:-.01em}
-  h2{font-size:clamp(2rem,4vw,2.9rem)}
-  .eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-600);margin:0 0 14px}
-  .lede{font-size:1.15rem;color:var(--muted);max-width:640px}
-  section{padding:96px 0}
-  .btn{display:inline-flex;align-items:center;gap:8px;font:700 1rem var(--body);padding:15px 26px;border-radius:999px;border:0;cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .15s,background .15s}
-  .btn-primary{background:var(--ink);color:#fff;box-shadow:0 6px 0 var(--gold-400)}
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 0 var(--gold-400)}
+  button{font:inherit;color:inherit}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:var(--display);line-height:1.08;margin:0;letter-spacing:-.01em}
+  h2{font-size:clamp(2rem,4vw,2.8rem)}
+  .eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-600);margin:0 0 12px}
+  .lede{font-size:1.12rem;color:var(--muted);max-width:560px;margin:16px 0 0}
+  section{padding:88px 0}
+  .center{text-align:center}.center .lede{margin-left:auto;margin-right:auto}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 1rem var(--body);padding:14px 24px;border-radius:999px;border:0;cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .15s}
+  .btn-primary{background:var(--ink);color:#fff;box-shadow:0 5px 0 var(--gold-400)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--gold-400)}
   .btn-ghost{color:var(--ink);padding-left:4px}
   .btn-ghost:hover{text-decoration:underline}
-
-  /* waffle grid motif */
   .grid-bg{background-image:linear-gradient(var(--gold-200) 2px,transparent 2px),linear-gradient(90deg,var(--gold-200) 2px,transparent 2px);background-size:44px 44px}
 
   /* nav */
-  nav{position:sticky;top:0;z-index:10;background:rgba(255,252,245,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
-  .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:1.45rem;text-decoration:none}
-  .logo-mark{width:30px;height:30px}
-  nav ul{display:flex;gap:28px;list-style:none;margin:0;padding:0;font-size:.95rem;font-weight:500}
+  nav{position:sticky;top:0;z-index:30;background:rgba(255,252,245,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:66px;gap:16px}
+  .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:1.4rem;text-decoration:none}
+  nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-size:.95rem;font-weight:500}
   nav ul a{text-decoration:none;color:var(--muted)}
   nav ul a:hover{color:var(--ink)}
+  .nav-right{display:flex;align-items:center;gap:16px}
+  .nav-signin{font-size:.92rem;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap}
+  .nav-signin:hover{color:var(--ink)}
   .nav-cta{padding:10px 18px;font-size:.9rem;box-shadow:0 4px 0 var(--gold-400)}
-  .nav-right{display:flex;align-items:center;gap:18px}
-  .nav-signin{font-size:.9rem;font-weight:500;color:var(--muted);text-decoration:none;white-space:nowrap}
-  .nav-signin:hover{color:var(--ink);text-decoration:underline}
 
   /* hero */
-  .hero{position:relative;overflow:hidden;padding:88px 0 110px;background:var(--gold-50)}
-  .hero .grid-bg{position:absolute;inset:0;opacity:.55;mask-image:radial-gradient(ellipse at 75% 40%,#000 0%,transparent 65%);-webkit-mask-image:radial-gradient(ellipse at 75% 40%,#000 0%,transparent 65%)}
-  .hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
-  .hero h1{font-size:clamp(2.7rem,6vw,4.6rem);font-weight:700}
+  .hero{position:relative;overflow:hidden;padding:64px 0 80px;background:var(--gold-50)}
+  .hero>.grid-bg{position:absolute;inset:0;opacity:.55;mask-image:radial-gradient(ellipse at 72% 45%,#000 0%,transparent 62%);-webkit-mask-image:radial-gradient(ellipse at 72% 45%,#000 0%,transparent 62%)}
+  .hero .wrap{position:relative;display:grid;grid-template-columns:1fr 400px;gap:56px;align-items:center}
+  .hero h1{font-size:clamp(3rem,7vw,5.2rem);font-weight:700}
   .hero h1 em{font-style:italic;color:var(--gold-600)}
-  .hero .lede{margin:22px 0 34px}
-  .hero-actions{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
-  .hero-note{margin-top:22px;font-size:.9rem;color:var(--muted)}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:30px}
+  .proof{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+  .proof span{display:inline-flex;align-items:center;gap:7px;font-size:.88rem;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+  .proof svg{color:var(--gold-600)}
 
-  /* product mock */
-  .mock{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 60px -25px rgba(100,61,20,.35);padding:22px;transform:rotate(1.2deg)}
-  .mock-head{display:flex;gap:14px;align-items:center;padding-bottom:16px;border-bottom:1px solid var(--line)}
-  .avatar{width:54px;height:54px;border-radius:14px;background:var(--gold-100);display:grid;place-items:center;font-size:1.6rem}
-  .mock-head b{font-size:1.15rem;display:block}
-  .mock-head small{color:var(--muted)}
-  .pill{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:999px;background:#f4f1ea;color:var(--muted)}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
-  .flag{background:#fef2f2;color:var(--red)}
-  .mock-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
-  .stages{display:flex;gap:6px;margin:6px 0 16px}
-  .stage{flex:1;height:8px;border-radius:4px;background:#efe9df}
-  .stage.done{background:var(--gold-400)}
-  .stage.now{background:repeating-linear-gradient(45deg,var(--gold-400) 0 6px,var(--gold-200) 6px 12px)}
-  .mock label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-  .ds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
-  .ds div{background:var(--gold-50);border:1px solid var(--gold-100);border-radius:12px;padding:10px;text-align:center}
-  .ds strong{display:block;font-family:var(--display);font-size:1.3rem}
-  .ds span{font-size:.75rem;color:var(--muted)}
-  .note{margin-top:14px;font-size:.9rem;background:#faf8f3;border-radius:12px;padding:12px 14px;color:var(--muted)}
+  /* ---------- app replica (matches src/components/ui.tsx) ---------- */
+  .app{font-family:var(--body);color:var(--ink);font-size:14px;line-height:1.45}
+  .a-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}
+  .a-card.big{border-radius:24px;padding:18px}
+  .a-eye{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--n500)}
+  .a-h1{font-family:var(--display);font-weight:700;font-size:30px;line-height:1.1}
+  .a-h2{font-family:var(--display);font-weight:700;font-size:18px}
+  .a-muted{color:var(--n500)}
+  .a-row{display:flex;align-items:center;gap:10px}
+  .avatar{flex:none;display:grid;place-items:center;background:var(--gold-100);color:var(--gold-800);font:700 16px var(--display);width:36px;height:36px;border-radius:12px}
+  .avatar.md{width:44px;height:44px;font-size:20px}
+  .avatar.lg{width:56px;height:56px;border-radius:16px;font-size:24px}
+  .dot{display:inline-block;flex:none;width:10px;height:10px;border-radius:50%}
+  .paid{background:var(--green)}.unpaid{background:var(--red)}
+  .pill{display:inline-flex;align-items:center;gap:6px;flex:none;white-space:nowrap;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--n100);color:var(--muted)}
+  .pill .dot{width:8px;height:8px}
+  .pill.gold{background:var(--gold-400);color:var(--ink)}
+  .pill.orange{background:#fff7ed;color:#9a3412}
+  .pill.green{background:#f0fdf4;color:#166534}
+  .pill.flag{background:var(--red-soft);color:var(--red);padding:2px 8px}
+  .bars{display:flex;gap:6px}
+  .bars i{flex:1;height:8px;border-radius:4px;background:var(--n100)}
+  .bars i.done{background:var(--gold-400)}
+  .bars i.now{background:repeating-linear-gradient(45deg,var(--gold-400) 0 6px,var(--gold-200) 6px 12px)}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .tile{background:var(--gold-50);border:1px solid var(--gold-100);border-radius:12px;padding:8px 4px;text-align:center}
+  .tile strong{display:block;font:700 18px/1.15 var(--display)}
+  .tile span{font-size:11px;color:var(--n500)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{min-height:40px;padding:0 15px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13.5px;font-weight:600;color:#4a433a;cursor:pointer;transition:background .15s,border-color .15s}
+  .chip:hover{border-color:var(--gold-300)}
+  .chip.on{background:var(--gold-400);border-color:var(--gold-500);color:var(--ink)}
+  .chip.sm{min-height:34px;padding:0 10px;font-size:13px;flex:1}
+  .a-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 18px;border-radius:999px;border:0;background:var(--ink);color:#fff;font:600 15px var(--body);box-shadow:0 4px 0 var(--gold-400);cursor:pointer;width:100%}
+  .a-btn{white-space:nowrap}.a-btn.sec{background:#fff;color:#332d26;border:1px solid var(--line);box-shadow:none}
+  .flagbar{display:flex;gap:10px;align-items:flex-start;background:var(--red-soft);border:1px solid var(--red-line);border-radius:16px;padding:12px}
+  .flagbar .ico{flex:none;width:32px;height:32px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center}
+  .flagbar .a-eye{color:var(--red)}
+  .flagbar .res{margin-left:auto;flex:none;font-size:12px;font-weight:600;background:#fff;border:1px solid var(--red-line);border-radius:999px;padding:5px 11px;cursor:pointer}
+  .strip{display:flex;align-items:center;gap:9px;background:var(--ink);color:#f4f1ea;border-radius:16px;padding:9px 13px;font-size:13px}
+  .strip b,.strip small{color:var(--gold-300);white-space:nowrap}.strip em{font-style:normal;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .strip small{margin-left:auto;color:#a59a8a!important}
+  .callout{background:var(--gold-100);border:1px solid var(--gold-200);border-radius:16px;padding:10px 14px}
+  .callout .a-eye{color:var(--gold-800)}
+  .callout div+div{font:700 17px var(--display)}
+  .owner-row{display:flex;justify-content:space-between;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:10px 12px}
+  .call{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+  .appt{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:11px;cursor:pointer;width:100%;text-align:left;transition:transform .15s,box-shadow .15s}
+  .appt:hover{transform:translateY(-1px);box-shadow:0 12px 30px -18px rgba(100,61,20,.45)}
+  .appt.hl{border-color:var(--gold-400);box-shadow:0 0 0 3px var(--gold-100)}
+  .appt .time{width:60px;flex:none;font-size:12px;white-space:nowrap}
+  .appt .time b{display:block;font-size:13px}
+  .appt .bar{width:4px;align-self:stretch;border-radius:4px;background:var(--gold-400)}
+  .appt .bar.red{background:var(--red)}
+  .appt .info{min-width:0;flex:1}
+  .appt .info .top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .appt .info .sub{display:block;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gap{display:flex;align-items:center;gap:10px;padding:3px 0 3px 26px;font-size:11.5px;font-weight:600;color:var(--gold-700)}
+  .gap::before{content:"";height:18px;border-left:2px dashed var(--n300)}
+  .gap.slow{color:var(--n500)}
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+  .week span{display:flex;flex-direction:column;align-items:center;padding:6px 0;border-radius:14px;font-size:10px;color:var(--n500)}
+  .week span b{font:700 15px var(--display);color:var(--ink)}
+  .week span.on{background:var(--ink);color:#ddd2bf}.week span.on b{color:#fff}
+  .check{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:16px;background:#fff;cursor:pointer;width:100%;text-align:left;font-size:13.5px;transition:background .15s,border-color .15s}
+  .check .box{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--n300);display:grid;place-items:center;color:transparent}
+  .check.done{background:var(--gold-50);border-color:var(--gold-200)}
+  .check.done .box{background:var(--gold-400);border-color:var(--gold-500);color:var(--ink)}
+  .check.done span:last-child{color:var(--n500);text-decoration:line-through}
+  .note{background:var(--paper);border-radius:16px;padding:11px 13px;font-size:13px;color:var(--muted)}
+  .seg{display:flex;gap:8px}.seg .chip{flex:1}
+
+  /* phone */
+  .phone-col{display:flex;flex-direction:column;align-items:center;gap:16px}
+  .phone{width:min(360px,100%);background:var(--ink);border-radius:46px;padding:11px;box-shadow:0 40px 80px -30px rgba(100,61,20,.55),0 0 0 1px rgba(0,0,0,.05)}
+  .screen{position:relative;height:640px;background:var(--paper);border-radius:36px;overflow:hidden;display:flex;flex-direction:column}
+  .s-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid var(--line);background:var(--paper)}
+  .s-head .brand{display:flex;align-items:center;gap:8px;font:700 17px var(--display)}
+  .s-head .out{font-size:11.5px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#fff}
+  .s-body{flex:1;overflow-y:auto;padding:14px 14px 18px;scrollbar-width:none}
+  .s-body::-webkit-scrollbar{display:none}
+  .s-tabs{display:flex;border-top:1px solid var(--line);background:#fff;padding:6px 0 10px}
+  .s-tabs span{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:600;color:var(--n500)}
+  .s-tabs span i{display:grid;place-items:center;width:44px;height:24px;border-radius:999px}
+  .s-tabs span.on{color:var(--ink)}.s-tabs span.on i{background:var(--gold-400)}
+  .s-foot{padding:10px 14px 14px;border-top:1px solid var(--line);background:#fff;display:flex;gap:8px}
+  .view{display:none;flex-direction:column;gap:12px;animation:fade .25s ease}
+  .view.on{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .back{font-size:12.5px;font-weight:600;color:var(--n500);background:none;border:0;padding:0;cursor:pointer;align-self:flex-start}
+  .hint{position:absolute;z-index:3;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;font-weight:600;padding:6px 11px;border-radius:999px;box-shadow:0 4px 0 var(--gold-400);animation:bob 1.6s ease-in-out infinite;white-space:nowrap}
+  @keyframes bob{50%{transform:translateY(-4px)}}
+  .steps{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  .steps button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+  .steps button.on{background:var(--gold-400);border-color:var(--gold-500);color:var(--ink)}
+  .steps button b{font-family:var(--display);margin-right:4px}
+  .try{font-size:.88rem;color:var(--muted);font-weight:500}
 
   /* problem */
-  .problem .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:start}
-  .pains{display:grid;gap:16px;margin-top:8px}
-  .pain{display:flex;gap:16px;padding:20px;border:1px solid var(--line);border-radius:16px;background:#fff}
-  .pain-icon{flex:none;width:44px;height:44px;border-radius:12px;background:var(--gold-50);display:grid;place-items:center}
-  .pain h3{font-family:var(--body);font-size:1.05rem;font-weight:700;margin-bottom:4px}
-  .pain p{margin:0;color:var(--muted);font-size:.97rem}
-  blockquote{margin:36px 0 0;padding:26px 28px;background:var(--ink);color:#fff;border-radius:18px;position:relative}
-  blockquote p{font-family:var(--display);font-size:1.35rem;line-height:1.35;margin:0 0 12px}
+  .problem .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+  .pains{display:grid;gap:12px}
+  .pain{display:flex;gap:14px;align-items:center;padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:#fff}
+  .pain .ic{flex:none;width:42px;height:42px;border-radius:12px;background:var(--gold-50);display:grid;place-items:center;color:var(--gold-600)}
+  .pain b{display:block;font-size:1rem}
+  .pain span{color:var(--muted);font-size:.93rem}
+  blockquote{margin:28px 0 0;padding:22px 24px;background:var(--ink);color:#fff;border-radius:18px}
+  blockquote p{font-family:var(--display);font-size:1.3rem;line-height:1.35;margin:0 0 10px}
   blockquote cite{font-style:normal;font-size:.85rem;color:var(--gold-200)}
-  .evidence{margin-top:18px;font-size:.9rem;color:var(--muted)}
 
-  /* solution */
-  .solution{background:var(--ink);color:#fff;position:relative;overflow:hidden}
-  .solution .grid-bg{position:absolute;inset:0;opacity:.06}
-  .solution .wrap{position:relative}
-  .solution .lede{color:#cfc6b8}
-  .solution .eyebrow{color:var(--gold-400)}
-  .loop{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px;counter-reset:step}
-  .loop li{list-style:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px;counter-increment:step}
-  .loop li::before{content:counter(step);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--gold-400);color:var(--ink);font-weight:700;margin-bottom:14px}
-  .loop h3{font-family:var(--body);font-size:1.05rem;margin-bottom:6px}
-  .loop p{margin:0;color:#cfc6b8;font-size:.93rem}
-  .loop{padding:0}
-  .vs{margin-top:44px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .vs div{border-radius:18px;padding:24px}
-  .vs .old{border:1px dashed rgba(255,255,255,.25);color:#cfc6b8}
-  .vs .new{background:var(--gold-400);color:var(--ink)}
-  .vs h3{font-family:var(--body);font-size:1rem;margin-bottom:10px}
-  .vs ul{margin:0;padding-left:18px}
-  .vs li{margin:4px 0}
-
-  /* audience */
-  .who{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;margin-top:44px}
-  .card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px}
-  .card.primary{background:var(--gold-50);border-color:var(--gold-200)}
-  .tag{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:999px;background:var(--ink);color:#fff;margin-bottom:16px}
-  .card.secondary .tag{background:#efe9df;color:var(--muted)}
-  .card h3{font-size:1.6rem;margin-bottom:10px}
-  .card p{color:var(--muted);margin:0 0 16px}
-  .traits{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px;margin:0;padding:0;list-style:none;font-size:.95rem}
-  .traits li{display:flex;gap:10px;align-items:flex-start}
-  .traits li::before{content:"";flex:none;width:10px;height:10px;margin-top:8px;border-radius:2px;background:var(--gold-400)}
-  .card.secondary .traits{grid-template-columns:1fr}
+  /* how it works */
+  .how{background:var(--ink);color:#fff;position:relative;overflow:hidden}
+  .how>.grid-bg{position:absolute;inset:0;opacity:.06}
+  .how .wrap{position:relative}
+  .how .lede{color:#cfc6b8}
+  .how .eyebrow{color:var(--gold-400)}
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:44px}
+  .step{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px;cursor:pointer;text-align:left;color:#fff;transition:transform .2s,border-color .2s}
+  .step:hover{transform:translateY(-4px);border-color:var(--gold-400)}
+  .step .n{display:flex;align-items:center;gap:10px}
+  .step .n b{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--gold-400);color:var(--ink);font-family:var(--display)}
+  .step h3{font-family:var(--body);font-size:1.02rem}
+  .step p{margin:0;color:#cfc6b8;font-size:.9rem}
+  .step .snip{background:var(--paper);border-radius:16px;padding:10px;color:var(--ink);pointer-events:none}
+  .step .go{font-size:.82rem;font-weight:700;color:var(--gold-300);margin-top:auto}
 
   /* features */
-  .features{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
-  .feat{border-radius:22px;padding:30px;background:var(--paper);border:1px solid var(--line);transition:transform .2s,box-shadow .2s}
-  .feat:hover{transform:translateY(-4px);box-shadow:0 18px 40px -22px rgba(100,61,20,.4)}
-  .feat-icon{width:58px;height:58px;border-radius:16px;background:var(--gold-400);display:grid;place-items:center;margin-bottom:22px}
-  .feat h3{font-size:1.45rem;margin-bottom:10px}
-  .feat p{color:var(--muted);margin:0 0 14px}
-  .feat .stat{font-size:.85rem;font-weight:700;color:var(--gold-600)}
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
+  .feat{border-radius:24px;padding:24px;background:#fff;border:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+  .feat h3{font-size:1.4rem}
+  .feat p{color:var(--muted);margin:0;font-size:.97rem}
+  .feat .demo{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:12px;margin-top:auto;display:flex;flex-direction:column;gap:10px}
+  .feat .tag{font-size:.78rem;font-weight:700;color:var(--gold-600)}
+  .extras{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:28px}
+  .extras span{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.92rem;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 14px}
+  .extras svg{color:var(--gold-600)}
+
+  /* who */
+  .who{background:var(--gold-50);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .who .wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center}
+  .traits{display:flex;flex-wrap:wrap;gap:10px}
+  .traits span{background:#fff;border:1px solid var(--gold-200);border-radius:999px;padding:8px 14px;font-weight:600;font-size:.92rem}
 
   /* cta */
   .cta{position:relative;overflow:hidden;background:var(--gold-400)}
-  .cta .grid-bg{position:absolute;inset:0;opacity:.4;background-image:linear-gradient(var(--gold-500) 2px,transparent 2px),linear-gradient(90deg,var(--gold-500) 2px,transparent 2px)}
+  .cta>.grid-bg{position:absolute;inset:0;opacity:.4;background-image:linear-gradient(var(--gold-500) 2px,transparent 2px),linear-gradient(90deg,var(--gold-500) 2px,transparent 2px)}
   .cta .wrap{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
-  .cta .eyebrow{color:var(--gold-900)}
-  .cta .lede{color:var(--gold-900)}
-  form{background:#fff;border-radius:24px;padding:30px;box-shadow:0 30px 60px -30px rgba(100,61,20,.6)}
-  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+  .cta .eyebrow,.cta .lede{color:var(--gold-900)}
+  form{background:#fff;border-radius:24px;padding:28px;box-shadow:0 30px 60px -30px rgba(100,61,20,.6)}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
   .field label{font-size:.88rem;font-weight:700}
-  input,select{font:inherit;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink)}
+  input,select{font:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink)}
   input:focus,select:focus{outline:none;border-color:var(--gold-500);box-shadow:0 0 0 3px var(--gold-100)}
-  form .btn{width:100%;justify-content:center;margin-top:6px}
-  .fine{font-size:.82rem;color:var(--muted);margin:14px 0 0;text-align:center}
-  .hidden{display:none}
+  form .btn{width:100%;margin-top:6px}
+  .fine{font-size:.82rem;color:var(--muted);margin:12px 0 0;text-align:center}
+  .hidden{display:none!important}
   .success{text-align:center;padding:20px 0}
   .success h3{font-size:1.6rem;margin:14px 0 8px}
   .success p{color:var(--muted);margin:0}
   .err{color:var(--red);font-size:.9rem;margin:10px 0 0;text-align:center}
-
-  footer{padding:36px 0;font-size:.9rem;color:var(--muted)}
+  footer{padding:32px 0;font-size:.9rem;color:var(--muted)}
   footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 
-  /* reveal */
-  .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .js .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
   .js .reveal.in{opacity:1;transform:none}
-  @media (prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+  @media (prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}.hint,.view{animation:none}}
 
-  @media (max-width:900px){
+  @media (max-width:960px){
     nav ul{display:none}
-    .hero .wrap,.problem .wrap,.cta .wrap,.who,.vs{grid-template-columns:1fr}
-    .loop{grid-template-columns:1fr 1fr}
+    .hero .wrap,.problem .wrap,.cta .wrap,.who .wrap{grid-template-columns:minmax(0,1fr)}
+    .flow{grid-template-columns:1fr 1fr}
     .feat-grid{grid-template-columns:1fr}
-    .mock{transform:none}
-    section{padding:72px 0}
+    section{padding:68px 0}
   }
-  @media (max-width:520px){.loop,.traits{grid-template-columns:1fr}}
+  @media (max-width:560px){
+    .flow{grid-template-columns:1fr}
+    .nav-cta{display:none}
+    .screen{height:600px}
+  }
 </style>
 </head>
 <body>
 
+<!-- Inline icon set (same paths as the app's icons in src/components/ui.tsx). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></symbol>
+  <symbol id="i-dog" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="9" r="1.6"/><circle cx="10" cy="5.5" r="1.6"/><circle cx="14" cy="5.5" r="1.6"/><circle cx="18" cy="9" r="1.6"/><path d="M12 11c-3 0-5.5 3.5-5.5 6 0 1.6 1.2 2.2 2.6 2.2 1.3 0 1.9-.7 2.9-.7s1.6.7 2.9.7c1.4 0 2.6-.6 2.6-2.2 0-2.5-2.5-6-5.5-6Z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 20 12Z"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5 9 3l1.6 4-2 1.3a11 11 0 0 0 5.1 5.1l1.3-2 4 1.6-.5 2.4a2 2 0 0 1-2.1 1.6A15 15 0 0 1 5 5.6a2 2 0 0 1 1.6-2.1Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h12l-3-3M20 16H8l3 3"/></symbol>
+  <symbol id="i-scatter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7"/></symbol>
+  <symbol id="i-logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#f0b12e"/><path d="M11 3v26M21 3v26M3 11h26M3 21h26" stroke="#b9760c" stroke-width="2.4"/></symbol>
+</svg>
+
 <nav>
   <div class="wrap">
-    <a class="logo" href="#top" aria-label="Waffle home">
-      <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#f0b12e"/><path d="M11 3v26M21 3v26M3 11h26M3 21h26" stroke="#b9760c" stroke-width="2.4"/></svg>
-      Waffle
-    </a>
+    <a class="logo" href="#top" aria-label="Waffle home"><svg width="30" height="30"><use href="#i-logo"/></svg>Waffle</a>
     <ul>
-      <li><a href="#problem">Problem</a></li>
-      <li><a href="#solution">How it works</a></li>
-      <li><a href="#who">Who it's for</a></li>
+      <li><a href="#how">How it works</a></li>
       <li><a href="#features">Features</a></li>
+      <li><a href="#who">Who it's for</a></li>
     </ul>
     <div class="nav-right">
       <a class="nav-signin" href="/login">Sign in</a>
@@ -196,38 +278,167 @@
 <header class="hero" id="top">
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="wrap">
-    <div>
-      <p class="eyebrow">A CRM for dog trainers</p>
-      <h1>Built around the <em>dog</em>, not the sale.</h1>
-      <p class="lede">Waffle keeps every dog's training in one record. You log a session in about a minute, and Waffle turns it into a clear update the owner can actually follow.</p>
+    <div class="reveal">
+      <p class="eyebrow">Customer success for dog trainers</p>
+      <h1>Train with <em>Waffle</em>.</h1>
+      <p class="lede">Keep every client on track, from first lesson to graduation. See each dog at a glance, log sessions in a minute, and send owners updates they actually follow.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="#join">Join the pilot program</a>
-        <a class="btn btn-ghost" href="#solution">See how it works →</a>
+        <a class="btn btn-primary" href="#join">Join the pilot</a>
+        <a class="btn btn-ghost" href="#how">See how it works →</a>
       </div>
-      <p class="hero-note">Free for our first pilot trainers · Works on your phone</p>
+      <div class="proof">
+        <span><svg width="16" height="16"><use href="#i-clock"/></svg>Logs in about a minute</span>
+        <span><svg width="16" height="16"><use href="#i-phone"/></svg>Made for your phone</span>
+        <span><svg width="16" height="16"><use href="#i-chat"/></svg>No app for owners</span>
+      </div>
     </div>
 
-    <div class="mock reveal" aria-label="Example Waffle dog summary card">
-      <div class="mock-head">
-        <div class="avatar" aria-hidden="true">🐕</div>
-        <div>
-          <b>Biscuit</b>
-          <small>Lab mix · Owner: Dana R.</small>
+    <!-- Interactive demo: a working replica of the app's trainer flow. -->
+    <div class="phone-col reveal">
+      <div class="phone" aria-label="Interactive Waffle demo">
+        <div class="screen app" id="demo">
+          <div class="s-head" id="d-head">
+            <span class="brand"><svg width="22" height="22"><use href="#i-logo"/></svg>Waffle</span>
+            <span class="out">Sign out</span>
+          </div>
+          <div class="s-body" id="d-body">
+
+            <!-- 1. Calendar -->
+            <div class="view on" data-view="cal">
+              <div>
+                <div class="a-eye" style="color:var(--gold-600)">Hi Sam</div>
+                <div class="a-h1" style="font-size:32px">Today <span style="font:500 14px var(--body);color:var(--n500)">Nov 17</span></div>
+              </div>
+              <div class="week"><span>M<b>16</b></span><span class="on">T<b>17</b></span><span>W<b>18</b></span><span>T<b>19</b></span><span>F<b>20</b></span><span>S<b>21</b></span><span>S<b>22</b></span></div>
+              <div class="a-h2">3 appointments</div>
+              <div>
+                <button class="appt hl" data-go="card">
+                  <span class="time"><b>9:45 AM</b><span class="a-muted">60 min</span></span>
+                  <span class="bar red"></span>
+                  <span class="avatar">B</span>
+                  <span class="info">
+                    <span class="top"><b>Biscuit</b><i class="dot paid"></i><span class="pill flag"><svg width="11" height="11"><use href="#i-flag"/></svg>Flag</span><span class="pill gold" style="margin-left:auto">Up next</span></span>
+                    <span class="sub">Dana R. · Private lesson</span>
+                  </span>
+                </button>
+                <div class="gap">15 min between</div>
+                <button class="appt" data-go="card">
+                  <span class="time"><b>11:00 AM</b><span class="a-muted">60 min</span></span>
+                  <span class="bar"></span>
+                  <span class="avatar">J</span>
+                  <span class="info"><span class="top"><b>Juno</b><i class="dot paid"></i></span><span class="sub">Marcus T. · Private lesson</span></span>
+                </button>
+                <div class="gap slow">1 hr between</div>
+                <button class="appt" data-go="card">
+                  <span class="time"><b>1:00 PM</b><span class="a-muted">45 min</span></span>
+                  <span class="bar"></span>
+                  <span class="avatar">M</span>
+                  <span class="info"><span class="top"><b>Milo</b><i class="dot unpaid"></i></span><span class="sub">Priya S. · Follow-up</span></span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 2. Dog card -->
+            <div class="view" data-view="card">
+              <button class="back" data-go="cal">‹ Calendar</button>
+              <div class="flagbar">
+                <span class="ico"><svg width="15" height="15"><use href="#i-flag"/></svg></span>
+                <div><div class="a-eye">Safety · Med</div><div style="font-weight:500">Reactive to bikes within 20 ft</div></div>
+              </div>
+              <div class="strip"><svg width="15" height="15" style="color:var(--gold-400)"><use href="#i-clock"/></svg><b>9:45 AM</b><em>Private lesson · Client home</em><small>60 min</small></div>
+              <div class="a-card big" style="display:flex;flex-direction:column;gap:13px">
+                <div class="a-row"><span class="avatar lg">B</span><div><div class="a-h1">Biscuit</div><div class="a-muted" style="font-size:13px">Lab mix · 3 yrs</div></div></div>
+                <div><span class="pill"><i class="dot paid"></i>Paid <span style="font-weight:500">· 4 sessions left</span></span></div>
+                <div class="owner-row"><div><div class="a-eye">Owner</div><b>Dana R.</b></div><span class="call"><svg width="14" height="14"><use href="#i-phone"/></svg>Call</span></div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;justify-content:space-between"><span class="a-eye">Plan · Loose-leash walking</span><span class="a-muted" style="font-size:12px">Stage 2 of 4</span></div>
+                  <div class="bars"><i class="done"></i><i class="now"></i><i></i><i></i></div>
+                  <div style="font-size:13px"><span class="a-muted">Goal: </span>Calm walks past bikes and dogs</div>
+                </div>
+              </div>
+              <div class="callout"><div class="a-eye">Pick up from last time</div><div>Add distraction</div></div>
+            </div>
+
+            <!-- 3. Log -->
+            <div class="view" data-view="log">
+              <button class="back" data-go="card">‹ Back</button>
+              <div class="a-row"><span class="avatar md">B</span><div><div class="a-h1">Log · Biscuit</div><div class="a-muted" style="font-size:12.5px">Just now</div></div></div>
+              <div>
+                <div class="a-h2" style="margin-bottom:8px">Worked on <span style="font:400 12.5px var(--body);color:var(--n500)">· Tap all that apply</span></div>
+                <div class="chips" id="d-tags">
+                  <button class="chip on">Pulling</button><button class="chip">Focus</button><button class="chip">Recall</button><button class="chip">Reactivity</button><button class="chip">Sit/Stay</button>
+                </div>
+              </div>
+              <div class="a-card" style="border-color:var(--gold-300);box-shadow:0 0 0 3px var(--gold-50)">
+                <div style="display:flex;justify-content:space-between;align-items:center"><b>Pulling</b><span class="a-muted" style="font-size:12.5px;font-weight:500" id="d-sum">Add the 3 Ds</span></div>
+                <div style="border-top:1px solid var(--n100);margin-top:10px;padding-top:10px;display:flex;flex-direction:column;gap:10px">
+                  <div><div class="a-eye" style="margin-bottom:6px">Duration</div><div class="chips" data-m="dur"><button class="chip sm">10s</button><button class="chip sm">30s</button><button class="chip sm">45s</button><button class="chip sm">1m</button></div></div>
+                  <div><div class="a-eye" style="margin-bottom:6px">Distance</div><div class="chips" data-m="dist"><button class="chip sm">6ft</button><button class="chip sm">10ft</button><button class="chip sm">20ft</button><button class="chip sm">30ft</button></div></div>
+                  <div><div class="a-eye" style="margin-bottom:6px">Distraction</div><div class="chips" data-m="distr"><button class="chip sm">1</button><button class="chip sm">2</button><button class="chip sm">3</button><button class="chip sm">4</button><button class="chip sm">5</button></div></div>
+                </div>
+              </div>
+              <div>
+                <div class="a-h2" style="margin-bottom:8px">Took food? <span style="font:400 12.5px var(--body);color:var(--n500)">· Quick stress check</span></div>
+                <div class="seg" data-single><button class="chip">Yes</button><button class="chip">No</button></div>
+              </div>
+              <div>
+                <div class="a-h2" style="margin-bottom:8px">Next step</div>
+                <div class="chips" data-single id="d-next"><button class="chip">Add distance</button><button class="chip">Add distraction</button><button class="chip">Ready for next stage</button></div>
+              </div>
+            </div>
+
+            <!-- 4. Saved -->
+            <div class="view" data-view="saved" style="align-items:center;text-align:center;gap:14px">
+              <span style="position:relative;margin-top:36px"><svg width="64" height="64"><use href="#i-logo"/></svg><span style="position:absolute;right:-8px;bottom:-8px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--gold-300);display:grid;place-items:center;box-shadow:0 0 0 4px var(--paper)"><svg width="15" height="15"><use href="#i-check"/></svg></span></span>
+              <div class="a-h1" style="margin-top:6px">Session saved</div>
+              <div class="a-muted" style="max-width:240px">Biscuit's log is on their card for the next lesson.</div>
+              <div class="callout" style="text-align:center"><div class="a-eye">Next step</div><div id="d-saved-next">Add distraction</div></div>
+              <div style="display:flex;flex-direction:column;gap:9px;width:100%;margin-top:6px">
+                <button class="a-btn" data-go="cal">Back to calendar</button>
+                <button class="a-btn sec" data-go="owner"><svg width="16" height="16"><use href="#i-share"/></svg>Share update with Dana</button>
+              </div>
+            </div>
+
+            <!-- 5. Owner view (no login) -->
+            <div class="view" data-view="owner">
+              <button class="back" data-go="saved">‹ Back to trainer view</button>
+              <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--n500)"><svg width="16" height="16"><use href="#i-logo"/></svg>Sam's Dog Training</div>
+              <div class="a-h1" style="font-size:34px">Hi Dana</div>
+              <div class="a-muted" style="margin-top:-6px">Here's Biscuit's latest.</div>
+              <div class="a-card big" style="display:flex;flex-direction:column;gap:13px">
+                <div class="a-row"><span class="avatar md">B</span><div class="a-h1" style="font-size:24px">Biscuit</div></div>
+                <div style="display:flex;flex-direction:column;gap:8px"><div class="a-eye">Plan · Loose-leash walking</div><div class="bars"><i class="done"></i><i class="now"></i><i></i><i></i></div></div>
+                <div><div class="a-h2" style="margin-bottom:6px">Last lesson</div><div class="note">Biscuit checked in before the leash got tight on 4 of 5 turns. Great work!</div></div>
+                <div>
+                  <div class="a-h2" style="margin-bottom:8px">Homework <span style="font:400 12.5px var(--body);color:var(--n500)" id="d-left">· 3 to do</span></div>
+                  <div style="display:flex;flex-direction:column;gap:7px" id="d-hw">
+                    <button class="check"><span class="box"><svg width="12" height="12"><use href="#i-check"/></svg></span><span>“Watch me” for 5 min, twice a day</span></button>
+                    <button class="check"><span class="box"><svg width="12" height="12"><use href="#i-check"/></svg></span><span>Reward before bikes get close</span></button>
+                    <button class="check"><span class="box"><svg width="12" height="12"><use href="#i-check"/></svg></span><span>Practice U-turns on one walk</span></button>
+                  </div>
+                </div>
+              </div>
+              <div class="a-muted" style="text-align:center;font-size:11px">No app or login needed</div>
+            </div>
+          </div>
+
+          <div class="s-foot hidden" id="d-foot-card"><button class="a-btn sec" style="width:auto;font-size:13px" data-go="cal">Full profile</button><button class="a-btn" data-go="log">Log session</button></div>
+          <div class="s-foot hidden" id="d-foot-log"><button class="a-btn" data-go="saved" id="d-save">Save log · 1 behavior</button></div>
+          <div class="s-tabs" id="d-tabs">
+            <span class="on"><i><svg width="18" height="18"><use href="#i-cal"/></svg></i>Calendar</span>
+            <span><i><svg width="18" height="18"><use href="#i-dog"/></svg></i>Dogs</span>
+            <span><i><svg width="18" height="18"><use href="#i-chat"/></svg></i>Updates</span>
+          </div>
+          <div class="hint" id="d-hint">Tap Biscuit</div>
         </div>
       </div>
-      <div class="mock-row">
-        <span class="pill"><span class="dot"></span>Paid · 4 of 6 sessions</span>
-        <span class="pill flag">⚑ Reactive to bikes</span>
+      <div class="steps" aria-label="Demo steps">
+        <button class="on" data-go="cal"><b>1</b>Calendar</button>
+        <button data-go="card"><b>2</b>Dog card</button>
+        <button data-go="log"><b>3</b>Log</button>
+        <button data-go="owner"><b>4</b>Owner update</button>
       </div>
-      <label>Plan · Foundations 2</label>
-      <div class="stages" aria-hidden="true"><span class="stage done"></span><span class="stage done"></span><span class="stage now"></span><span class="stage"></span><span class="stage"></span></div>
-      <label>Last session · Loose-leash walk · with Sam</label>
-      <div class="ds">
-        <div><strong>45s</strong><span>Duration</span></div>
-        <div><strong>20ft</strong><span>Distance</span></div>
-        <div><strong>3/5</strong><span>Distraction</span></div>
-      </div>
-      <div class="note"><b>Homework:</b> 2× daily, 5 min "watch me" on walks. Reward before bikes get close.</div>
+      <span class="try">These are real Waffle screens. Tap around.</span>
     </div>
   </div>
 </header>
@@ -235,109 +446,132 @@
 <section class="problem" id="problem">
   <div class="wrap">
     <div class="reveal">
-      <p class="eyebrow">The problem</p>
-      <h2>Training isn't a sales pipeline. Trainers' tools think it is.</h2>
-      <p class="lede" style="margin-top:20px">Training is specific to each behavior, often covers several dogs in one household, and doesn't move in a straight line. Generic CRMs are built for a linear sales funnel, so trainers work around them.</p>
+      <p class="eyebrow">Why Waffle</p>
+      <h2>Great training gets lost between sessions.</h2>
       <blockquote>
         <p>“Finding payment info, consult notes, or even a dog's name takes too many steps.”</p>
-        <cite>— John Hayes, Dog Wizard</cite>
+        <cite>John Hayes, Dog Wizard</cite>
       </blockquote>
-      <p class="evidence">Grounded in our customer discovery: interviews with dog trainers, including Dog Wizard, a multi-location training business, plus pet owners, shelters, and rescues.</p>
     </div>
     <div class="pains reveal">
-      <div class="pain">
-        <div class="pain-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b9760c" stroke-width="2" stroke-linecap="round"><path d="M4 8h12l-3-3M20 16H8l3 3"/></svg></div>
-        <div><h3>Dogs switch trainers mid-program</h3><p>On a team, one dog can work with several trainers. If a dog is halfway through leash walking and its next lesson is with someone new, that trainer has to find out fast where things left off.</p></div>
-      </div>
-      <div class="pain">
-        <div class="pain-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b9760c" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7"/></svg></div>
-        <div><h3>Dog history is scattered</h3><p>It lives in trainers' heads, in Word and PDF files, and across separate tabs in tools that weren't made for training.</p></div>
-      </div>
-      <div class="pain">
-        <div class="pain-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b9760c" stroke-width="2" stroke-linecap="round"><path d="M4 12h4l3-7 4 14 3-7h2"/></svg></div>
-        <div><h3>Progress is hard to see</h3><p>Goals change mid-program and dogs regress. A pipeline stage can't show that a dog held a stay for 45 seconds at 20 feet near other dogs.</p></div>
-      </div>
-      <div class="pain">
-        <div class="pain-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b9760c" stroke-width="2" stroke-linecap="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/><path d="M9 11h6M9 14h3"/></svg></div>
-        <div><h3>Owners get "report cards" they can't use</h3><p>Hand-typed texts after each session don't tell owners what to practice, so progress stalls between sessions.</p></div>
-      </div>
+      <div class="pain"><span class="ic"><svg width="22" height="22"><use href="#i-swap"/></svg></span><div><b>Dogs switch trainers</b><span>The next trainer starts from scratch.</span></div></div>
+      <div class="pain"><span class="ic"><svg width="22" height="22"><use href="#i-scatter"/></svg></span><div><b>History is scattered</b><span>Notes live in heads, docs and tabs.</span></div></div>
+      <div class="pain"><span class="ic"><svg width="22" height="22"><use href="#i-chat"/></svg></span><div><b>Owners drift</b><span>Vague report cards mean no practice at home.</span></div></div>
     </div>
   </div>
 </section>
 
-<section class="solution" id="solution">
+<section class="how" id="how">
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="wrap">
-    <p class="eyebrow reveal">The solution</p>
-    <h2 class="reveal">One structured record per dog,<br>from first consult to graduation.</h2>
-    <p class="lede reveal" style="margin-top:20px">Waffle models the way training actually works: flexible plans, behavior-by-behavior progress, and households with more than one dog. Everything else (scheduling, POS, payroll) stays in the tools you already use.</p>
-    <ol class="loop">
-      <li class="reveal"><h3>Set up the household</h3><p>Owner, phone, payment status, and every dog with its own goal and safety flags.</p></li>
-      <li class="reveal"><h3>Build the plan</h3><p>Start from your own curriculum template, then reorder or rename stages for this dog.</p></li>
-      <li class="reveal"><h3>Log the session</h3><p>Tap behaviors, record the 3 Ds, dictate notes. About a minute, right from the field.</p></li>
-      <li class="reveal"><h3>Update the owner</h3><p>Send a no-login link with what you worked on and 2–3 homework tasks they can check off.</p></li>
-    </ol>
-    <div class="vs reveal">
-      <div class="old"><h3>Generic CRM</h3><ul><li>Built around leads and deals</li><li>One linear pipeline per client</li><li>Free-text notes</li><li>Unstructured updates for owners</li></ul></div>
-      <div class="new"><h3>Waffle</h3><ul><li>Built around each dog</li><li>Flexible, reopenable stages per dog</li><li>Duration, Distance, Distraction</li><li>Clear updates with homework</li></ul></div>
+    <div class="center reveal">
+      <p class="eyebrow">How it works</p>
+      <h2>Appointment to update in four taps.</h2>
+      <p class="lede">Built for the five minutes between back-to-back lessons.</p>
+    </div>
+    <div class="flow">
+      <button class="step reveal" data-jump="cal">
+        <span class="n"><b>1</b><h3>Open your day</h3></span>
+        <div class="snip app">
+          <div class="appt hl" style="padding:8px;gap:8px"><span class="bar red"></span><span class="avatar">B</span><span class="info"><span class="top"><b>Biscuit</b><i class="dot paid"></i><span class="pill gold" style="margin-left:auto">Up next</span></span><span class="sub">9:45 AM · Private lesson</span></span></div>
+          <div class="gap" style="padding-left:20px">15 min between</div>
+        </div>
+        <p>Every appointment, with flags and paid status.</p>
+        <span class="go">Try it ↑</span>
+      </button>
+      <button class="step reveal" data-jump="card">
+        <span class="n"><b>2</b><h3>See the dog</h3></span>
+        <div class="snip app" style="display:flex;flex-direction:column;gap:9px">
+          <div class="a-row"><span class="avatar">B</span><b>Biscuit</b><span class="pill" style="margin-left:auto"><i class="dot paid"></i>Paid</span></div>
+          <div class="bars"><i class="done"></i><i class="now"></i><i></i><i></i></div>
+        </div>
+        <p>Stage, safety and last sessions on one card.</p>
+        <span class="go">Try it ↑</span>
+      </button>
+      <button class="step reveal" data-jump="log">
+        <span class="n"><b>3</b><h3>Log in a minute</h3></span>
+        <div class="snip app">
+          <div class="tiles"><div class="tile"><strong>45s</strong><span>Duration</span></div><div class="tile"><strong>20ft</strong><span>Distance</span></div><div class="tile"><strong>3/5</strong><span>Distraction</span></div></div>
+        </div>
+        <p>Tap behaviors and the 3 Ds. No typing needed.</p>
+        <span class="go">Try it ↑</span>
+      </button>
+      <button class="step reveal" data-jump="owner">
+        <span class="n"><b>4</b><h3>Update the owner</h3></span>
+        <div class="snip app">
+          <div class="check done" style="min-height:38px"><span class="box"><svg width="11" height="11"><use href="#i-check"/></svg></span><span>“Watch me” twice a day</span></div>
+        </div>
+        <p>A private link with progress and homework.</p>
+        <span class="go">Try it ↑</span>
+      </button>
     </div>
   </div>
 </section>
 
-<section id="who">
+<section id="features">
   <div class="wrap">
-    <p class="eyebrow reveal">Who it's for</p>
-    <h2 class="reveal">Made for trainers running<br>multi-session programs.</h2>
-    <div class="who">
-      <div class="card primary reveal">
-        <span class="tag">Primary customer</span>
-        <h3>Independent trainers &amp; small teams</h3>
-        <p>Solo trainers and businesses with 1–10 trainers who coach dogs through packages of sessions. On a team, the same dog often works with more than one trainer.</p>
-        <ul class="traits">
-          <li>Sell multi-session training packages</li>
-          <li>Work from their phone between visits</li>
-          <li>Hand dogs off between trainers mid-program</li>
-          <li>Juggle several dogs per household</li>
-          <li>Short on admin time; want logging done in the field</li>
-          <li>Already use separate tools for scheduling and payments</li>
-        </ul>
-      </div>
-      <div class="card secondary reveal">
-        <span class="tag">Also serves</span>
-        <h3>Dog owners</h3>
-        <p>The trainer's clients. They receive updates and homework through a simple link, with no app to download and no account to create.</p>
-        <ul class="traits">
-          <li>Often less tech-savvy</li>
-          <li>Want to understand their dog, not just "fix" it</li>
-        </ul>
-      </div>
+    <div class="center reveal">
+      <p class="eyebrow">Core features</p>
+      <h2>Happy dogs. Happier clients.</h2>
+      <p class="lede">The tools that keep clients progressing, and coming back.</p>
     </div>
-  </div>
-</section>
-
-<section class="features" id="features">
-  <div class="wrap">
-    <p class="eyebrow reveal">Core features</p>
-    <h2 class="reveal">Three things that make Waffle different.</h2>
     <div class="feat-grid">
       <article class="feat reveal">
-        <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1f1a14" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/><circle cx="15.5" cy="16.5" r="2"/></svg></div>
-        <h3>The at-a-glance dog card</h3>
-        <p>Dog, owner, payment dot, goal, safety flags, current stage, and the last two sessions on one screen. Any trainer can pick up exactly where the last one left off.</p>
-        <span class="stat">Top request from a training-business owner we interviewed</span>
+        <span class="tag">Dog card</span>
+        <h3>Every dog at a glance</h3>
+        <p>Any trainer can pick up right where the last one left off.</p>
+        <div class="demo app">
+          <div class="flagbar" id="f-flag">
+            <span class="ico"><svg width="14" height="14"><use href="#i-flag"/></svg></span>
+            <div><div class="a-eye">Safety · Med</div><div style="font-size:13px">Reactive to bikes</div></div>
+            <button class="res" id="f-resolve">Resolve</button>
+          </div>
+          <div class="a-row"><span class="avatar md">B</span><div><b style="font-size:16px">Biscuit</b><div class="a-muted" style="font-size:12px">Dana R.</div></div><span class="pill" style="margin-left:auto"><i class="dot paid"></i>Paid</span></div>
+          <div><div class="a-eye" style="margin-bottom:6px">Plan · Stage 2 of 4</div><div class="bars"><i class="done"></i><i class="now"></i><i></i><i></i></div></div>
+        </div>
       </article>
       <article class="feat reveal">
-        <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1f1a14" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
-        <h3>One-minute session logs</h3>
-        <p>Track Duration, Distance, and Distraction per behavior, keep internal notes private, and dictate instead of typing.</p>
-        <span class="stat">Designed to be logged in about a minute</span>
+        <span class="tag">Session log</span>
+        <h3>Logged in a minute</h3>
+        <p>Duration, Distance and Distraction in a few taps. Try it:</p>
+        <div class="demo app">
+          <div class="tiles"><div class="tile"><strong id="f-dur">45s</strong><span>Duration</span></div><div class="tile"><strong id="f-dist">20ft</strong><span>Distance</span></div><div class="tile"><strong id="f-distr">3/5</strong><span>Distraction</span></div></div>
+          <div class="chips" data-fm="f-dur"><button class="chip sm">10s</button><button class="chip sm">30s</button><button class="chip sm on">45s</button><button class="chip sm">1m</button></div>
+          <div class="chips" data-fm="f-dist"><button class="chip sm">6ft</button><button class="chip sm">10ft</button><button class="chip sm on">20ft</button><button class="chip sm">30ft</button></div>
+        </div>
       </article>
       <article class="feat reveal">
-        <div class="feat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1f1a14" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></div>
-        <h3>No-login owner updates</h3>
-        <p>Turn a session into a private link with progress and homework. Owners tick off tasks, and you see what got done.</p>
-        <span class="stat">No app or account for owners</span>
+        <span class="tag">Owner updates</span>
+        <h3>Homework that gets done</h3>
+        <p>Owners tick off tasks from a link. You see what got practiced.</p>
+        <div class="demo app">
+          <div style="display:flex;justify-content:space-between;align-items:center"><b>Biscuit's homework</b><span class="pill" id="f-count">1 of 3 done</span></div>
+          <div style="display:flex;flex-direction:column;gap:7px" id="f-hw">
+            <button class="check done"><span class="box"><svg width="12" height="12"><use href="#i-check"/></svg></span><span>“Watch me” for 5 min</span></button>
+            <button class="check"><span class="box"><svg width="12" height="12"><use href="#i-check"/></svg></span><span>Reward before bikes</span></button>
+            <button class="check"><span class="box"><svg width="12" height="12"><use href="#i-check"/></svg></span><span>U-turns on one walk</span></button>
+          </div>
+        </div>
       </article>
+    </div>
+    <div class="extras reveal">
+      <span><svg width="16" height="16"><use href="#i-flag"/></svg>Safety flags pinned on top</span>
+      <span><svg width="16" height="16"><use href="#i-cal"/></svg>Your day as a calendar</span>
+      <span><i class="dot paid"></i>Paid / unpaid at a glance</span>
+      <span><svg width="16" height="16"><use href="#i-swap"/></svg>Easy hand-offs between trainers</span>
+    </div>
+  </div>
+</section>
+
+<section class="who" id="who">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="eyebrow">Who it's for</p>
+      <h2>Independent trainers and teams of 1–10.</h2>
+      <p class="lede">If you coach dogs through multi-session packages, Waffle keeps every client moving forward.</p>
+    </div>
+    <div class="traits reveal">
+      <span>Sell session packages</span><span>Work from your phone</span><span>Share dogs across trainers</span><span>Several dogs per household</span><span>Owners who aren't tech-savvy</span><span>Keep your scheduling and payment tools</span>
     </div>
   </div>
 </section>
@@ -348,7 +582,7 @@
     <div class="reveal">
       <p class="eyebrow">Join the pilot</p>
       <h2>Help us shape Waffle.</h2>
-      <p class="lede" style="margin-top:18px">We're looking for a small group of dog trainers to try Waffle with real clients and tell us what's missing. Pilot trainers get free access and a direct line to the team.</p>
+      <p class="lede">Try Waffle free with real clients and tell us what's missing. You'll get a direct line to the team.</p>
     </div>
     <form name="pilot" method="POST" data-netlify="true" netlify-honeypot="company-website" id="pilot-form" class="reveal">
       <input type="hidden" name="form-name" value="pilot">
@@ -392,6 +626,111 @@
     entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) } })
   }, { threshold: 0.12 }) : null
   document.querySelectorAll('.reveal').forEach((el) => io ? io.observe(el) : el.classList.add('in'))
+
+  // ---- Interactive demo: the trainer flow (calendar -> dog card -> log -> saved -> owner) ----
+  const demo = document.getElementById('demo')
+  const body = document.getElementById('d-body')
+  const hint = document.getElementById('d-hint')
+  const stepOf = { cal: 'cal', card: 'card', log: 'log', saved: 'log', owner: 'owner' }
+  // Each hint points at a real element: [text, target selector, where]
+  const hints = {
+    cal: ['Tap Biscuit', '.appt.hl', 'corner'],
+    card: ['Tap Log session', '#d-foot-card [data-go=log]', 'above'],
+    log: ['Tap away, then Save', '#d-save', 'above'],
+    saved: ['Share it with Dana', '[data-view=saved] [data-go=owner]', 'below'],
+    owner: ['Tick off homework', '#d-hw', 'above'],
+  }
+  function placeHint(sel, where) {
+    const t = demo.querySelector(sel); if (!t) return
+    const s = demo.getBoundingClientRect(), r = t.getBoundingClientRect(), w = hint.offsetWidth, h = hint.offsetHeight
+    const top = where === 'below' ? r.bottom - s.top + 8 : where === 'corner' ? r.top - s.top - h / 2 : r.top - s.top - h - 10
+    const left = where === 'corner' ? r.right - s.left - w - 10 : r.left - s.left + r.width / 2 - w / 2
+    hint.style.top = `${Math.max(6, top)}px`
+    hint.style.left = `${Math.min(Math.max(8, left), s.width - w - 8)}px`
+  }
+  let touched = false
+  function show(view) {
+    demo.querySelectorAll('.view').forEach((v) => v.classList.toggle('on', v.dataset.view === view))
+    document.getElementById('d-foot-card').classList.toggle('hidden', view !== 'card')
+    document.getElementById('d-foot-log').classList.toggle('hidden', view !== 'log')
+    const tabs = document.getElementById('d-tabs')
+    tabs.classList.toggle('hidden', view === 'owner')
+    tabs.querySelectorAll('span').forEach((t, i) => t.classList.toggle('on', i === (view === 'card' || view === 'log' ? 1 : 0)))
+    document.getElementById('d-head').classList.toggle('hidden', view === 'owner')
+    document.querySelectorAll('.steps button').forEach((b) => b.classList.toggle('on', b.dataset.go === stepOf[view]))
+    const [text, sel, where] = hints[view]
+    hint.textContent = text
+    hint.classList.toggle('hidden', touched && view === 'log')
+    body.scrollTop = 0
+    requestAnimationFrame(() => placeHint(sel, where))
+  }
+  // Re-place the hint whenever layout settles (fonts loading, resizes).
+  const replace = () => { const [, sel, where] = hints[demo.querySelector('.view.on').dataset.view]; placeHint(sel, where) }
+  requestAnimationFrame(replace)
+  document.fonts?.ready.then(replace)
+  window.addEventListener('load', replace)
+  if ('ResizeObserver' in window) new ResizeObserver(replace).observe(body)
+  document.addEventListener('click', (e) => {
+    const go = e.target.closest('[data-go]')
+    if (go) { show(go.dataset.go); return }
+    const jump = e.target.closest('[data-jump]')
+    if (jump) { show(jump.dataset.jump); document.getElementById('top').scrollIntoView({ behavior: 'smooth' }) }
+  })
+
+  // Chips: multi-select for behaviors; single-select for 3D rows, food and next step.
+  const tileText = (chip) => chip.textContent.trim().replace(/^(\d)$/, '$1/5')
+  demo.addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip')
+    if (!chip) return
+    touched = true
+    hint.classList.add('hidden')
+    const row = chip.parentElement
+    if (row.hasAttribute('data-single') || row.dataset.m) {
+      const was = chip.classList.contains('on')
+      row.querySelectorAll('.chip').forEach((c) => c.classList.remove('on'))
+      if (!was) chip.classList.add('on')
+    } else chip.classList.toggle('on')
+    const parts = [...demo.querySelectorAll('[data-m] .chip.on')].map(tileText)
+    document.getElementById('d-sum').textContent = parts.length ? parts.join(' · ') : 'Add the 3 Ds'
+    const n = document.querySelectorAll('#d-tags .chip.on').length
+    document.getElementById('d-save').textContent = n ? `Save log · ${n} ${n === 1 ? 'behavior' : 'behaviors'}` : 'Save log'
+    const next = document.querySelector('#d-next .chip.on')
+    document.getElementById('d-saved-next').textContent = next ? next.textContent : 'Add distraction'
+  })
+
+  // Homework checklists (demo + feature card)
+  function wireChecks(list, counter, fmt) {
+    list.addEventListener('click', (e) => {
+      const c = e.target.closest('.check'); if (!c) return
+      c.classList.toggle('done')
+      if (demo.contains(list)) hint.classList.add('hidden')
+      const done = list.querySelectorAll('.check.done').length, all = list.querySelectorAll('.check').length
+      counter.textContent = fmt(done, all)
+    })
+  }
+  wireChecks(document.getElementById('d-hw'), document.getElementById('d-left'), (d, a) => (a - d ? `· ${a - d} to do` : '· all done!'))
+  wireChecks(document.getElementById('f-hw'), document.getElementById('f-count'), (d, a) => `${d} of ${a} done`)
+
+  // Feature card: 3D tiles respond to chips
+  document.querySelectorAll('[data-fm]').forEach((row) => row.addEventListener('click', (e) => {
+    const c = e.target.closest('.chip'); if (!c) return
+    row.querySelectorAll('.chip').forEach((x) => x.classList.remove('on'))
+    c.classList.add('on')
+    document.getElementById(row.dataset.fm).textContent = c.textContent
+  }))
+
+  // Feature card: resolve the safety flag (and undo)
+  const flagEl = document.getElementById('f-flag')
+  document.getElementById('f-resolve').addEventListener('click', (e) => {
+    const resolved = flagEl.classList.toggle('resolved')
+    flagEl.style.background = resolved ? '#f0fdf4' : ''
+    flagEl.style.borderColor = resolved ? '#bbf7d0' : ''
+    const eye = flagEl.querySelector('.a-eye')
+    eye.textContent = resolved ? 'Resolved' : 'Safety · Med'
+    eye.style.color = resolved ? '#166534' : ''
+    flagEl.querySelector('.ico').style.background = resolved ? 'var(--green)' : ''
+    e.currentTarget.textContent = resolved ? 'Undo' : 'Resolve'
+  })
 
   // Pilot form: submits to Netlify Forms without leaving the page
   const form = document.getElementById('pilot-form')

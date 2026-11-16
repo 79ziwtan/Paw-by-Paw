@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Button, inputClass } from '../../components/ui'
+import { Button, inputClass, PageLoader } from '../../components/ui'
 import { useCan } from '../auth/permissions'
 import { TemplatesSection } from '../plans/TemplatesSection'
 import { useAddTag, useBehaviorTags, useDeleteTag, useRenameTag } from './api'
@@ -16,7 +16,7 @@ export function TagsSection() {
   const [label, setLabel] = useState('')
   const mutationError = add.error ?? rename.error ?? del.error
 
-  if (isPending) return <p className="text-neutral-500">Loading…</p>
+  if (isPending) return <PageLoader />
   if (error) return <p className="text-flag">{error.message}</p>
 
   async function submit(e: FormEvent) {

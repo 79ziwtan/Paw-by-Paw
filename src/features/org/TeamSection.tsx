@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
-import { Button, Card, Field, inputClass, actionClass, selectClass, dropdownClass } from '../../components/ui'
+import { actionClass, Button, Card, dropdownClass, Field, inputClass, PageLoader, selectClass } from '../../components/ui'
 import { useAuth } from '../auth/AuthProvider'
 import { PERMISSIONS, useCan, type Permission } from '../auth/permissions'
 import { useLocations } from '../households/api'
@@ -28,7 +28,7 @@ export function TeamSection() {
   const [showInvite, setShowInvite] = useState(false)
   const mutationError = updateRole.error ?? setDeactivated.error ?? setAccess.error ?? setPerms.error
 
-  if (isPending) return <p className="text-neutral-500">Loading…</p>
+  if (isPending) return <PageLoader />
   if (error) return <p className="text-flag">{error.message}</p>
 
   const myLocations = team.find((t) => t.id === me?.id)?.location_ids ?? []

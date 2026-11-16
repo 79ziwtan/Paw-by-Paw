@@ -1,13 +1,14 @@
+import type { ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 import { BackLink } from '../../components/BackLink'
-import { Card, PaidStatus, primaryLinkClass } from '../../components/ui'
-import type { Views } from '../../lib/supabase'
+import { Card, ClockIcon, DogAvatar, Eyebrow, MeasureTile, PageLoader, PaidStatus, PhoneIcon, Pill, primaryLinkClass, secondaryLinkClass, StageBars } from '../../components/ui'
 import { formatAge, formatPhone } from '../../lib/format'
+import { HOME } from '../../lib/paths'
+import type { Views } from '../../lib/supabase'
 import { usePlanStages } from '../sessions/api'
-import { formatMeasure, MEASURE_FIELDS, type Measures } from '../sessions/measures'
+import { MEASURE_FIELDS, tileValue, type Measures } from '../sessions/measures'
 import { useActiveFlags, useDogSummary } from './api'
 import { SafetyFlag } from './SafetyFlag'
-import { HOME } from '../../lib/paths'
 
 type LastSession = {
   id: string
@@ -33,46 +34,69 @@ export function DogSummaryPage() {
   const { data: dog, isPending, error } = useDogSummary(dogId)
   const { data: flags = [] } = useActiveFlags(dogId)
 
-  if (isPending) return <p className="text-neutral-500">Loading…</p>
+  if (isPending) return <PageLoader />
   if (error) return <p className="text-flag">{error.message}</p>
 
   const at = params.get('at')
   const last = ((dog.last_sessions ?? []) as LastSession[]).slice(0, 2)
+  const nextStep = last.find((s) => s.next_step)?.next_step
 
   return (
-    <section className="flex flex-col gap-3 pb-36">
-      <BackLink fallback={HOME} fallbackLabel="Calendar" />
+    <section className="flex flex-col gap-3.5 pb-36">
+      <BackLink fallback={HOME} fallbackLabel="Calendar" className="text-sm font-semibold text-neutral-500" />
 
       {flags.map((f) => <SafetyFlag key={f.id} flag={f} readOnly={!!dog.archived_at} />)}
 
       {at && (
-        <p className="text-sm text-neutral-600">
-          {new Date(at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })} · {params.get('kind')} · {params.get('place')} · {params.get('min')} min
-        </p>
+        <div className="flex items-center gap-2.5 rounded-2xl bg-neutral-900 px-4 py-2.5 text-sm text-neutral-100">
+          <ClockIcon className="size-4 text-gold-400" />
+          <span className="font-bold text-gold-300">{new Date(at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</span>
+          <span className="truncate">{params.get('kind')} · {params.get('place')}</span>
+          <span className="ml-auto shrink-0 text-xs text-neutral-400">{params.get('min')} min</span>
+        </div>
       )}
 
-      <Card className="flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-semibold">{dog.name}</h1>
+      <Card className="flex flex-col gap-4 rounded-3xl p-5">
+        <div className="flex items-start gap-3.5">
+          <DogAvatar name={dog.name} size="lg" />
+          <div className="min-w-0 flex-1">
+            <h1 className="text-3xl leading-tight font-bold">{dog.name}</h1>
             <p className="text-sm text-neutral-500">{[dog.breed, formatAge(dog.birth_date)].filter(Boolean).join(' · ')}</p>
           </div>
-          <PaidStatus status={dog.payment_status} />
         </div>
 
-        <Row label="Owner">
-          <Link to={`/households/${dog.household_id}`} className="underline">{dog.owner_name}</Link>
-          {dog.phone && <> · <a href={`tel:${dog.phone}`} className="underline">{formatPhone(dog.phone)}</a></>}
-        </Row>
-        <Row label="Package">
-          {dog.sessions_remaining != null ? `${dog.sessions_remaining} ${dog.sessions_remaining === 1 ? 'session' : 'sessions'} left` : 'None'}
-        </Row>
-        <StageRow dogId={dogId} current={dog.current_stage} />
-        {dog.goal && <Row label="Goal">{dog.goal}</Row>}
+        <div className="flex flex-wrap gap-2">
+          <PaidStatus
+            status={dog.payment_status}
+            detail={dog.sessions_remaining != null ? `${dog.sessions_remaining} ${dog.sessions_remaining === 1 ? 'session' : 'sessions'} left` : null}
+          />
+        </div>
+
+        <div className="flex items-center justify-between gap-3 rounded-2xl bg-neutral-50 p-3 ring-1 ring-neutral-200">
+          <div className="min-w-0">
+            <Eyebrow>Owner</Eyebrow>
+            <Link to={`/households/${dog.household_id}`} className="font-bold hover:underline">{dog.owner_name}</Link>
+          </div>
+          {dog.phone && (
+            <a href={`tel:${dog.phone}`} className="flex min-h-10 shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 text-sm font-semibold ring-1 ring-neutral-200 hover:bg-neutral-100">
+              <PhoneIcon className="size-4" />
+              <span className="hidden sm:inline">{formatPhone(dog.phone)}</span><span className="sm:hidden">Call</span>
+            </a>
+          )}
+        </div>
+
+        <Plan dogId={dogId} current={dog.current_stage} goal={dog.goal} />
       </Card>
 
-      <h2 className="mt-2 font-semibold">Last 2 sessions</h2>
-      {last.length === 0 && <Card className="text-sm text-neutral-500">No sessions logged yet.</Card>}
+      {nextStep && (
+        <div className="rounded-2xl border border-gold-200 bg-gold-100 px-4 py-3">
+          <Eyebrow className="text-gold-800">Pick up from last time</Eyebrow>
+          <div className="mt-0.5 font-display text-lg font-bold">{nextStep}</div>
+        </div>
+      )}
+
+      <h2 className="mt-2 font-display text-xl font-bold">Last 2 sessions</h2>
+      {last.length === 0 && <Card className="text-center text-sm text-neutral-500">First session! Nothing logged yet.</Card>}
       {last.map((s) => <LastSessionCard key={s.id} session={s} />)}
 
       <ActionBar dog={dog} />
@@ -80,61 +104,62 @@ export function DogSummaryPage() {
   )
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="text-sm">
-      <span className="text-neutral-500">{label}: </span>
-      {children}
-    </div>
-  )
-}
-
-function StageRow({ dogId, current }: { dogId: string; current: string | null }) {
+function Plan({ dogId, current, goal }: { dogId: string; current: string | null; goal: string | null }) {
   const { data: stages = [] } = usePlanStages(dogId)
   const idx = stages.findIndex((s) => s.status === 'in_progress')
   return (
-    <Row label="Current stage">
-      {current ?? 'None in progress'}
-      {stages.length > 0 && idx >= 0 && <span className="text-neutral-500"> (stage {idx + 1} of {stages.length})</span>}
-    </Row>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-baseline justify-between gap-2">
+        <Eyebrow>Plan · {current ?? 'No stage in progress'}</Eyebrow>
+        {idx >= 0 && <span className="text-xs text-neutral-500">Stage {idx + 1} of {stages.length}</span>}
+      </div>
+      <StageBars stages={stages} />
+      {goal && <p className="text-sm"><span className="text-neutral-500">Goal: </span>{goal}</p>}
+    </div>
   )
 }
 
 function LastSessionCard({ session: s }: { session: LastSession }) {
   return (
-    <Card className="flex flex-col gap-1 p-3 text-sm">
-      <div className="font-medium">
-        {ago(s.occurred_at)}
-        {s.takes_food != null && <span className="font-normal text-neutral-500"> · {s.takes_food ? 'took food' : 'no food'}</span>}
+    <Card className="flex flex-col gap-3">
+      <div className="flex items-center justify-between gap-2">
+        <span className="font-bold">{ago(s.occurred_at)}</span>
+        {s.takes_food != null && <Pill tone={s.takes_food ? 'neutral' : 'orange'}>{s.takes_food ? 'Took food' : 'No food'}</Pill>}
       </div>
       {s.behaviors?.map((b, i) => {
         const m = b.measures ?? {}
-        const parts = MEASURE_FIELDS.filter((f) => m[f.key]).map((f) => formatMeasure(f.key, m[f.key]!))
+        const tiles = MEASURE_FIELDS.filter((f) => m[f.key])
         return (
-          <div key={i}>
-            {b.tag}
-            {parts.length > 0 && <span className="text-neutral-500"> · {parts.join(' · ')}</span>}
+          <div key={i} className="flex flex-col gap-2">
+            <Eyebrow>{b.tag}</Eyebrow>
+            {tiles.length > 0 && (
+              <div className="grid grid-cols-3 gap-2">
+                {tiles.map((f) => <MeasureTile key={f.key} value={tileValue(f.key, m[f.key]!)} label={f.label} />)}
+              </div>
+            )}
           </div>
         )
       })}
-      {s.next_step && <div><span className="text-neutral-500">Next step: </span>{s.next_step}</div>}
-      {s.external_notes && <p className="line-clamp-2 text-neutral-600">{s.external_notes}</p>}
+      {s.next_step && <Note label="Next step">{s.next_step}</Note>}
+      {s.external_notes && <p className="line-clamp-2 text-sm text-neutral-600">{s.external_notes}</p>}
     </Card>
+  )
+}
+
+function Note({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="rounded-xl bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-600">
+      <b className="text-neutral-900">{label}:</b> {children}
+    </div>
   )
 }
 
 function ActionBar({ dog }: { dog: Views<'dog_summary'> }) {
   return (
-    <div className="fixed inset-x-0 bottom-14 z-10 border-t border-neutral-300 bg-white p-3">
-      <div className="mx-auto flex max-w-3xl gap-2">
-        <Link to={`/dogs/${dog.id}`} className="flex min-h-11 items-center rounded-md border border-neutral-300 px-3 text-sm">
-          Full profile
-        </Link>
-        {!dog.archived_at && (
-          <Link to={`/dogs/${dog.id}/log`} className={`${primaryLinkClass} flex-1`}>
-            Log session
-          </Link>
-        )}
+    <div className="fixed inset-x-0 bottom-16 z-10 border-t border-neutral-200 bg-white/95 p-3 backdrop-blur">
+      <div className="mx-auto flex max-w-3xl gap-2.5">
+        <Link to={`/dogs/${dog.id}`} className={`${secondaryLinkClass} text-sm`}>Full profile</Link>
+        {!dog.archived_at && <Link to={`/dogs/${dog.id}/log`} className={`${primaryLinkClass} flex-1`}>Log session</Link>}
       </div>
     </div>
   )

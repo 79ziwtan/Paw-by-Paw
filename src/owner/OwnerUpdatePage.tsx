@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router'
 import { publicSupabase as supabase } from '../lib/publicSupabase'
+import { PageLoader } from '../components/ui'
 
 type OwnerUpdate =
   | { status: 'not_found' | 'expired' }
@@ -49,7 +50,7 @@ export function OwnerUpdatePage() {
     },
   })
 
-  if (isPending) return <p className="p-6 text-neutral-500">Loading…</p>
+  if (isPending) return <PageLoader full />
 
   if (!data || data.status !== 'ok') {
     return (

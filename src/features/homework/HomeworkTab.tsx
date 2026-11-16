@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Button, Card, inputClass, actionClass } from '../../components/ui'
+import { actionClass, Button, Card, inputClass, PageLoader } from '../../components/ui'
 import { useAuth } from '../auth/AuthProvider'
 import { useCan } from '../auth/permissions'
 import { useAssignHomework, useDeleteHomework, useDogHomework, useEditHomework, useSetHomeworkDone, type HomeworkRow } from './api'
@@ -12,7 +12,7 @@ export function HomeworkTab({ dogId, readOnly = false }: { dogId: string; readOn
   const { data: tasks, isPending, error } = useDogHomework(dogId)
   const [assigning, setAssigning] = useState(false)
 
-  if (isPending) return <p className="text-neutral-500">Loading homework…</p>
+  if (isPending) return <PageLoader label="Loading homework" />
   if (error) return <p className="text-flag">{error.message}</p>
 
   const open = tasks.filter((t) => !t.completed_at)

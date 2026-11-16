@@ -1,14 +1,14 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { BackLink } from '../../components/BackLink'
-import { Button, Card, chipClass, chipOff, chipOn, inputClass, selectClass } from '../../components/ui'
+import { Button, Card, CheckIcon, chipClass, chipOff, chipOn, DogAvatar, FlagIcon, inputClass, Logo, selectClass, ShareIcon } from '../../components/ui'
 import { useAuth } from '../auth/AuthProvider'
 import { useDogSummary } from '../dogs/api'
 import { cleanTasks, HomeworkInput } from '../homework/HomeworkInput'
 import { useBehaviorTags } from '../org/api'
 import { ShareProfileButton } from '../updates/ShareProfileButton'
 import { useAddCustomTag, useLogSession, useOpenPackage, usePlanStages, type StageAction, type StageStatus } from './api'
-import { MEASURE_FIELDS, type Measures } from './measures'
+import { MEASURE_FIELDS, tileValue, type Measures } from './measures'
 import { useDictation } from './useDictation'
 import { HOME } from '../../lib/paths'
 
@@ -124,21 +124,31 @@ export function LogSessionPage() {
   if (saved) {
     return (
       <section className="flex min-h-[65dvh] flex-col items-center justify-center gap-4 text-center">
-        <h1 className="text-xl font-semibold">Session saved</h1>
-        <p className="max-w-xs text-neutral-600">
-          {dog?.name}'s session is saved{nextStep.trim() && <> · next step: <strong>{nextStep.trim()}</strong></>}.
-        </p>
-        <div className="flex w-full max-w-xs flex-col gap-2">
+        <span className="relative">
+          <Logo size={64} />
+          <span className="absolute -right-2 -bottom-2 flex size-8 items-center justify-center rounded-full bg-neutral-900 text-gold-300 ring-4 ring-neutral-50">
+            <CheckIcon className="size-4" />
+          </span>
+        </span>
+        <h1 className="mt-2 text-3xl font-bold">Session saved</h1>
+        <p className="max-w-xs text-neutral-600">{dog?.name}'s log is on their card for the next lesson.</p>
+        {nextStep.trim() && (
+          <div className="rounded-2xl border border-gold-200 bg-gold-100 px-4 py-2.5">
+            <div className="text-[11px] font-bold tracking-[0.1em] text-gold-800 uppercase">Next step</div>
+            <div className="font-display text-lg font-bold">{nextStep.trim()}</div>
+          </div>
+        )}
+        <div className="mt-2 flex w-full max-w-xs flex-col gap-2.5">
           <Button onClick={() => navigate(HOME, { replace: true })}>Back to calendar</Button>
           {dog?.household_id && (
             <ShareProfileButton
               householdId={dog.household_id}
               dogId={dogId}
-              label={`Share update with ${dog.owner_name?.split(' ')[0] ?? 'owner'} (optional)`}
-              className="min-h-11 w-full rounded-md border border-neutral-300 bg-white px-4 font-medium text-neutral-800 hover:bg-neutral-50 disabled:opacity-50"
+              label={<><ShareIcon className="size-4" /> Share update with {dog.owner_name?.split(' ')[0] ?? 'owner'}</>}
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-5 font-semibold text-neutral-800 hover:bg-neutral-100 disabled:opacity-50"
             />
           )}
-          <Link to={`/dogs/${dogId}/summary`} replace className="py-2 text-sm text-neutral-500 underline">View {dog?.name}'s card</Link>
+          <Link to={`/dogs/${dogId}/summary`} replace className="py-2 text-sm font-semibold text-neutral-500 hover:underline">View {dog?.name}'s card</Link>
         </div>
       </section>
     )
@@ -146,18 +156,21 @@ export function LogSessionPage() {
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-6 pb-24">
-      <header className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <BackLink fallback={`/dogs/${dogId}/summary`} fallbackLabel={dog?.name ?? 'Dog'} className="text-sm font-medium text-neutral-500" />
-          <h1 className="truncate text-xl font-semibold">Log session: {dog?.name ?? '…'}</h1>
+      <header className="flex flex-col gap-3">
+        <BackLink fallback={`/dogs/${dogId}/summary`} fallbackLabel={dog?.name ?? 'Dog'} className="text-sm font-semibold text-neutral-500" />
+        <div className="flex items-center gap-3">
+          <DogAvatar name={dog?.name ?? null} />
+          <div className="min-w-0">
+          <h1 className="truncate text-3xl font-bold">Log · {dog?.name ?? '…'}</h1>
           <p className="text-sm text-neutral-500">
             {when ? new Date(when).toLocaleString() : 'Just now'} ·{' '}
             {when === null ? (
               <button type="button" className="underline" onClick={() => setWhen(openedAt)}>change</button>
             ) : (
-              <input type="datetime-local" className="rounded border border-neutral-300 px-1" value={when} max={openedAt} onChange={(e) => setWhen(e.target.value)} />
+              <input type="datetime-local" className="rounded-lg border border-neutral-200 bg-white px-1.5" value={when} max={openedAt} onChange={(e) => setWhen(e.target.value)} />
             )}
           </p>
+          </div>
         </div>
       </header>
 
@@ -169,14 +182,14 @@ export function LogSessionPage() {
             </button>
           ))}
           {customTag === null ? (
-            <button type="button" onClick={() => setCustomTag('')} className={`${chipClass} border-dashed border-neutral-400 text-neutral-600`}>
+            <button type="button" onClick={() => setCustomTag('')} className={`${chipClass} border-dashed border-neutral-300 bg-transparent text-neutral-600`}>
               + Tag
             </button>
           ) : (
             <span className="flex gap-1">
               <input
                 autoFocus
-                className="min-h-11 w-36 rounded-md border border-neutral-400 px-3 text-sm"
+                className="min-h-11 w-36 rounded-full border border-neutral-300 bg-white px-4 text-sm"
                 placeholder="New tag"
                 value={customTag}
                 onChange={(e) => setCustomTag(e.target.value)}
@@ -195,20 +208,20 @@ export function LogSessionPage() {
             {[...selected].map(([tagId, measures]) => {
               const label = allTags.find((t) => t.id === tagId)?.label ?? 'Tag'
               const open = expanded === tagId
-              const filled = MEASURE_FIELDS.filter((f) => measures[f.key]).map((f) => f.label[0] + f.label.slice(1, 4).toLowerCase())
+              const filled = MEASURE_FIELDS.filter((f) => measures[f.key]).map((f) => tileValue(f.key, measures[f.key]!))
               const note = behaviorNotes.get(tagId)
               return (
                 <li key={tagId}>
-                  <Card className={`p-3 ${open ? 'border-gold-300' : ''}`}>
+                  <Card className={`p-3.5 ${open ? 'border-gold-300 shadow-[0_0_0_3px_var(--color-gold-50)]' : ''}`}>
                     <button type="button" className="flex min-h-10 w-full items-center justify-between text-left" onClick={() => setExpanded(open ? null : tagId)}>
-                      <span className="font-semibold">{label}</span>
-                      <span className="text-sm text-neutral-500">{filled.length ? filled.join(' · ') : 'Add 3 Ds'} ({open ? 'hide' : 'show'})</span>
+                      <span className="font-bold">{label}</span>
+                      <span className="text-sm font-medium text-neutral-500">{filled.length ? filled.join(' · ') : 'Add the 3 Ds'} <span aria-hidden>{open ? '▴' : '▾'}</span></span>
                     </button>
                     {open && (
                       <>
                         <MeasureInputs value={measures} onChange={(m) => setSelected(new Map(selected).set(tagId, m))} />
                         {note === undefined ? (
-                          <button type="button" className="mt-2 text-sm text-neutral-500 underline" onClick={() => setBehaviorNotes(new Map(behaviorNotes).set(tagId, ''))}>
+                          <button type="button" className="mt-3 text-sm font-semibold text-gold-700 hover:underline" onClick={() => setBehaviorNotes(new Map(behaviorNotes).set(tagId, ''))}>
                             + note
                           </button>
                         ) : (
@@ -236,12 +249,20 @@ export function LogSessionPage() {
       </Section>
 
       <Section title="Safety">
-        <label className="flex min-h-11 items-center gap-3 rounded-md border border-neutral-300 bg-white px-3">
-          <input type="checkbox" role="switch" className="size-5" checked={flagOn} onChange={(e) => setFlagOn(e.target.checked)} />
-          <span className={flagOn ? 'text-flag' : ''}>Flag a safety concern</span>
-        </label>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={flagOn}
+          onClick={() => setFlagOn(!flagOn)}
+          className={`flex min-h-13 w-full items-center justify-between gap-3 rounded-2xl border px-4 text-left transition-colors ${flagOn ? 'border-red-200 bg-flag-soft' : 'border-neutral-200 bg-white'}`}
+        >
+          <span className={`flex items-center gap-2 font-semibold ${flagOn ? 'text-flag' : ''}`}><FlagIcon className="size-4" /> Flag a safety concern</span>
+          <span className={`flex h-7 w-12 items-center rounded-full p-0.5 transition-colors ${flagOn ? 'bg-flag' : 'bg-neutral-200'}`}>
+            <span className={`size-6 rounded-full bg-white shadow transition-transform ${flagOn ? 'translate-x-5' : ''}`} />
+          </span>
+        </button>
         {flagOn && (
-          <div className="mt-2 flex flex-col gap-2 rounded-md border border-flag bg-flag-soft p-3">
+          <div className="mt-2 flex flex-col gap-2.5 rounded-2xl border border-red-200 bg-flag-soft p-3.5">
             <Segmented
               options={(['low', 'med', 'high'] as const).map((s) => ({ value: s, label: s[0].toUpperCase() + s.slice(1) }))}
               value={flag.severity}
@@ -255,7 +276,7 @@ export function LogSessionPage() {
                   type="button"
                   aria-pressed={flag.note === n}
                   onClick={() => setFlag({ ...flag, note: flag.note === n ? '' : n })}
-                  className={`min-h-9 rounded-md border px-3 text-sm ${flag.note === n ? 'border-flag bg-flag text-white' : 'border-neutral-300 bg-white'}`}
+                  className={`min-h-9 rounded-full border px-3.5 text-sm font-medium ${flag.note === n ? 'border-flag bg-flag text-white' : 'border-red-200 bg-white'}`}
                 >
                   {n}
                 </button>
@@ -278,9 +299,10 @@ export function LogSessionPage() {
         <input className={`${inputClass} mt-2`} aria-label="Next step" placeholder="Or type one…" value={nextStep} onChange={(e) => setNextStep(e.target.value)} />
       </Section>
 
-      <details className="rounded-md border border-neutral-300 bg-white p-3">
-        <summary className="cursor-pointer font-semibold">
-          More <span className="text-sm font-normal text-neutral-500">(notes, homework, stage change)</span>
+      <details className="group rounded-2xl border border-neutral-200 bg-white p-4">
+        <summary className="flex cursor-pointer list-none items-center justify-between font-display text-lg font-bold [&::-webkit-details-marker]:hidden">
+          <span>More <span className="font-sans text-sm font-normal text-neutral-500">· notes, homework, stage</span></span>
+          <span aria-hidden className="text-neutral-400 transition-transform group-open:rotate-180">▾</span>
         </summary>
         <div className="mt-4 flex flex-col gap-5">
           <NotesField label="For the owner" hint="Can be shared in an update" value={externalNotes} onChange={setExternalNotes} placeholder={`${dog?.name ?? 'Your dog'} practiced checking in before the leash got tight.`} />
@@ -298,7 +320,7 @@ export function LogSessionPage() {
                 {advanceLabel && <Radio name="stage" checked={stageAction === 'advance'} onChange={() => setStageAction('advance')}>{advanceLabel}</Radio>}
                 <Radio name="stage" checked={stageAction === 'set'} onChange={() => setStageAction('set')}>Custom: set any stage</Radio>
                 {stageAction === 'set' && (
-                  <div className="flex flex-col gap-2 rounded-md border border-neutral-300 bg-white p-3">
+                  <div className="flex flex-col gap-2 rounded-2xl border border-neutral-200 bg-white p-3">
                     <select className={selectClass} aria-label="Stage to change" value={customStageId} onChange={(e) => { setCustomStageId(e.target.value); setCustomStatus(null) }}>
                       <option value="">Choose stage…</option>
                       {stages.map((s) => <option key={s.id} value={s.id}>{s.name} ({STATUS_LABEL[s.status].toLowerCase()})</option>)}
@@ -313,7 +335,7 @@ export function LogSessionPage() {
                             aria-checked={customStatus === st}
                             disabled={st === customStage.status}
                             onClick={() => setCustomStatus(st)}
-                            className={`min-h-11 flex-1 rounded-md border text-sm font-medium disabled:opacity-40 ${customStatus === st ? chipOn : chipOff}`}
+                            className={`min-h-11 flex-1 rounded-full border text-sm font-medium disabled:opacity-40 ${customStatus === st ? chipOn : chipOff}`}
                           >
                             {STATUS_LABEL[st]}
                           </button>
@@ -338,15 +360,15 @@ export function LogSessionPage() {
       </details>
 
       {openPackage && (
-        <label className="flex min-h-11 items-center gap-3 rounded-md border border-neutral-200 bg-white px-3 text-sm">
+        <label className="flex min-h-12 items-center gap-3 rounded-2xl border border-neutral-200 bg-white px-4 text-sm">
           <input type="checkbox" className="size-5 accent-[var(--color-gold-500)]" checked={countPackage} onChange={(e) => setCountPackage(e.target.checked)} />
           Count toward {openPackage.name} ({openPackage.sessions_used} of {openPackage.sessions_total} used)
         </label>
       )}
 
-      {error && <p className="rounded-md bg-flag-soft p-3 text-sm text-flag">{error}</p>}
+      {error && <p className="rounded-2xl bg-flag-soft p-3 text-sm text-flag">{error}</p>}
 
-      <div className="fixed inset-x-0 bottom-14 z-10 border-t border-neutral-200 bg-white p-3">
+      <div className="fixed inset-x-0 bottom-16 z-10 border-t border-neutral-200 bg-white/95 p-3 backdrop-blur">
         <div className="mx-auto max-w-3xl">
           <Button type="submit" className="w-full text-base" disabled={logSession.isPending}>
             {logSession.isPending ? 'Saving…' : `Save log${selected.size ? ` · ${selected.size} ${selected.size === 1 ? 'behavior' : 'behaviors'}` : ''}`}
@@ -360,8 +382,8 @@ export function LogSessionPage() {
 export function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
   return (
     <section>
-      <h2 className="mb-2 font-semibold">
-        {title} {hint && <span className="text-sm font-normal text-neutral-500">· {hint}</span>}
+      <h2 className="mb-2.5 font-display text-lg font-bold">
+        {title} {hint && <span className="font-sans text-sm font-normal text-neutral-500">· {hint}</span>}
       </h2>
       {children}
     </section>
@@ -382,7 +404,7 @@ export function Segmented<T>({ options, value, onChange, activeClass = chipOn }:
           type="button"
           aria-pressed={value === o.value}
           onClick={() => onChange(value === o.value ? null : o.value)}
-          className={`min-h-12 flex-1 rounded-md border text-sm font-semibold ${value === o.value ? activeClass : 'border-neutral-300 bg-white'}`}
+          className={`min-h-12 flex-1 rounded-full border text-sm font-semibold transition-colors ${value === o.value ? activeClass : 'border-neutral-200 bg-white'}`}
         >
           {o.label}
         </button>
@@ -393,7 +415,7 @@ export function Segmented<T>({ options, value, onChange, activeClass = chipOn }:
 
 function Radio({ name, checked, onChange, children }: { name: string; checked: boolean; onChange: () => void; children: ReactNode }) {
   return (
-    <label className={`flex min-h-11 items-center gap-3 rounded-md border px-3 text-sm ${checked ? 'border-gold-500 bg-gold-50' : 'border-neutral-300 bg-white'}`}>
+    <label className={`flex min-h-11 items-center gap-3 rounded-2xl border px-3.5 text-sm ${checked ? 'border-gold-400 bg-gold-50' : 'border-neutral-200 bg-white'}`}>
       <input type="radio" name={name} checked={checked} onChange={onChange} className="accent-[var(--color-gold-500)]" />
       {children}
     </label>
@@ -430,17 +452,17 @@ export function MeasureInputs({ value, onChange }: { value: Measures; onChange: 
     else next[key] = m
     onChange(next)
   }
-  const mini = 'min-h-10 min-w-11 flex-1 rounded-md border px-2 text-sm font-medium'
+  const mini = 'min-h-10 min-w-11 flex-1 rounded-full border px-2 text-sm font-semibold transition-colors'
 
   return (
-    <div className="mt-2 flex flex-col gap-3 border-t border-neutral-100 pt-3">
+    <div className="mt-3 flex flex-col gap-3.5 border-t border-neutral-100 pt-3.5">
       {(['duration', 'distance'] as const).map((key) => {
         const field = MEASURE_FIELDS.find((f) => f.key === key)!
         const m = value[key]
         const isCustom = custom.has(key)
         return (
           <div key={key}>
-            <div className="mb-1 text-sm text-neutral-600">{field.label}</div>
+            <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-neutral-500 uppercase">{field.label}</div>
             <div className="grid grid-cols-4 gap-1 sm:grid-cols-7">
               {PRESETS[key].map((p) => {
                 const on = !isCustom && m?.value === p.value && m.unit === p.unit
@@ -477,7 +499,7 @@ export function MeasureInputs({ value, onChange }: { value: Measures; onChange: 
                   }}
                 />
                 <select
-                  className="min-h-11 cursor-pointer rounded-md border border-neutral-400 bg-white px-2 text-sm"
+                  className="min-h-11 cursor-pointer rounded-xl border border-neutral-200 bg-white px-2 text-sm"
                   aria-label={`${field.label} unit`}
                   value={m?.unit ?? field.units[0]}
                   onChange={(e) => m && set(key, { value: m.value, unit: e.target.value })}
@@ -490,8 +512,8 @@ export function MeasureInputs({ value, onChange }: { value: Measures; onChange: 
         )
       })}
       <div>
-        <div className="mb-1 text-sm text-neutral-600">
-          Distraction <span className="text-neutral-400">(1 quiet room to 5 busy park)</span>
+        <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-neutral-500 uppercase">
+          Distraction <span className="font-medium tracking-normal normal-case">· 1 quiet room → 5 busy park</span>
         </div>
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((n) => {
@@ -525,7 +547,7 @@ export function NotesField({ label, hint, value, onChange, placeholder }: {
             type="button"
             onClick={dictation.toggle}
             aria-label={dictation.listening ? 'Stop dictation' : 'Dictate'}
-            className={`absolute top-1.5 right-1.5 min-h-9 rounded-md border px-2 text-xs ${dictation.listening ? 'border-gold-500 bg-gold-300' : 'border-neutral-300 bg-white'}`}
+            className={`absolute top-2 right-2 min-h-8 rounded-full border px-3 text-xs font-semibold ${dictation.listening ? 'border-gold-500 bg-gold-400' : 'border-neutral-200 bg-white'}`}
           >
             {dictation.listening ? 'Stop' : 'Dictate'}
           </button>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 import { BackLink } from '../../components/BackLink'
 import { LoadMore } from '../../components/LoadMore'
-import { Card, PaymentDot, primaryLinkClass } from '../../components/ui'
+import { Card, PageLoader, PaymentDot, primaryLinkClass } from '../../components/ui'
 import { formatAge } from '../../lib/format'
 import { useDogSessions, usePlanStages } from '../sessions/api'
 import { SessionCard } from '../sessions/SessionCard'
@@ -23,7 +23,7 @@ export function DogProfilePage() {
   const locationName = useLocationName()
   const [tab, setTab] = useState<Tab>(() => (['sessions', 'plan', 'homework'].includes(params.get('tab') ?? '') ? (params.get('tab') as Tab) : 'sessions'))
 
-  if (isPending) return <p className="text-neutral-500">Loading…</p>
+  if (isPending) return <PageLoader />
   if (error) return <p className="text-flag">{error.message}</p>
 
   return (
@@ -85,7 +85,7 @@ export function DogProfilePage() {
       {tab === 'homework' && <HomeworkTab dogId={dogId} readOnly={!!dog.archived_at} />}
 
       {!dog.archived_at && (
-        <div className="fixed inset-x-0 bottom-14 border-t border-neutral-200 bg-white p-3">
+        <div className="fixed inset-x-0 bottom-16 border-t border-neutral-200 bg-white p-3">
           <div className="mx-auto max-w-3xl">
             <div className="flex gap-2">
               <Link to="summary" className="flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-neutral-600">
@@ -105,7 +105,7 @@ export function DogProfilePage() {
 function SessionList({ dogId }: { dogId: string }) {
   const { data, isPending, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useDogSessions(dogId)
 
-  if (isPending) return <p className="text-neutral-500">Loading sessions…</p>
+  if (isPending) return <PageLoader label="Loading sessions" />
   if (error) return <p className="text-flag">{error.message}</p>
 
   const sessions = data.pages.flat()
@@ -141,7 +141,7 @@ const statusText = { complete: 'Complete', in_progress: 'In progress', not_start
 
 function PlanSummary({ dogId }: { dogId: string }) {
   const { data: stages, isPending } = usePlanStages(dogId)
-  if (isPending) return <p className="text-neutral-500">Loading plan…</p>
+  if (isPending) return <PageLoader label="Loading plan" />
   const done = stages?.filter((s) => s.status === 'complete').length ?? 0
 
   return (

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { LoadMore } from '../../components/LoadMore'
-import { Card } from '../../components/ui'
+import { Card, PageLoader } from '../../components/ui'
 import { ACTIVITY_TABLES, describeChanges, useActivity, type ActivityRow } from './api'
 
 const FILTERS = [...new Set(Object.values(ACTIVITY_TABLES).map((t) => t.filter!))]
@@ -14,7 +14,7 @@ export function ActivityFeed() {
   const tables = filter ? Object.entries(ACTIVITY_TABLES).filter(([, t]) => t.filter === filter).map(([k]) => k) : null
   const { data, isPending, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useActivity(tables)
 
-  if (isPending) return <p className="text-neutral-500">Loading activity…</p>
+  if (isPending) return <PageLoader label="Loading activity" />
   if (error) return <p className="text-flag">{error.message}</p>
 
   const rows = data.pages.flat()

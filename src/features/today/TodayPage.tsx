@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Card } from '../../components/ui'
+import { Card, WaffleLoader } from '../../components/ui'
 import { SessionCard } from '../sessions/SessionCard'
 import { useTodayHomework, useTodaySessions, type TodayHomeworkBlock } from './api'
 
@@ -15,7 +15,7 @@ export function TodayActivity() {
 
       <div className="flex flex-col gap-3">
         <h2 className="font-semibold">Sessions today{sessions.data && ` (${sessions.data.length})`}</h2>
-        {sessions.isPending && <p className="text-sm text-neutral-500">Loading…</p>}
+        {sessions.isPending && <WaffleLoader size={40} className="self-center py-6" />}
         {sessions.error && <p className="text-sm text-flag">{sessions.error.message}</p>}
         {sessions.data?.length === 0 && (
           <Card className="border-dashed text-center text-sm text-neutral-500">
@@ -33,7 +33,7 @@ export function TodayActivity() {
 
       <div className="flex flex-col gap-3">
         <h2 className="font-semibold">Homework today{homework.data && ` (${homework.data.length})`}</h2>
-        {homework.isPending && <p className="text-sm text-neutral-500">Loading…</p>}
+        {homework.isPending && <WaffleLoader size={40} className="self-center py-6" />}
         {homework.error && <p className="text-sm text-flag">{homework.error.message}</p>}
         {homework.data?.length === 0 && (
           <Card className="border-dashed text-center text-sm text-neutral-500">No homework assigned or completed today.</Card>

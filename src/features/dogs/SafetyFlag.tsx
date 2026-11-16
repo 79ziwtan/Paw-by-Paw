@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { inputClass } from '../../components/ui'
+import { Button, FlagIcon, inputClass } from '../../components/ui'
 import type { Tables } from '../../lib/supabase'
 import { useResolveFlag } from './api'
 
@@ -10,13 +10,17 @@ export function SafetyFlag({ flag: f, readOnly = false }: { flag: Tables<'flags'
   const [note, setNote] = useState('')
 
   return (
-    <div role="alert" className="flex flex-col gap-2 rounded-md border border-flag bg-flag-soft p-3 text-sm">
-      <div className="flex items-start justify-between gap-3">
-        <p>
-          <span className="font-semibold text-flag">Safety flag ({f.severity}):</span> {f.note}
-        </p>
+    <div role="alert" className="flex flex-col gap-3 rounded-2xl border border-red-200 bg-flag-soft p-3.5">
+      <div className="flex items-start gap-3">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-flag text-white">
+          <FlagIcon className="size-4" />
+        </span>
+        <div className="min-w-0 flex-1 text-sm">
+          <div className="text-[11px] font-bold tracking-[0.1em] text-flag uppercase">Safety · {f.severity}</div>
+          <p className="font-medium text-neutral-900">{f.note}</p>
+        </div>
         {!readOnly && !open && (
-          <button type="button" className="shrink-0 rounded-md border border-neutral-300 bg-white px-2 py-1 text-xs" onClick={() => setOpen(true)}>
+          <button type="button" className="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs font-semibold ring-1 ring-red-200 hover:bg-red-50" onClick={() => setOpen(true)}>
             Resolve
           </button>
         )}
@@ -29,21 +33,10 @@ export function SafetyFlag({ flag: f, readOnly = false }: { flag: Tables<'flags'
             resolve.mutate({ flagId: f.id, note })
           }}
         >
-          <input
-            autoFocus
-            className={inputClass}
-            aria-label="What changed"
-            placeholder="What changed? (optional)"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
+          <input autoFocus className={inputClass} aria-label="What changed" placeholder="What changed? (optional)" value={note} onChange={(e) => setNote(e.target.value)} />
           <div className="flex gap-2">
-            <button type="submit" disabled={resolve.isPending} className="min-h-10 rounded-md border border-gold-500 bg-gold-400 px-3 text-sm font-medium disabled:opacity-50">
-              {resolve.isPending ? 'Resolving…' : 'Resolve flag'}
-            </button>
-            <button type="button" className="min-h-10 rounded-md border border-neutral-300 bg-white px-3 text-sm" onClick={() => setOpen(false)}>
-              Cancel
-            </button>
+            <Button type="submit" className="min-h-10 text-sm" disabled={resolve.isPending}>{resolve.isPending ? 'Resolving…' : 'Resolve flag'}</Button>
+            <Button type="button" variant="secondary" className="min-h-10 text-sm" onClick={() => setOpen(false)}>Cancel</Button>
           </div>
           {resolve.error && <p className="text-xs text-flag">{resolve.error.message}</p>}
         </form>

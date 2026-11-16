@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useParams } from 'react-router'
 import { BackLink, useGoBack } from '../../components/BackLink'
-import { Button, Card, inputClass } from '../../components/ui'
+import { Button, Card, inputClass, PageLoader } from '../../components/ui'
 import { useAuth } from '../auth/AuthProvider'
 import { useCan } from '../auth/permissions'
 import { useDogSummary } from '../dogs/api'
@@ -22,7 +22,7 @@ export function EditSessionPage() {
   const { dogId = '', sessionId = '' } = useParams()
   const { data: session, isPending, error } = useSession(sessionId)
   const { data: dog } = useDogSummary(dogId)
-  if (isPending) return <p className="text-neutral-500">Loading…</p>
+  if (isPending) return <PageLoader />
   if (error) return <p className="text-flag">{error.message}</p>
   return <EditForm session={session} dogId={dogId} dogName={dog?.name ?? 'Dog'} />
 }
@@ -173,7 +173,7 @@ function EditForm({ session: s, dogId, dogName }: { session: NonNullable<ReturnT
 
       {(error || update.error) && <p className="rounded-md bg-flag-soft p-3 text-sm text-flag">{error ?? update.error?.message}</p>}
 
-      <div className="fixed inset-x-0 bottom-14 border-t border-neutral-200 bg-white p-3">
+      <div className="fixed inset-x-0 bottom-16 border-t border-neutral-200 bg-white p-3">
         <div className="mx-auto flex max-w-3xl gap-2">
           <Button type="submit" className="flex-1" disabled={update.isPending}>{update.isPending ? 'Saving…' : 'Save changes'}</Button>
           <Button type="button" variant="secondary" onClick={goBack}>Cancel</Button>

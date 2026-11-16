@@ -1,7 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { BackLink, useGoBack } from '../../components/BackLink'
-import { Button, Field, inputClass } from '../../components/ui'
+import { Button, Field, inputClass, PageLoader } from '../../components/ui'
 import { ageToBirthDate } from '../../lib/format'
 import { useAddDog, useHousehold } from '../households/api'
 
@@ -23,7 +23,7 @@ export function AddDogPage() {
   const nameRef = useRef<HTMLInputElement>(null)
   const set = (k: keyof typeof empty) => (e: { target: { value: string } }) => setForm({ ...form, [k]: e.target.value })
 
-  if (isPending) return <p className="text-neutral-500">Loading…</p>
+  if (isPending) return <PageLoader />
   if (loadError) return <p className="text-flag">{loadError.message}</p>
 
   async function save(e: FormEvent<HTMLFormElement>) {

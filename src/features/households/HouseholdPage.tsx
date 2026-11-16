@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { BackLink } from '../../components/BackLink'
-import { Button, Card, actionClass } from '../../components/ui'
+import { actionClass, Button, Card, PageLoader } from '../../components/ui'
 import { formatAge } from '../../lib/format'
 import { useCan } from '../auth/permissions'
 import { useDeleteHousehold, useHousehold, useSetDogArchived } from './api'
@@ -19,7 +19,7 @@ export function HouseholdPage() {
   const canDelete = can('delete_households')
   const canEditPackages = can('manage_packages')
 
-  if (isPending) return <p className="text-neutral-500">Loading…</p>
+  if (isPending) return <PageLoader />
   if (error) return <p className="text-flag">{error.message}</p>
 
   const active = h.dogs.filter((d) => !d.archived_at)

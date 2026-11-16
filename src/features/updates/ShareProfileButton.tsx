@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useShareProfile } from './api'
 
@@ -6,7 +7,7 @@ import { useShareProfile } from './api'
  * share with the owner. With `dogId`, the page opens on that dog; the owner's other dogs are
  * still there, collapsed.
  */
-export function ShareProfileButton({ householdId, dogId, label = 'Send', className }: { householdId: string; dogId?: string | null; label?: string; className?: string }) {
+export function ShareProfileButton({ householdId, dogId, label = 'Send', className }: { householdId: string; dogId?: string | null; label?: ReactNode; className?: string }) {
   const share = useShareProfile()
   const qc = useQueryClient()
 

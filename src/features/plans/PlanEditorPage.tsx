@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useParams } from 'react-router'
 import { BackLink } from '../../components/BackLink'
-import { Button, Card, inputClass, actionClass } from '../../components/ui'
+import { actionClass, Button, Card, inputClass, PageLoader, WaffleLoader } from '../../components/ui'
 import { useDogSummary } from '../dogs/api'
 import { usePlanStages, type StageStatus } from '../sessions/api'
 import {
@@ -30,7 +30,7 @@ export function PlanEditorPage() {
   const { data: stages, isPending, error } = usePlanStages(dogId)
   const [mode, setMode] = useState<'template' | null>(null)
 
-  if (isPending) return <p className="text-neutral-500">Loading plan…</p>
+  if (isPending) return <PageLoader label="Loading plan" />
   if (error) return <p className="text-flag">{error.message}</p>
 
   const empty = stages.length === 0
@@ -241,7 +241,7 @@ function TemplatePicker({ dogId, startAt, appending, onDone }: { dogId: string; 
         <button className={actionClass} onClick={onDone}>Close</button>
       </div>
       <p className="text-sm text-neutral-500">Stages are copied into this dog's plan, and you can change them afterwards.</p>
-      {isPending && <p className="text-sm text-neutral-500">Loading templates…</p>}
+      {isPending && <WaffleLoader size={40} className="self-center py-6" label="Loading templates" />}
       {templates?.length === 0 && <p className="text-sm text-neutral-500">Your business has no templates yet.</p>}
       <ul className="flex flex-col gap-2">
         {templates?.map((t) => (

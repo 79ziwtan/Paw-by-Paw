@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Navigate } from 'react-router'
-import { Button } from '../../components/ui'
+import { Button, PageLoader } from '../../components/ui'
 import { supabase } from '../../lib/supabase'
 import type { StaffRole } from '../org/api'
 import { useAuth } from './AuthProvider'
@@ -9,7 +9,7 @@ import { HOME } from '../../lib/paths'
 /** Signed in, belongs to an organization, still active, and (optionally) has one of `roles`. */
 export function RequireStaff({ children, roles }: { children: ReactNode; roles?: StaffRole[] }) {
   const { session, staff, loading } = useAuth()
-  if (loading) return <p className="p-6 text-neutral-500">Loading…</p>
+  if (loading) return <PageLoader full />
   if (!session) return <Navigate to="/login" replace />
   if (!staff) return <Navigate to="/onboarding" replace />
   if (staff.deactivated_at) {

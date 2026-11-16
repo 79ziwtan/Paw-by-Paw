@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
-import { Button, Card, PaymentDot, inputClass, actionClass } from '../../components/ui'
+import { actionClass, Button, Card, inputClass, PageLoader, PaymentDot, WaffleLoader } from '../../components/ui'
 import { ROLE_INFO, useAddLocation, useDeleteLocation, useLocationClients, useLocationsWithCounts, useTeam, useUpdateLocation } from './api'
 
 export function LocationsSection() {
@@ -14,7 +14,7 @@ export function LocationsSection() {
   const [newLoc, setNewLoc] = useState({ name: '', city: '' })
   const mutationError = add.error ?? update.error ?? del.error
 
-  if (isPending) return <p className="text-neutral-500">Loading…</p>
+  if (isPending) return <PageLoader />
   if (error) return <p className="text-flag">{error.message}</p>
 
   async function addLocation(e: FormEvent) {
@@ -110,7 +110,7 @@ function LocationPeople({ locationId }: { locationId: string }) {
     <div className="mt-3 flex flex-col gap-4 border-t border-neutral-100 pt-3 text-sm">
       <div>
         <h3 className="mb-1.5 font-semibold">Team ({members.filter((m) => !m.deactivated_at).length})</h3>
-        {team.isPending && <p className="text-neutral-500">Loading…</p>}
+        {team.isPending && <WaffleLoader size={40} className="self-center py-6" />}
         {team.error && <p className="text-flag">{team.error.message}</p>}
         {team.data && members.length === 0 && <p className="text-neutral-500">Nobody has access yet. Give access in Team.</p>}
         <ul className="flex flex-col gap-1">

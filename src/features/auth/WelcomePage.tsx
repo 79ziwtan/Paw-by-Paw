@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router'
-import { Button, Field, inputClass } from '../../components/ui'
+import { Button, Field, inputClass, PageLoader } from '../../components/ui'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from './AuthProvider'
 import { HOME } from '../../lib/paths'
@@ -12,7 +12,7 @@ export function WelcomePage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  if (loading) return <p className="p-6 text-neutral-500">Loading…</p>
+  if (loading) return <PageLoader full />
   if (!session) return <Navigate to="/login" replace />
 
   async function submit(e: FormEvent) {

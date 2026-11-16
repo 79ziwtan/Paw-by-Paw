@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { Card } from '../../components/ui'
+import { Card, WaffleLoader } from '../../components/ui'
 import { ActivityFeed } from '../activity/ActivityFeed'
 import { useAuth } from '../auth/AuthProvider'
 import { useSentItems } from './api'
@@ -49,7 +49,7 @@ function OwnerUpdates() {
         <h2 className="font-semibold">Sent</h2>
         <p className="text-sm text-neutral-500">Newest first. A profile link shows all of that owner's dogs and lasts 14 days.</p>
       </header>
-      {isPending && <p className="text-neutral-500">Loading…</p>}
+      {isPending && <WaffleLoader size={40} className="self-center py-6" />}
       {error && <p className="text-flag">{error.message}</p>}
       {sent?.length === 0 && <Card className="border-dashed text-center text-sm text-neutral-500">Nothing sent yet. Use Send on a session above.</Card>}
       <ul className="flex flex-col gap-2">

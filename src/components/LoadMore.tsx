@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Button } from './ui'
+import { Button, WaffleLoader } from './ui'
 
 /** Fetches the next page when scrolled into view; the button is a fallback. */
 export function LoadMore({ hasMore, loading, onLoad, label = 'Load more' }: {
@@ -27,7 +27,7 @@ export function LoadMore({ hasMore, loading, onLoad, label = 'Load more' }: {
   return (
     <div ref={ref}>
       <Button variant="secondary" className="w-full" onClick={() => latest.current()} disabled={loading}>
-        {loading ? 'Loading…' : label}
+        {loading ? <WaffleLoader size={24} label="" /> : label}
       </Button>
     </div>
   )

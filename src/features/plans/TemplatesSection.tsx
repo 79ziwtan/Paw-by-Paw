@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Button, Card, inputClass, actionClass } from '../../components/ui'
+import { actionClass, Button, Card, inputClass, WaffleLoader } from '../../components/ui'
 import { useCan } from '../auth/permissions'
 import { useDeleteTemplate, usePlanTemplates, useSaveTemplate, type TemplateStageInput } from './api'
 
@@ -20,7 +20,7 @@ export function TemplatesSection() {
           Reusable plans, e.g. Foundations 1 → Foundations 2 → Freedom 1. Applying one copies its stages into a dog's plan; changing a template later doesn't change dogs already using it.
         </p>
       </div>
-      {isPending && <p className="text-sm text-neutral-500">Loading…</p>}
+      {isPending && <WaffleLoader size={40} className="self-center py-6" />}
       {error && <p className="text-sm text-flag">{error.message}</p>}
       {del.error && <p className="text-sm text-flag">{del.error.message}</p>}
 
