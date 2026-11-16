@@ -4,6 +4,7 @@ import { Button } from '../../components/ui'
 import { supabase } from '../../lib/supabase'
 import type { StaffRole } from '../org/api'
 import { useAuth } from './AuthProvider'
+import { HOME } from '../../lib/paths'
 
 /** Signed in, belongs to an organization, still active, and (optionally) has one of `roles`. */
 export function RequireStaff({ children, roles }: { children: ReactNode; roles?: StaffRole[] }) {
@@ -20,6 +21,6 @@ export function RequireStaff({ children, roles }: { children: ReactNode; roles?:
       </main>
     )
   }
-  if (roles && !roles.includes(staff.role)) return <Navigate to="/" replace />
+  if (roles && !roles.includes(staff.role)) return <Navigate to={HOME} replace />
   return children
 }

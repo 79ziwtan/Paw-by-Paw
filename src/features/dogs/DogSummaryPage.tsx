@@ -7,6 +7,7 @@ import { usePlanStages } from '../sessions/api'
 import { formatMeasure, MEASURE_FIELDS, type Measures } from '../sessions/measures'
 import { useActiveFlags, useDogSummary } from './api'
 import { SafetyFlag } from './SafetyFlag'
+import { HOME } from '../../lib/paths'
 
 type LastSession = {
   id: string
@@ -40,7 +41,7 @@ export function DogSummaryPage() {
 
   return (
     <section className="flex flex-col gap-3 pb-36">
-      <BackLink fallback="/" fallbackLabel="Calendar" />
+      <BackLink fallback={HOME} fallbackLabel="Calendar" />
 
       {flags.map((f) => <SafetyFlag key={f.id} flag={f} readOnly={!!dog.archived_at} />)}
 

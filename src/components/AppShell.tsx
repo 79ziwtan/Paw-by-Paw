@@ -2,9 +2,10 @@ import { Link, NavLink, Outlet } from 'react-router'
 import { useAuth } from '../features/auth/AuthProvider'
 import { ORG_PERMISSIONS, useCan } from '../features/auth/permissions'
 import { supabase } from '../lib/supabase'
+import { HOME } from '../lib/paths'
 
 const tabs = [
-  { to: '/', label: 'Calendar', end: true },
+  { to: HOME, label: 'Calendar', end: true },
   { to: '/dogs', label: 'Dogs', end: false },
   { to: '/updates', label: 'Updates', end: false },
   { to: '/org', label: 'Org', end: false, org: true },
@@ -18,7 +19,7 @@ export function AppShell() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-3xl flex-col">
       <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-2 text-sm">
-        <Link to="/" className="font-semibold">Waffle</Link>
+        <Link to={HOME} className="font-semibold">Waffle</Link>
         <span className="flex items-center gap-3 text-neutral-500">
           <span className="hidden sm:inline">{staff?.display_name}</span>
           <button className="underline" onClick={() => supabase.auth.signOut()}>Sign out</button>

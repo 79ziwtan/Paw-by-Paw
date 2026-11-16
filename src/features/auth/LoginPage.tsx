@@ -3,6 +3,7 @@ import { Navigate } from 'react-router'
 import { Button, Field, inputClass } from '../../components/ui'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from './AuthProvider'
+import { HOME } from '../../lib/paths'
 
 export function LoginPage() {
   const { session } = useAuth()
@@ -11,7 +12,7 @@ export function LoginPage() {
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn')
   const [error, setError] = useState<string | null>(null)
 
-  if (session) return <Navigate to="/" replace />
+  if (session) return <Navigate to={HOME} replace />
 
   async function submit(e: FormEvent) {
     e.preventDefault()

@@ -10,6 +10,7 @@ import { ShareProfileButton } from '../updates/ShareProfileButton'
 import { useAddCustomTag, useLogSession, useOpenPackage, usePlanStages, type StageAction, type StageStatus } from './api'
 import { MEASURE_FIELDS, type Measures } from './measures'
 import { useDictation } from './useDictation'
+import { HOME } from '../../lib/paths'
 
 type Severity = 'low' | 'med' | 'high'
 const STATUS_LABEL: Record<StageStatus, string> = { not_started: 'Not started', in_progress: 'In progress', complete: 'Complete' }
@@ -128,7 +129,7 @@ export function LogSessionPage() {
           {dog?.name}'s session is saved{nextStep.trim() && <> · next step: <strong>{nextStep.trim()}</strong></>}.
         </p>
         <div className="flex w-full max-w-xs flex-col gap-2">
-          <Button onClick={() => navigate('/', { replace: true })}>Back to calendar</Button>
+          <Button onClick={() => navigate(HOME, { replace: true })}>Back to calendar</Button>
           {dog?.household_id && (
             <ShareProfileButton
               householdId={dog.household_id}

@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from 'react-router'
 import { Button, Field, inputClass } from '../../components/ui'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from './AuthProvider'
+import { HOME } from '../../lib/paths'
 
 /** Invited staff land here from their email link and choose a password. */
 export function WelcomePage() {
@@ -18,7 +19,7 @@ export function WelcomePage() {
     e.preventDefault()
     const { error } = await supabase.auth.updateUser({ password })
     if (error) return setError(error.message)
-    navigate('/', { replace: true })
+    navigate(HOME, { replace: true })
   }
 
   return (

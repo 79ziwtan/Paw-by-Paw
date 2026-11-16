@@ -14,7 +14,7 @@ cp .env.example .env.local       # paste the key into VITE_SUPABASE_ANON_KEY
 npm run dev                      # http://localhost:5173
 ```
 
-Production build: `npm run build` (output in `dist/`).
+Production build: `npm run build` (output in `dist/`). One Netlify site serves both: the landing page (`landing/index.html`) at `/` and the trainer app at `/app` (sign-in at `/login`; owner links at `/u/…` and `/o/…`). In `npm run dev`, `/` just opens the app; to view the landing page locally, open `landing/index.html` in a browser.
 
 To wipe the database back to the demo data: `npm run db:reset`.
 

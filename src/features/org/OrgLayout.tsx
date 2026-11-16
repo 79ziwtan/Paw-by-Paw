@@ -2,6 +2,7 @@ import { Navigate, NavLink, Outlet } from 'react-router'
 import { useAuth } from '../auth/AuthProvider'
 import { useCan, type Permission } from '../auth/permissions'
 import { useOrganization } from './api'
+import { HOME } from '../../lib/paths'
 
 // `perms`: an admin needs any one of these to see the section. Business is owner-only.
 const sections: { to: string; label: string; perms: Permission[] | 'owner' }[] = [
@@ -19,7 +20,7 @@ function useSections() {
 /** /org → the first section this person can open. */
 export function OrgIndex() {
   const first = useSections()[0]
-  return <Navigate to={first ? first.to : '/'} replace />
+  return <Navigate to={first ? first.to : HOME} replace />
 }
 
 /** Organization settings: everything for owners; admins see the sections their permissions cover. */

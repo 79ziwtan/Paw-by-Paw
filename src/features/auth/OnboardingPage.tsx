@@ -4,6 +4,7 @@ import { Navigate, useNavigate } from 'react-router'
 import { Button, Field, inputClass } from '../../components/ui'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from './AuthProvider'
+import { HOME } from '../../lib/paths'
 
 /** First sign-in: create the organization; the caller becomes its owner. */
 export function OnboardingPage() {
@@ -16,14 +17,14 @@ export function OnboardingPage() {
 
   if (loading) return null
   if (!session) return <Navigate to="/login" replace />
-  if (staff) return <Navigate to="/" replace />
+  if (staff) return <Navigate to={HOME} replace />
 
   async function submit(e: FormEvent) {
     e.preventDefault()
     const { error } = await supabase.rpc('create_organization', { org_name: orgName, owner_display_name: name })
     if (error) return setError(error.message)
     await qc.invalidateQueries({ queryKey: ['staff'] })
-    navigate('/')
+    navigate(HOME)
   }
 
   return (

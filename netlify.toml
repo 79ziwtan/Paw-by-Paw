@@ -1,4 +1,5 @@
 # Netlify reads this on every deploy.
+# One site serves both: the landing page at / and the trainer app everywhere else.
 [build]
   command = "npm run build"
   publish = "dist"
@@ -6,8 +7,10 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# Single-page app: send every path (e.g. /u/<token> owner links) to index.html.
+# `npm run build` writes the landing page to dist/index.html (served at /) and the app to
+# dist/app.html. Every other path (/app, /login, /dogs/..., owner links /u/<token> and
+# /o/<token>) falls through to the app. Real files like /index.html and /assets/* win first.
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/app.html"
   status = 200

@@ -21,8 +21,11 @@ import { TeamSection } from './features/org/TeamSection'
 import { UpdatesPage } from './features/updates/UpdatesPage'
 import { OwnerProfilePage } from './owner/OwnerProfilePage'
 import { OwnerUpdatePage } from './owner/OwnerUpdatePage'
+import { HOME } from './lib/paths'
 
 export const router = createBrowserRouter([
+  // In production `/` is the static landing page (landing/index.html); in dev it just opens the app.
+  { path: '/', element: <Navigate to={HOME} replace /> },
   { path: '/login', element: <LoginPage /> },
   { path: '/onboarding', element: <OnboardingPage /> },
   { path: '/welcome', element: <WelcomePage /> },
@@ -37,7 +40,7 @@ export const router = createBrowserRouter([
       </RequireStaff>
     ),
     children: [
-      { index: true, element: <CalendarPage /> },
+      { path: 'app', element: <CalendarPage /> },
       { path: 'dogs', element: <DogListPage /> },
       { path: 'dogs/:dogId', element: <DogProfilePage /> },
       { path: 'dogs/:dogId/summary', element: <DogSummaryPage /> },
