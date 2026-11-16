@@ -1,0 +1,4 @@
+# Landing page site. In Netlify, set Base directory to "landing".
+# Plain HTML: nothing to build.
+[build]
+  publish = "."
