@@ -59,6 +59,7 @@ export function DogSummaryPage() {
             <span className="truncate">{[appt.location, appt.trainer?.display_name].filter(Boolean).join(' · ')}</span>
             <span className="ml-auto shrink-0 text-xs text-neutral-400">{appt.duration_minutes} min</span>
             {appt.sessions && <Pill tone="green">Logged</Pill>}
+            <Link to={`/appointments/${appt.id}/edit`} className="shrink-0 text-xs font-semibold text-gold-300 hover:underline">Edit</Link>
           </div>
           {appt.notes && <p className="pl-6.5 text-xs text-neutral-300">{appt.notes}</p>}
         </div>

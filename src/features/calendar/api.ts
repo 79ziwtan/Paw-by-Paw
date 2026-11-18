@@ -53,6 +53,31 @@ export function useCreateAppointment() {
   })
 }
 
+export function useUpdateAppointment(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (a: AppointmentInput) => {
+      const { data, error } = await supabase.from('appointments').update(a).eq('id', id).select('id')
+      if (error) throw error
+      if (!data.length) throw new Error('Appointment not found.')
+    },
+    onSettled: () => Promise.all([['appointments'], ['sessions'], ['activity']].map((queryKey) => qc.invalidateQueries({ queryKey }))),
+  })
+}
+
+/** Cancels (deletes) an appointment. The database refuses if a session is logged for it. */
+export function useCancelAppointment() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data, error } = await supabase.from('appointments').delete().eq('id', id).select('id')
+      if (error) throw error
+      if (!data.length) throw new Error('Appointment not found.')
+    },
+    onSettled: () => Promise.all([['appointments'], ['activity']].map((queryKey) => qc.invalidateQueries({ queryKey }))),
+  })
+}
+
 export const timeLabel = (d: Date) => d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
 
 /** yyyy-mm-dd in local time (for <input type="date"> and the calendar's ?date=). */

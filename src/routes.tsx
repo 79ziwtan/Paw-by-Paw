@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router'
 import { AppShell } from './components/AppShell'
 import { CalendarPage } from './features/calendar/CalendarPage'
-import { NewAppointmentPage } from './features/calendar/NewAppointmentPage'
+import { EditAppointmentPage, NewAppointmentPage } from './features/calendar/NewAppointmentPage'
 import { DogSummaryPage } from './features/dogs/DogSummaryPage'
 import { LoginPage } from './features/auth/LoginPage'
 import { OnboardingPage } from './features/auth/OnboardingPage'
@@ -43,6 +43,7 @@ export const router = createBrowserRouter([
     children: [
       { path: 'app', element: <CalendarPage /> },
       { path: 'appointments/new', element: <NewAppointmentPage /> },
+      { path: 'appointments/:appointmentId/edit', element: <EditAppointmentPage /> },
       { path: 'dogs', element: <DogListPage /> },
       { path: 'dogs/:dogId', element: <DogProfilePage /> },
       { path: 'dogs/:dogId/summary', element: <DogSummaryPage /> },

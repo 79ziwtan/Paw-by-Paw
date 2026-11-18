@@ -149,7 +149,7 @@ export function useDeleteSession() {
       if (!data.length) throw new Error("You don't have permission to delete sessions.")
     },
     onSettled: () =>
-      Promise.all([['sessions'], ['homework'], ['unsent_sessions'], ['dog_summary'], ['open_package'], ['activity']].map((queryKey) => qc.invalidateQueries({ queryKey }))),
+      Promise.all([['sessions'], ['appointments'], ['homework'], ['unsent_sessions'], ['dog_summary'], ['open_package'], ['activity']].map((queryKey) => qc.invalidateQueries({ queryKey }))),
   })
 }
 
