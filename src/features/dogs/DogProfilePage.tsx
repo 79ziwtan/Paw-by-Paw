@@ -11,6 +11,7 @@ import { useLocationName } from '../households/api'
 import { useActiveFlags, useDogSummary } from './api'
 import { DogDetails } from './DogDetails'
 import { SafetyFlag } from './SafetyFlag'
+import { TrainerHandoff } from './TrainerHandoff'
 
 type Tab = 'sessions' | 'plan' | 'homework'
 
@@ -63,6 +64,12 @@ export function DogProfilePage() {
           <div className="font-medium">{dog.goal || '—'}</div>
         </div>
       </Card>
+
+      <TrainerHandoff
+        dogId={dogId}
+        last={(dog.last_sessions as { occurred_at: string; trainer?: string | null }[] | null)?.[0]}
+        canBook={!dog.archived_at}
+      />
 
       <DogDetails dogId={dogId} readOnly={!!dog.archived_at} />
 

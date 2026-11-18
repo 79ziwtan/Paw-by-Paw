@@ -10,6 +10,7 @@ import { usePlanStages } from '../sessions/api'
 import { MEASURE_FIELDS, tileValue, type Measures } from '../sessions/measures'
 import { useActiveFlags, useDogSummary } from './api'
 import { SafetyFlag } from './SafetyFlag'
+import { TrainerHandoff } from './TrainerHandoff'
 
 type LastSession = {
   id: string
@@ -17,6 +18,7 @@ type LastSession = {
   takes_food: boolean | null
   external_notes: string
   next_step?: string
+  trainer?: string | null
   behaviors: { tag: string; measures: Measures }[] | null
 }
 
@@ -97,6 +99,8 @@ export function DogSummaryPage() {
         <Plan dogId={dogId} current={dog.current_stage} goal={dog.goal} />
       </Card>
 
+      <TrainerHandoff dogId={dogId} last={last[0]} canBook={!dog.archived_at} />
+
       {nextStep && (
         <div className="rounded-2xl border border-gold-200 bg-gold-100 px-4 py-3">
           <Eyebrow className="text-gold-800">Pick up from last time</Eyebrow>
@@ -133,7 +137,10 @@ function LastSessionCard({ session: s }: { session: LastSession }) {
   return (
     <Card className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="font-bold">{ago(s.occurred_at)}</span>
+        <span>
+          <span className="font-bold">{ago(s.occurred_at)}</span>
+          <span className="text-sm text-neutral-500"> · by {s.trainer ?? 'former staff'}</span>
+        </span>
         {s.takes_food != null && <Pill tone={s.takes_food ? 'neutral' : 'orange'}>{s.takes_food ? 'Took food' : 'No food'}</Pill>}
       </div>
       {s.behaviors?.map((b, i) => {

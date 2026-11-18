@@ -41,6 +41,26 @@ export function useAppointment(id: string | null) {
   })
 }
 
+/** The dog's next appointment that hasn't started yet (with its trainer), or null if none is booked. */
+export function useNextAppointment(dogId: string) {
+  return useQuery({
+    queryKey: ['appointments', 'next', dogId],
+    enabled: !!dogId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('id, starts_at, duration_minutes, location, trainer:staff!appointments_trainer_id_fkey ( display_name )')
+        .eq('dog_id', dogId)
+        .gte('starts_at', new Date().toISOString())
+        .order('starts_at')
+        .limit(1)
+        .maybeSingle()
+      if (error) throw error
+      return data
+    },
+  })
+}
+
 export type AppointmentInput = Pick<Tables<'appointments'>, 'dog_id' | 'trainer_id' | 'starts_at' | 'duration_minutes' | 'location' | 'notes'>
 
 export function useCreateAppointment() {
