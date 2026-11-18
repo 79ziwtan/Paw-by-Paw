@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 import { BackLink } from '../../components/BackLink'
-import { Card, ClockIcon, DogAvatar, Eyebrow, MeasureTile, PageLoader, PaidStatus, PhoneIcon, Pill, primaryLinkClass, secondaryLinkClass, StageBars } from '../../components/ui'
+import { Card, ClockIcon, Eyebrow, MeasureTile, PageLoader, PaidStatus, PhoneIcon, Pill, primaryLinkClass, secondaryLinkClass, StageBars } from '../../components/ui'
 import { formatAge, formatPhone } from '../../lib/format'
 import { HOME } from '../../lib/paths'
 import type { Views } from '../../lib/supabase'
@@ -11,6 +11,7 @@ import { MEASURE_FIELDS, tileValue, type Measures } from '../sessions/measures'
 import { useActiveFlags, useDogSummary } from './api'
 import { SafetyFlag } from './SafetyFlag'
 import { TrainerHandoff } from './TrainerHandoff'
+import { DogPhoto } from './photos'
 
 type LastSession = {
   id: string
@@ -69,7 +70,7 @@ export function DogSummaryPage() {
 
       <Card className="flex flex-col gap-4 rounded-3xl p-5">
         <div className="flex items-start gap-3.5">
-          <DogAvatar name={dog.name} size="lg" />
+          <DogPhoto name={dog.name} photoPath={dog.photo_path} size="lg" />
           <div className="min-w-0 flex-1">
             <h1 className="text-3xl leading-tight font-bold">{dog.name}</h1>
             <p className="text-sm text-neutral-500">{[dog.breed, formatAge(dog.birth_date)].filter(Boolean).join(' · ')}</p>

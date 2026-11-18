@@ -1,4 +1,4 @@
-import { useId, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { useId, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import type { Database } from '../lib/database.types'
 
 /*
@@ -59,12 +59,54 @@ export function Eyebrow({ children, className = '' }: { children: ReactNode; cla
   return <div className={`text-[11px] font-bold tracking-[0.1em] text-neutral-500 uppercase ${className}`}>{children}</div>
 }
 
-/** Rounded gold tile with the dog's initial (stands in for a photo). */
-export function DogAvatar({ name, size = 'md' }: { name: string | null; size?: 'sm' | 'md' | 'lg' }) {
-  const s = size === 'lg' ? 'size-14 rounded-2xl text-2xl' : size === 'sm' ? 'size-9 rounded-xl text-base' : 'size-11 rounded-xl text-xl'
+/**
+ * Cartoon dog in Waffle colours (honey, caramel, ink): the stand-in when a dog has no photo.
+ * Deliberately drawn, not photographic, so it reads as "no photo yet".
+ */
+export function DogPlaceholder({ className = '' }: { className?: string }) {
   return (
-    <span aria-hidden className={`flex shrink-0 items-center justify-center bg-gold-100 font-display font-bold text-gold-800 ${s}`}>
-      {(name ?? '?').slice(0, 1).toUpperCase()}
+    <svg viewBox="0 0 64 64" className={className} aria-hidden>
+      <circle cx="32" cy="32" r="32" fill="var(--color-gold-100)" />
+      {/* floppy ears */}
+      <path d="M17.5 18.5c-6 2-8.5 12-7.5 19 .6 4.6 5.8 5.6 7.8 1.6l4.6-11.5c1.9-4.8-.3-10.8-4.9-9.1Z" fill="var(--color-gold-700)" />
+      <path d="M46.5 18.5c6 2 8.5 12 7.5 19-.6 4.6-5.8 5.6-7.8 1.6l-4.6-11.5c-1.9-4.8.3-10.8 4.9-9.1Z" fill="var(--color-gold-700)" />
+      {/* head + eye patch + muzzle */}
+      <ellipse cx="32" cy="35" rx="15.5" ry="16.5" fill="var(--color-gold-300)" />
+      <ellipse cx="25" cy="30.5" rx="5.2" ry="5.6" fill="var(--color-gold-500)" />
+      <ellipse cx="32" cy="42.5" rx="9.5" ry="7.5" fill="var(--color-gold-50)" />
+      {/* eyes with a glint */}
+      <circle cx="25.5" cy="31" r="2.4" fill="var(--color-neutral-900)" />
+      <circle cx="26.4" cy="30.1" r=".85" fill="#fff" />
+      <circle cx="38.5" cy="31" r="2.4" fill="var(--color-neutral-900)" />
+      <circle cx="39.4" cy="30.1" r=".85" fill="#fff" />
+      {/* nose, smile, tongue, cheeks */}
+      <path d="M28.6 38.4c0-1.4 1.6-2.1 3.4-2.1s3.4.7 3.4 2.1c0 1.5-1.9 2.8-3.4 2.8s-3.4-1.3-3.4-2.8Z" fill="var(--color-neutral-900)" />
+      <path d="M32 41.2v1.9M32 43.1c-1 1.5-3.1 1.7-4.3.6M32 43.1c1 1.5 3.1 1.7 4.3.6" stroke="var(--color-neutral-900)" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+      <path d="M30.4 44.4h3.2v1.2c0 1-.7 1.7-1.6 1.7s-1.6-.7-1.6-1.7Z" fill="#ef8d86" />
+      <circle cx="21.5" cy="39.5" r="2.1" fill="#f2a093" opacity=".55" />
+      <circle cx="42.5" cy="39.5" r="2.1" fill="#f2a093" opacity=".55" />
+    </svg>
+  )
+}
+
+const AVATAR_SIZE = { xs: 'size-5', sm: 'size-9', md: 'size-11', lg: 'size-14', xl: 'size-24' } as const
+
+/** Round dog avatar: the photo when there is one (`src` = a signed URL), otherwise the cartoon dog. */
+export function DogAvatar({ name, src, size = 'md', className = '' }: {
+  name: string | null
+  src?: string | null
+  size?: keyof typeof AVATAR_SIZE
+  className?: string
+}) {
+  const [failed, setFailed] = useState<string | null>(null)
+  const showPhoto = !!src && failed !== src
+  return (
+    <span className={`relative flex shrink-0 overflow-hidden rounded-full bg-gold-100 ring-1 ring-black/5 ${AVATAR_SIZE[size]} ${className}`}>
+      {showPhoto ? (
+        <img src={src} alt={name ? `Photo of ${name}` : ''} className="size-full object-cover" loading="lazy" onError={() => setFailed(src)} />
+      ) : (
+        <DogPlaceholder className="size-full" />
+      )}
     </span>
   )
 }

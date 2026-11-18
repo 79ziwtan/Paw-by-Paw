@@ -1,10 +1,11 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { BackLink } from '../../components/BackLink'
-import { Button, Card, CheckIcon, chipClass, chipOff, chipOn, DogAvatar, FlagIcon, inputClass, Logo, selectClass, ShareIcon } from '../../components/ui'
+import { Button, Card, CheckIcon, chipClass, chipOff, chipOn, FlagIcon, inputClass, Logo, selectClass, ShareIcon } from '../../components/ui'
 import { useAuth } from '../auth/AuthProvider'
 import { timeLabel, useAppointment } from '../calendar/api'
 import { useDogSummary } from '../dogs/api'
+import { DogPhoto } from '../dogs/photos'
 import { cleanTasks, HomeworkInput } from '../homework/HomeworkInput'
 import { useBehaviorTags } from '../org/api'
 import { ShareProfileButton } from '../updates/ShareProfileButton'
@@ -165,7 +166,7 @@ export function LogSessionPage() {
       <header className="flex flex-col gap-3">
         <BackLink fallback={`/dogs/${dogId}/summary`} fallbackLabel={dog?.name ?? 'Dog'} className="text-sm font-semibold text-neutral-500" />
         <div className="flex items-center gap-3">
-          <DogAvatar name={dog?.name ?? null} />
+          <DogPhoto name={dog?.name ?? null} photoPath={dog?.photo_path} />
           <div className="min-w-0">
           <h1 className="truncate text-3xl font-bold">Log · {dog?.name ?? '…'}</h1>
           <p className="text-sm text-neutral-500">

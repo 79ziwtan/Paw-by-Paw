@@ -706,7 +706,7 @@ isOneToOne: false
           Views: {
             "dog_summary": {
                   Row: {
-                    "active_flags": number | null,"archived_at": string | null,"birth_date": string | null,"breed": string | null,"current_stage": string | null,"goal": string,"household_id": string,"id": string,"last_sessions": Json | null,"location_id": string,"max_flag_severity": Database["public"]['Enums']["flag_severity"] | null,"name": string,"owner_name": string,"payment_status": Database["public"]['Enums']["payment_status"],"phone": string,"sessions_remaining": number | null
+                    "active_flags": number | null,"archived_at": string | null,"birth_date": string | null,"breed": string | null,"current_stage": string | null,"goal": string,"household_id": string,"id": string,"last_sessions": Json | null,"location_id": string,"max_flag_severity": Database["public"]['Enums']["flag_severity"] | null,"name": string,"owner_name": string,"payment_status": Database["public"]['Enums']["payment_status"],"phone": string,"photo_path": string | null,"sessions_remaining": number | null
                   }
                   ComputedFields: never
                   Relationships: [
@@ -770,6 +770,9 @@ isOneToOne: false
                            },
 "create_owner_link":
 { Args: { "p_dog_id"?: string,"p_household_id": string }; Returns: string
+                           },
+"dog_photo_dog_id":
+{ Args: { "object_name": string }; Returns: string
                            },
 "get_owner_profile":
 { Args: { "token": string }; Returns: Json

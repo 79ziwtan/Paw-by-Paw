@@ -9,6 +9,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router'
 import { ChevronRight, Eyebrow, FlagIcon, primaryLinkClass } from '../../components/ui'
 import { useAuth } from '../auth/AuthProvider'
 import { useDogSummaries } from '../dogs/api'
+import { DogPhoto } from '../dogs/photos'
 import { TodayActivity } from '../today/TodayPage'
 import { fromDateParam, toDateParam, useAppointments } from './api'
 
@@ -26,7 +27,7 @@ const LEGEND: { status: Status; label: string }[] = [
   { status: 'logged', label: 'Logged' },
 ]
 
-type EventProps = { trainer: string; status: Status; flagged: boolean; location: string; minutes: number }
+type EventProps = { trainer: string; status: Status; flagged: boolean; location: string; minutes: number; photoPath: string | null }
 
 const hhmm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 
@@ -102,6 +103,7 @@ export function CalendarPage() {
         flagged: !!dog.active_flags,
         location: r.location,
         minutes: r.duration_minutes,
+        photoPath: dog.photo_path,
       }
       return [{
         id: r.id,
@@ -288,6 +290,7 @@ function EventContent({ arg, narrow }: { arg: EventContentArg; narrow: boolean }
       <span className="flex w-full min-w-0 items-center gap-1.5" title={label} aria-label={label}>
         <span className={`wc-dot wc-${p.status}`} />
         <span className="wc-extra shrink-0 tabular-nums text-neutral-600">{arg.timeText}</span>
+        <DogPhoto name={arg.event.title} photoPath={p.photoPath} size="xs" className="wc-extra size-4!" />
         <span className="truncate font-semibold text-neutral-900">{arg.event.title}</span>
         {flag && <span className="wc-extra flex">{flag}</span>}
       </span>
@@ -300,6 +303,7 @@ function EventContent({ arg, narrow }: { arg: EventContentArg; narrow: boolean }
   return (
     <span className="flex h-full min-w-0 flex-col overflow-hidden leading-tight" title={label} aria-label={label}>
       <span className="flex min-w-0 items-center gap-1">
+        {!compact && <DogPhoto name={arg.event.title} photoPath={p.photoPath} size="xs" />}
         <span className="truncate font-bold">{arg.event.title}</span>
         {/* Phone week columns are ~45px: the name wins; the flag shows in Day view and on the card. */}
         {!compact && flag}

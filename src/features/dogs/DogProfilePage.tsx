@@ -12,6 +12,7 @@ import { useActiveFlags, useDogSummary } from './api'
 import { DogDetails } from './DogDetails'
 import { SafetyFlag } from './SafetyFlag'
 import { TrainerHandoff } from './TrainerHandoff'
+import { DogPhoto, useRemoveDogPhoto, useUploadDogPhoto } from './photos'
 
 type Tab = 'sessions' | 'plan' | 'homework'
 
@@ -31,12 +32,20 @@ export function DogProfilePage() {
     <section className="flex flex-col gap-4 pb-20">
       <header>
         <BackLink fallback="/dogs" fallbackLabel="Dogs" />
-        <h1 className="text-2xl font-semibold">{dog.name}</h1>
-        <p className="text-sm text-neutral-500">
-          {[dog.breed, formatAge(dog.birth_date)].filter(Boolean).join(' · ')} · Owner:{' '}
-          <Link to={`/households/${dog.household_id}`} className="underline">{dog.owner_name}</Link>
-        </p>
-        {locationName(dog.location_id) && <p className="text-sm text-neutral-500">Location: {locationName(dog.location_id)}</p>}
+        <div className="mt-1 flex items-start gap-4">
+          <div className="flex shrink-0 flex-col items-center gap-1.5">
+            <DogPhoto name={dog.name} photoPath={dog.photo_path} size="xl" />
+            {!dog.archived_at && <PhotoControls dogId={dogId} photoPath={dog.photo_path} />}
+          </div>
+          <div className="min-w-0 pt-2">
+            <h1 className="text-2xl font-semibold">{dog.name}</h1>
+            <p className="text-sm text-neutral-500">
+              {[dog.breed, formatAge(dog.birth_date)].filter(Boolean).join(' · ')} · Owner:{' '}
+              <Link to={`/households/${dog.household_id}`} className="underline">{dog.owner_name}</Link>
+            </p>
+            {locationName(dog.location_id) && <p className="text-sm text-neutral-500">Location: {locationName(dog.location_id)}</p>}
+          </div>
+        </div>
       </header>
 
       {dog.archived_at && (
@@ -173,6 +182,45 @@ function PlanSummary({ dogId }: { dogId: string }) {
       <Link to="plan" className="rounded-md border border-neutral-300 bg-white py-3 text-center font-medium">
         {stages?.length ? 'Edit plan' : 'Build plan'}
       </Link>
+    </div>
+  )
+}
+
+/** "Add photo" / "Change · Remove" under the profile avatar. Phones offer the camera or the library. */
+function PhotoControls({ dogId, photoPath }: { dogId: string; photoPath: string | null }) {
+  const upload = useUploadDogPhoto(dogId, photoPath)
+  const remove = useRemoveDogPhoto(dogId, photoPath)
+  const busy = upload.isPending || remove.isPending
+  const err = upload.error ?? remove.error
+  return (
+    <div className="flex flex-col items-center gap-1 text-xs">
+      <div className="flex items-center gap-2">
+        <label className={`cursor-pointer font-semibold text-gold-700 hover:underline ${busy ? 'pointer-events-none opacity-50' : ''}`}>
+          {upload.isPending ? 'Uploading…' : photoPath ? 'Change' : 'Add photo'}
+          <input
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            disabled={busy}
+            onChange={(e) => {
+              const f = e.target.files?.[0]
+              e.target.value = '' // allow picking the same file again
+              if (f) upload.mutate(f)
+            }}
+          />
+        </label>
+        {photoPath && (
+          <button
+            type="button"
+            className="font-semibold text-neutral-500 hover:underline disabled:opacity-50"
+            disabled={busy}
+            onClick={() => confirm('Remove this photo?') && remove.mutate()}
+          >
+            {remove.isPending ? 'Removing…' : 'Remove'}
+          </button>
+        )}
+      </div>
+      {err && <p className="max-w-28 text-center text-flag">{err.message}</p>}
     </div>
   )
 }

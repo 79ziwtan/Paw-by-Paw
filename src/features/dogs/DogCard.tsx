@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
-import { ChevronRight, DogAvatar, FlagBadge, PaymentDot, Pill } from '../../components/ui'
+import { ChevronRight, FlagBadge, PaymentDot, Pill } from '../../components/ui'
+import { DogPhoto } from './photos'
 import type { Views } from '../../lib/supabase'
 import { useLocationName } from '../households/api'
 
@@ -10,7 +11,7 @@ export function DogCard({ dog }: { dog: Views<'dog_summary'> }) {
       to={`/dogs/${dog.id}`}
       className="flex items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-3.5 transition hover:-translate-y-px hover:shadow-[0_12px_30px_-18px_rgba(100,61,20,.45)]"
     >
-      <DogAvatar name={dog.name} />
+      <DogPhoto name={dog.name} photoPath={dog.photo_path} />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-bold">{dog.name}</span>
