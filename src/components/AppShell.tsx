@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet, ScrollRestoration } from 'react-router'
+import { Link, NavLink, Outlet, ScrollRestoration, useMatch } from 'react-router'
 import { useAuth } from '../features/auth/AuthProvider'
 import { ORG_PERMISSIONS, useCan } from '../features/auth/permissions'
 import { HOME } from '../lib/paths'
@@ -16,9 +16,11 @@ export function AppShell() {
   const { staff } = useAuth()
   const can = useCan()
   const visible = tabs.filter((t) => !t.org || ORG_PERMISSIONS.some(can))
+  // The calendar uses (nearly) the full screen; every other page keeps the narrow reading column.
+  const wide = useMatch(HOME) !== null
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-3xl flex-col">
+    <div className={`mx-auto flex min-h-dvh w-full flex-col ${wide ? 'max-w-[1800px] sm:px-4' : 'max-w-3xl'}`}>
       <header className="sticky top-0 z-20 border-b border-neutral-200 bg-neutral-50/90 backdrop-blur">
         <div className="flex h-15 items-center justify-between px-4">
           <Link to={HOME} className="flex items-center gap-2.5">

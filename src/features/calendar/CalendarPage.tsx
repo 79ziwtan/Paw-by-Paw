@@ -3,10 +3,10 @@ import interactionPlugin from '@fullcalendar/interaction'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import FullCalendar from '@fullcalendar/react'
-import type { DatesSetArg, EventClickArg, EventContentArg, EventInput } from '@fullcalendar/core'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import type { DatesSetArg, DayHeaderContentArg, EventClickArg, EventContentArg, EventInput } from '@fullcalendar/core'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
-import { ChevronRight, Eyebrow, primaryLinkClass } from '../../components/ui'
+import { ChevronRight, Eyebrow, FlagIcon, primaryLinkClass } from '../../components/ui'
 import { useAuth } from '../auth/AuthProvider'
 import { useDogSummaries } from '../dogs/api'
 import { TodayActivity } from '../today/TodayPage'
@@ -17,7 +17,7 @@ type Who = 'mine' | 'all'
 const FC_VIEW: Record<CalView, string> = { month: 'dayGridMonth', week: 'timeGridWeek', day: 'timeGridDay' }
 const FROM_FC = Object.fromEntries(Object.entries(FC_VIEW).map(([k, v]) => [v, k])) as Record<string, CalView>
 
-/** Event status → look (see .waffle-cal in index.css). Red stays reserved for safety flags. */
+/** Event status → colour (dot in Month, block in Week/Day; see .waffle-cal in index.css). Red is reserved for safety flags. */
 type Status = 'logged' | 'needs-log' | 'now' | 'upcoming'
 const LEGEND: { status: Status; label: string }[] = [
   { status: 'upcoming', label: 'Booked' },
@@ -26,9 +26,17 @@ const LEGEND: { status: Status; label: string }[] = [
   { status: 'logged', label: 'Logged' },
 ]
 
-type EventProps = { trainer: string; status: Status; flagged: boolean; location: string }
+type EventProps = { trainer: string; status: Status; flagged: boolean; location: string; minutes: number }
 
 const hhmm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+
+/** "GMT-05" (or "GMT+05:30"): shown in the corner above the hour labels, like Google Calendar. */
+const TZ_LABEL = (() => {
+  const off = -new Date().getTimezoneOffset()
+  const a = Math.abs(off)
+  const m = a % 60
+  return `GMT${off >= 0 ? '+' : '-'}${String(Math.floor(a / 60)).padStart(2, '0')}${m ? `:${String(m).padStart(2, '0')}` : ''}`
+})()
 
 /** Phone-width check, kept live so rotating or resizing switches the compact layout. */
 function useNarrow() {
@@ -88,7 +96,13 @@ export function CalendarPage() {
       const start = new Date(r.starts_at)
       const end = new Date(start.getTime() + r.duration_minutes * 60_000)
       const status: Status = r.sessions ? 'logged' : end.getTime() < now ? 'needs-log' : start.getTime() <= now ? 'now' : 'upcoming'
-      const props: EventProps = { trainer: r.trainer?.display_name ?? 'Unassigned', status, flagged: !!dog.active_flags, location: r.location }
+      const props: EventProps = {
+        trainer: r.trainer?.display_name ?? 'Unassigned',
+        status,
+        flagged: !!dog.active_flags,
+        location: r.location,
+        minutes: r.duration_minutes,
+      }
       return [{
         id: r.id,
         title: dog.name ?? 'Dog',
@@ -102,9 +116,6 @@ export function CalendarPage() {
   }, [rows, dogs, who, staff?.id, now])
 
   const api = () => calRef.current?.getApi()
-  const changeView = (v: CalView) => {
-    api()?.changeView(FC_VIEW[v])
-  }
 
   function onDatesSet(arg: DatesSetArg) {
     const view = FROM_FC[arg.view.type] ?? 'week'
@@ -124,6 +135,7 @@ export function CalendarPage() {
     navigate(`/appointments/new?${q}`)
   }
 
+  const view = shown?.view ?? initial.view
   const today = toDateParam(new Date(now))
   const isTodayShown = shown ? now >= shown.start.getTime() && now < shown.end.getTime() : true
 
@@ -134,52 +146,56 @@ export function CalendarPage() {
           <Eyebrow className="text-gold-600">Hi {staff?.display_name.split(' ')[0] ?? ''}</Eyebrow>
           <h1 className="mt-1 text-3xl font-bold sm:text-4xl">{shown?.title ?? 'Calendar'}</h1>
         </div>
-        <button
-          type="button"
-          disabled
-          title="Google Calendar sync is coming soon"
-          className="inline-flex cursor-not-allowed items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-neutral-500 ring-1 ring-neutral-200"
-        >
-          <span className="size-2 rounded-full bg-neutral-300" /> Google Calendar
-          <span className="rounded-full bg-gold-100 px-1.5 py-px text-[10px] font-bold tracking-wide text-gold-800 uppercase">Coming soon</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            disabled
+            title="Google Calendar sync is coming soon"
+            className="inline-flex min-h-10 cursor-not-allowed items-center gap-2 rounded-full bg-white px-3 text-xs font-semibold text-neutral-500 ring-1 ring-neutral-200"
+          >
+            <span className="size-2 rounded-full bg-neutral-300" /> Google Calendar
+            <span className="rounded-full bg-gold-100 px-1.5 py-px text-[10px] font-bold tracking-wide text-gold-800 uppercase">Coming soon</span>
+          </button>
+          <Link to={`/appointments/new?date=${view === 'day' && shown ? toDateParam(shown.start) : today}`} className={`${primaryLinkClass} min-h-10 text-sm`}>
+            + New appointment
+          </Link>
+        </div>
       </header>
 
-      {/* Toolbar: navigation + view on one row, then whose + book. Wraps on a phone. */}
+      {/* One toolbar row on desktop: navigation left, filters + view right. Wraps on a phone. */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-1">
-          <button aria-label="Previous" className="flex size-10 items-center justify-center rounded-full text-neutral-600 hover:bg-white" onClick={() => api()?.prev()}>
-            <ChevronRight className="size-5 rotate-180" />
-          </button>
           <button
             className="min-h-9 rounded-full border border-neutral-200 bg-white px-3.5 text-sm font-semibold text-neutral-700 hover:bg-neutral-100 disabled:opacity-40"
-            disabled={isTodayShown && shown?.view === 'day'}
+            disabled={isTodayShown && view === 'day'}
             onClick={() => api()?.today()}
           >
             Today
+          </button>
+          <button aria-label="Previous" className="flex size-10 items-center justify-center rounded-full text-neutral-600 hover:bg-white" onClick={() => api()?.prev()}>
+            <ChevronRight className="size-5 rotate-180" />
           </button>
           <button aria-label="Next" className="flex size-10 items-center justify-center rounded-full text-neutral-600 hover:bg-white" onClick={() => api()?.next()}>
             <ChevronRight className="size-5" />
           </button>
         </div>
-        <Segmented
-          label="Calendar view"
-          value={shown?.view ?? initial.view}
-          options={[['month', 'Month'], ['week', 'Week'], ['day', 'Day']]}
-          onChange={changeView}
-        />
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <Segmented label="Whose appointments" value={who} options={[['mine', 'Mine'], ['all', 'All']]} onChange={(v) => setUrl({ view: v })} />
-        <Link to={`/appointments/new?date=${shown?.view === 'day' ? toDateParam(shown.start) : today}`} className={`${primaryLinkClass} min-h-10 text-sm`}>
-          + New appointment
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Segmented label="Whose appointments" value={who} options={[['mine', 'Mine'], ['all', 'All']]} onChange={(v) => setUrl({ view: v })} />
+          <Segmented
+            label="Calendar view"
+            value={view}
+            options={[['month', 'Month'], ['week', 'Week'], ['day', 'Day']]}
+            onChange={(v) => api()?.changeView(FC_VIEW[v])}
+          />
+        </div>
       </div>
 
       {error && <p className="text-sm text-flag">{error.message}</p>}
 
-      <div className={`waffle-cal relative rounded-2xl border border-neutral-200 bg-white ${narrow ? 'is-narrow' : ''}`}>
+      <div
+        className={`waffle-cal relative rounded-2xl border border-neutral-200 bg-white ${narrow ? 'is-narrow' : ''}`}
+        style={{ '--wc-tz': JSON.stringify(TZ_LABEL) } as CSSProperties}
+      >
         {isFetching && <div className="absolute inset-x-0 top-0 z-10 h-0.5 animate-pulse rounded-t-2xl bg-gold-400" aria-hidden />}
         <FullCalendar
           ref={calRef}
@@ -190,7 +206,8 @@ export function CalendarPage() {
           firstDay={1}
           height="auto"
           events={events}
-          eventContent={(arg) => <EventChip arg={arg} narrow={narrow} />}
+          eventContent={(arg) => <EventContent arg={arg} narrow={narrow} />}
+          dayHeaderContent={(arg) => <DayHeader arg={arg} narrow={narrow} />}
           eventClick={onEventClick}
           dateClick={onDateClick}
           datesSet={onDatesSet}
@@ -202,27 +219,31 @@ export function CalendarPage() {
           slotMaxTime="21:00:00"
           scrollTime="08:00:00"
           slotDuration="00:30:00"
+          slotEventOverlap={false}
           expandRows
-          dayMaxEvents={narrow ? 2 : 3}
-          eventDisplay="block"
           displayEventEnd={false}
           eventTimeFormat={{ hour: 'numeric', minute: '2-digit', meridiem: 'short' }}
           slotLabelFormat={{ hour: 'numeric', meridiem: 'short' }}
-          dayHeaderFormat={shown?.view === 'month' ? { weekday: narrow ? 'narrow' : 'short' } : { weekday: narrow ? 'narrow' : 'short', day: 'numeric' }}
           views={{
-            timeGridDay: { dayHeaderFormat: { weekday: 'long', month: 'short', day: 'numeric' } },
-            dayGridMonth: { eventTimeFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: true, meridiem: 'narrow' } },
+            dayGridMonth: {
+              dayHeaderFormat: { weekday: narrow ? 'narrow' : 'short' },
+              eventDisplay: 'list-item',
+              dayMaxEvents: narrow ? 2 : 4,
+              moreLinkClick: 'popover',
+              eventTimeFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: true, meridiem: 'narrow' },
+            },
+            timeGrid: { eventDisplay: 'block', eventMinHeight: 24 },
           }}
         />
       </div>
 
-      <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-neutral-600" aria-label="Legend">
+      <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-neutral-600" aria-label="Legend">
         {LEGEND.map((l) => (
           <li key={l.status} className="flex items-center gap-1.5">
-            <span className={`wc-swatch wc-${l.status}`} /> {l.label}
+            <span className={`wc-dot wc-${l.status}`} /> {l.label}
           </li>
         ))}
-        <li className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-flag" /> Safety flag</li>
+        <li className="flex items-center gap-1.5"><FlagIcon className="size-3.5 text-flag" /> Safety flag</li>
         <li className="text-neutral-500">Tap an empty slot to book.</li>
       </ul>
 
@@ -241,42 +262,57 @@ export function CalendarPage() {
   )
 }
 
-/** One appointment on the calendar: time, dog (with a red dot if flagged) and trainer. */
-function EventChip({ arg, narrow }: { arg: EventContentArg; narrow: boolean }) {
-  const p = arg.event.extendedProps as EventProps
-  const month = arg.view.type === 'dayGridMonth'
-  const tiny = narrow && arg.view.type === 'timeGridWeek'
-  const label = `${arg.timeText} ${arg.event.title} with ${p.trainer}${p.location ? `, ${p.location}` : ''}${p.flagged ? ', safety flag' : ''}${p.status === 'logged' ? ', logged' : p.status === 'needs-log' ? ', needs log' : ''}`
-  const dog = (
-    <span className="flex min-w-0 items-center gap-1 font-bold">
-      {p.flagged && <span className="size-1.5 shrink-0 rounded-full bg-flag" />}
-      <span className="truncate">{arg.event.title}</span>
-      {p.status === 'logged' && <span aria-hidden className="shrink-0">✓</span>}
+/** Column header: "MON" in Month view; "MON" over a big date number (today circled) in Week/Day, like Google. */
+function DayHeader({ arg, narrow }: { arg: DayHeaderContentArg; narrow: boolean }) {
+  // Month headers are weekday columns, not dates: FullCalendar's arg.date there is a UTC marker that
+  // reads as the previous day in local time, so use its pre-formatted text (dayHeaderFormat) instead.
+  if (arg.view.type === 'dayGridMonth') return <span className="wc-dow">{arg.text}</span>
+  const dow = arg.date.toLocaleDateString(undefined, { weekday: narrow && arg.view.type !== 'timeGridDay' ? 'narrow' : 'short' })
+  return (
+    <span className="flex flex-col items-center gap-0.5">
+      <span className={`wc-dow ${arg.isToday ? 'text-gold-700' : ''}`}>{dow}</span>
+      <span className={`wc-daynum ${arg.isToday ? 'is-today' : ''}`}>{arg.date.getDate()}</span>
     </span>
   )
+}
 
-  if (month) {
-    // Dog name wins the space; the trainer truncates first.
+function EventContent({ arg, narrow }: { arg: EventContentArg; narrow: boolean }) {
+  const p = arg.event.extendedProps as EventProps
+  const label = `${arg.timeText} ${arg.event.title} with ${p.trainer}${p.location ? `, ${p.location}` : ''}${p.flagged ? ', safety flag' : ''}${p.status === 'logged' ? ', logged' : p.status === 'needs-log' ? ', needs log' : ''}`
+  const flag = p.flagged && <FlagIcon className="size-3 shrink-0 text-flag" aria-hidden />
+  const done = p.status === 'logged' && <span aria-hidden className="shrink-0 text-paid">✓</span>
+
+  // Month: one slim line, dot · time · dog. No box, no trainer (Google-style).
+  if (arg.view.type === 'dayGridMonth') {
     return (
-      <span className="wc-chip flex min-w-0 items-center gap-1" title={label} aria-label={label}>
-        {!narrow && <span className="shrink-0 tabular-nums opacity-70">{arg.timeText}</span>}
-        <span className="flex max-w-full shrink-0 items-center gap-1 font-bold">
-          {p.flagged && <span className="size-1.5 shrink-0 rounded-full bg-flag" />}
-          <span className="truncate">{arg.event.title}</span>
-          {p.status === 'logged' && <span aria-hidden className="shrink-0">✓</span>}
-        </span>
-        {!narrow && <span className="min-w-0 truncate opacity-70">· {p.trainer}</span>}
+      <span className="flex w-full min-w-0 items-center gap-1.5" title={label} aria-label={label}>
+        <span className={`wc-dot wc-${p.status}`} />
+        <span className="wc-extra shrink-0 tabular-nums text-neutral-600">{arg.timeText}</span>
+        <span className="truncate font-semibold text-neutral-900">{arg.event.title}</span>
+        {flag && <span className="wc-extra flex">{flag}</span>}
+        {done && <span className="wc-extra flex">{done}</span>}
       </span>
     )
   }
+
+  // Week/Day: dog (bold) first, trainer under it, time last only if the block is tall enough (45+ min).
+  const compact = narrow && arg.view.type === 'timeGridWeek'
+  const showTime = !compact && p.minutes >= 45
   return (
-    <span className={`wc-chip flex h-full min-w-0 flex-col overflow-hidden leading-tight ${tiny ? 'text-[10px]' : ''}`} title={label} aria-label={label}>
-      {!tiny && <span className="tabular-nums opacity-70">{arg.timeText}</span>}
-      {dog}
-      <span className="truncate opacity-80">
-        {p.trainer}
-        {arg.view.type === 'timeGridDay' && p.location && <span className="opacity-75"> · {p.location}</span>}
+    <span className="flex h-full min-w-0 flex-col overflow-hidden leading-tight" title={label} aria-label={label}>
+      <span className="flex min-w-0 items-center gap-1">
+        <span className="truncate font-bold">{arg.event.title}</span>
+        {/* Phone week columns are ~45px: the name wins; the flag shows in Day view and on the card. */}
+        {!compact && flag}
+        {!compact && done}
       </span>
+      <span className="wc-sub truncate">{p.trainer}</span>
+      {showTime && (
+        <span className="wc-sub truncate tabular-nums">
+          {arg.timeText}
+          {arg.view.type === 'timeGridDay' && p.location && ` · ${p.location}`}
+        </span>
+      )}
     </span>
   )
 }
