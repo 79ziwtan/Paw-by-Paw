@@ -268,8 +268,9 @@ function DayHeader({ arg, narrow }: { arg: DayHeaderContentArg; narrow: boolean 
   // reads as the previous day in local time, so use its pre-formatted text (dayHeaderFormat) instead.
   if (arg.view.type === 'dayGridMonth') return <span className="wc-dow">{arg.text}</span>
   const dow = arg.date.toLocaleDateString(undefined, { weekday: narrow && arg.view.type !== 'timeGridDay' ? 'narrow' : 'short' })
+  // Day view: stacked and left-aligned (like Google); Week: centred over each column.
   return (
-    <span className="flex flex-col items-center gap-0.5">
+    <span className={`flex flex-col gap-0.5 ${arg.view.type === 'timeGridDay' ? 'items-start' : 'items-center'}`}>
       <span className={`wc-dow ${arg.isToday ? 'text-gold-700' : ''}`}>{dow}</span>
       <span className={`wc-daynum ${arg.isToday ? 'is-today' : ''}`}>{arg.date.getDate()}</span>
     </span>
