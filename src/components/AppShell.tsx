@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet } from 'react-router'
+import { Link, NavLink, Outlet, ScrollRestoration } from 'react-router'
 import { useAuth } from '../features/auth/AuthProvider'
 import { ORG_PERMISSIONS, useCan } from '../features/auth/permissions'
 import { HOME } from '../lib/paths'
@@ -36,6 +36,8 @@ export function AppShell() {
       <main className="flex-1 px-4 pt-5 pb-28">
         <Outlet />
       </main>
+      {/* New pages open at the top; Back returns to where you were (e.g. on the calendar). */}
+      <ScrollRestoration />
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-neutral-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
         <ul className="mx-auto flex max-w-3xl">
           {visible.map(({ to, label, end, Icon }) => (

@@ -28,7 +28,8 @@ export function NewAppointmentPage() {
     dogId: params.get('dog') ?? '',
     trainerId: null,
     date: toDateParam(fromDateParam(params.get('date')) ?? new Date()),
-    time: nextHalfHour(),
+    // Tapping an empty calendar slot passes its time.
+    time: /^\d{2}:\d{2}$/.test(params.get('time') ?? '') ? params.get('time')! : nextHalfHour(),
     minutes: 60,
     location: '',
     notes: '',

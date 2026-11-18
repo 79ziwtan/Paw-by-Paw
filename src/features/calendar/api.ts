@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase, type Tables } from '../../lib/supabase'
 
 /** Columns for an appointment row. `sessions` holds the session logged for it, if any (at most one). */
@@ -8,11 +8,13 @@ const APPOINTMENT_SELECT = `
   sessions ( id )
 ` as const
 
-/** Appointments starting in [from, to), earliest first. */
-export function useAppointments(from: Date, to: Date) {
-  const range = [from.toISOString(), to.toISOString()] as const
+/** Appointments starting in [from, to), earliest first. Waits until a range is known. */
+export function useAppointments(from: Date | null, to: Date | null) {
+  const range = [from?.toISOString() ?? '', to?.toISOString() ?? ''] as const
   return useQuery({
     queryKey: ['appointments', ...range],
+    enabled: !!from && !!to,
+    placeholderData: keepPreviousData, // keep the old events up while the next week/month loads
     queryFn: async () => {
       const { data, error } = await supabase
         .from('appointments')

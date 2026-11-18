@@ -1,107 +1,138 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router'
-import { Card, ChevronRight, DogAvatar, Eyebrow, FlagBadge, PaymentDot, Pill, PinIcon, primaryLinkClass, WaffleLoader } from '../../components/ui'
-import type { Views } from '../../lib/supabase'
+import type { DateClickArg } from '@fullcalendar/interaction'
+import interactionPlugin from '@fullcalendar/interaction'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import FullCalendar from '@fullcalendar/react'
+import type { DatesSetArg, EventClickArg, EventContentArg, EventInput } from '@fullcalendar/core'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router'
+import { ChevronRight, Eyebrow, primaryLinkClass } from '../../components/ui'
 import { useAuth } from '../auth/AuthProvider'
 import { useDogSummaries } from '../dogs/api'
 import { TodayActivity } from '../today/TodayPage'
-import { fromDateParam, timeLabel, toDateParam, useAppointments } from './api'
+import { fromDateParam, toDateParam, useAppointments } from './api'
 
-const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate())
-const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
-const sameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString()
+type CalView = 'month' | 'week' | 'day'
+type Who = 'mine' | 'all'
+const FC_VIEW: Record<CalView, string> = { month: 'dayGridMonth', week: 'timeGridWeek', day: 'timeGridDay' }
+const FROM_FC = Object.fromEntries(Object.entries(FC_VIEW).map(([k, v]) => [v, k])) as Record<string, CalView>
 
-type Appointment = {
-  id: string
-  dog: Views<'dog_summary'>
-  start: Date
-  minutes: number
-  location: string
-  notes: string
-  trainerId: string | null
-  trainerName: string | null
-  sessionId: string | null
+/** Event status → look (see .waffle-cal in index.css). Red stays reserved for safety flags. */
+type Status = 'logged' | 'needs-log' | 'now' | 'upcoming'
+const LEGEND: { status: Status; label: string }[] = [
+  { status: 'upcoming', label: 'Booked' },
+  { status: 'now', label: 'In progress' },
+  { status: 'needs-log', label: 'Needs log' },
+  { status: 'logged', label: 'Logged' },
+]
+
+type EventProps = { trainer: string; status: Status; flagged: boolean; location: string }
+
+const hhmm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+
+/** Phone-width check, kept live so rotating or resizing switches the compact layout. */
+function useNarrow() {
+  const query = '(max-width: 639px)'
+  const [narrow, setNarrow] = useState(() => window.matchMedia(query).matches)
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const on = () => setNarrow(mq.matches)
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [])
+  return narrow
 }
 
-type Status = 'Now' | 'Up next' | 'Needs log' | 'Logged' | null
-const statusTone = { Now: 'ink', 'Up next': 'gold', 'Needs log': 'orange', Logged: 'green' } as const
-type View = 'mine' | 'all'
-
-/** Trainer home: Calendar -> tap appointment -> Dog summary card. */
+/** Trainer home: Month / Week / Day calendar. Tap an appointment -> dog summary card; tap an empty slot -> book. */
 export function CalendarPage() {
   const { staff } = useAuth()
+  const navigate = useNavigate()
+  const narrow = useNarrow()
+  const calRef = useRef<FullCalendar>(null)
   const [params, setParams] = useSearchParams()
-  const { data: dogs = [], isPending: dogsPending, error: dogsError } = useDogSummaries()
-  const [today] = useState(() => startOfDay(new Date()))
-  const [now, setNow] = useState(() => new Date())
+
+  // View, anchor date and Mine/All live in the URL, so "back" from a dog returns to the same place.
+  const [initial] = useState(() => ({
+    date: fromDateParam(params.get('date')) ?? new Date(),
+    view: (params.get('cv') as CalView | null) ?? (narrow ? 'day' : 'week'),
+  }))
+  const who: Who = (params.get('view') as Who | null) ?? (staff?.role === 'trainer' ? 'mine' : 'all')
+  const [shown, setShown] = useState<{ start: Date; end: Date; title: string; view: CalView } | null>(null)
+
+  // Only touch the URL when something changed: a no-op replace counts as a new page,
+  // which would throw away the scroll position that Back is restoring.
+  const setUrl = (patch: Record<string, string>) => {
+    if (Object.entries(patch).every(([k, v]) => params.get(k) === v)) return
+    setParams((p) => {
+      const q = new URLSearchParams(p)
+      for (const [k, v] of Object.entries(patch)) q.set(k, v)
+      return q
+    }, { replace: true })
+  }
+
+  const { data: dogs = [] } = useDogSummaries()
+  const { data: rows = [], isFetching, error } = useAppointments(shown?.start ?? null, shown?.end ?? null)
+
+  // Re-evaluate "in progress" / "needs log" each minute.
+  const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 60_000)
+    const t = setInterval(() => setNow(Date.now()), 60_000)
     return () => clearInterval(t)
   }, [])
 
-  // The selected day and Mine/All live in the URL so "back" from a dog returns to the same view.
-  const selected = fromDateParam(params.get('date')) ?? today
-  const view: View = (params.get('view') as View | null) ?? (staff?.role === 'trainer' ? 'mine' : 'all')
-  const update = (next: { date?: Date; view?: View }) =>
-    setParams(
-      (p) => {
-        const q = new URLSearchParams(p)
-        if (next.date) q.set('date', toDateParam(next.date))
-        if (next.view) q.set('view', next.view)
-        return q
-      },
-      { replace: true },
-    )
-  const setSelected = (date: Date) => update({ date })
-
-  // Week strip: Monday to Sunday of the selected week, fetched in one query.
-  const weekStart = addDays(selected, -((selected.getDay() + 6) % 7))
-  const week = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
-  const { data: rows = [], isPending: apptsPending, error: apptsError } = useAppointments(weekStart, addDays(weekStart, 7))
-  const weekAppts = useMemo(() => {
+  const events = useMemo<EventInput[]>(() => {
     const byId = new Map(dogs.map((d) => [d.id, d]))
-    return rows.flatMap((r): Appointment[] => {
+    return rows.flatMap((r) => {
       const dog = byId.get(r.dog_id) // archived dogs aren't in the summary list, so they drop off
-      if (!dog) return []
-      if (view === 'mine' && r.trainer_id !== staff?.id) return []
+      if (!dog || (who === 'mine' && r.trainer_id !== staff?.id)) return []
+      const start = new Date(r.starts_at)
+      const end = new Date(start.getTime() + r.duration_minutes * 60_000)
+      const status: Status = r.sessions ? 'logged' : end.getTime() < now ? 'needs-log' : start.getTime() <= now ? 'now' : 'upcoming'
+      const props: EventProps = { trainer: r.trainer?.display_name ?? 'Unassigned', status, flagged: !!dog.active_flags, location: r.location }
       return [{
         id: r.id,
-        dog,
-        start: new Date(r.starts_at),
-        minutes: r.duration_minutes,
-        location: r.location,
-        notes: r.notes,
-        trainerId: r.trainer_id,
-        trainerName: r.trainer?.display_name ?? null,
-        sessionId: r.sessions?.id ?? null,
+        title: dog.name ?? 'Dog',
+        start,
+        end,
+        url: `/dogs/${r.dog_id}/summary?appointment=${r.id}`,
+        classNames: [`wc-${status}`],
+        extendedProps: props,
       }]
     })
-  }, [rows, dogs, view, staff?.id])
-  const appts = weekAppts.filter((a) => sameDay(a.start, selected))
+  }, [rows, dogs, who, staff?.id, now])
 
-  const isPending = dogsPending || apptsPending
-  const error = dogsError ?? apptsError
-  const isToday = sameDay(selected, today)
-  const open = appts.filter((a) => !a.sessionId)
-  const nextUp = isToday ? open.find((a) => a.start.getTime() + a.minutes * 60_000 > now.getTime()) : undefined
-  const statusOf = (a: Appointment): Status =>
-    a.sessionId ? 'Logged'
-    : !isToday ? (a.start < today ? 'Needs log' : null)
-    : a.id === nextUp?.id ? (a.start <= now ? 'Now' : 'Up next')
-    : a.start < now ? 'Needs log'
-    : null
+  const api = () => calRef.current?.getApi()
+  const changeView = (v: CalView) => {
+    api()?.changeView(FC_VIEW[v])
+  }
+
+  function onDatesSet(arg: DatesSetArg) {
+    const view = FROM_FC[arg.view.type] ?? 'week'
+    setShown({ start: arg.start, end: arg.end, title: arg.view.title, view })
+    // Anchor on the view's current date (first day of the month in Month view).
+    setUrl({ date: toDateParam(arg.view.currentStart), cv: view })
+  }
+
+  function onEventClick(arg: EventClickArg) {
+    arg.jsEvent.preventDefault()
+    if (arg.event.url) navigate(arg.event.url)
+  }
+
+  function onDateClick(arg: DateClickArg) {
+    const q = new URLSearchParams({ date: toDateParam(arg.date) })
+    if (!arg.allDay) q.set('time', hhmm(arg.date))
+    navigate(`/appointments/new?${q}`)
+  }
+
+  const today = toDateParam(new Date(now))
+  const isTodayShown = shown ? now >= shown.start.getTime() && now < shown.end.getTime() : true
 
   return (
-    <section className="flex flex-col gap-5">
+    <section className="flex flex-col gap-4">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <Eyebrow className="text-gold-600">
-            {isToday ? `Hi ${staff?.display_name.split(' ')[0] ?? ''}` : selected.toLocaleDateString(undefined, { weekday: 'long' })}
-          </Eyebrow>
-          <h1 className="mt-1 text-4xl font-bold">
-            {isToday ? 'Today' : selected.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-            {isToday && <span className="ml-2 font-sans text-base font-medium text-neutral-500">{selected.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>}
-          </h1>
+          <Eyebrow className="text-gold-600">Hi {staff?.display_name.split(' ')[0] ?? ''}</Eyebrow>
+          <h1 className="mt-1 text-3xl font-bold sm:text-4xl">{shown?.title ?? 'Calendar'}</h1>
         </div>
         <button
           type="button"
@@ -114,79 +145,88 @@ export function CalendarPage() {
         </button>
       </header>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div role="group" aria-label="Whose appointments" className="inline-flex rounded-full bg-white p-1 ring-1 ring-neutral-200">
-          {(['mine', 'all'] as const).map((v) => (
-            <button
-              key={v}
-              type="button"
-              aria-pressed={view === v}
-              onClick={() => update({ view: v })}
-              className={`min-h-9 rounded-full px-4 text-sm font-semibold transition-colors ${view === v ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:bg-neutral-100'}`}
-            >
-              {v === 'mine' ? 'Mine' : 'All'}
-            </button>
-          ))}
+      {/* Toolbar: navigation + view on one row, then whose + book. Wraps on a phone. */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-1">
+          <button aria-label="Previous" className="flex size-10 items-center justify-center rounded-full text-neutral-600 hover:bg-white" onClick={() => api()?.prev()}>
+            <ChevronRight className="size-5 rotate-180" />
+          </button>
+          <button
+            className="min-h-9 rounded-full border border-neutral-200 bg-white px-3.5 text-sm font-semibold text-neutral-700 hover:bg-neutral-100 disabled:opacity-40"
+            disabled={isTodayShown && shown?.view === 'day'}
+            onClick={() => api()?.today()}
+          >
+            Today
+          </button>
+          <button aria-label="Next" className="flex size-10 items-center justify-center rounded-full text-neutral-600 hover:bg-white" onClick={() => api()?.next()}>
+            <ChevronRight className="size-5" />
+          </button>
         </div>
-        <Link to={`/appointments/new?date=${toDateParam(selected)}`} className={`${primaryLinkClass} min-h-10 text-sm`}>
+        <Segmented
+          label="Calendar view"
+          value={shown?.view ?? initial.view}
+          options={[['month', 'Month'], ['week', 'Week'], ['day', 'Day']]}
+          onChange={changeView}
+        />
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Segmented label="Whose appointments" value={who} options={[['mine', 'Mine'], ['all', 'All']]} onChange={(v) => setUrl({ view: v })} />
+        <Link to={`/appointments/new?date=${shown?.view === 'day' ? toDateParam(shown.start) : today}`} className={`${primaryLinkClass} min-h-10 text-sm`}>
           + New appointment
         </Link>
       </div>
 
-      <div className="flex items-center gap-1">
-        <button aria-label="Previous week" className="flex size-9 shrink-0 items-center justify-center rounded-full text-neutral-500 hover:bg-white" onClick={() => setSelected(addDays(selected, -7))}>
-          <ChevronRight className="size-5 rotate-180" />
-        </button>
-        <ol className="grid flex-1 grid-cols-7 gap-1">
-          {week.map((d) => {
-            const on = sameDay(d, selected)
-            const count = weekAppts.filter((a) => sameDay(a.start, d)).length
-            return (
-              <li key={d.toISOString()}>
-                <button
-                  onClick={() => setSelected(d)}
-                  aria-pressed={on}
-                  className={`flex w-full flex-col items-center gap-0.5 rounded-2xl py-2 text-xs transition-colors ${on ? 'bg-neutral-900 text-white' : 'hover:bg-white'}`}
-                >
-                  <span className={on ? 'text-neutral-300' : 'text-neutral-500'}>{d.toLocaleDateString(undefined, { weekday: 'narrow' })}</span>
-                  <span className={`font-display text-lg leading-none font-bold ${!on && sameDay(d, today) ? 'text-gold-600' : ''}`}>{d.getDate()}</span>
-                  <span className="flex h-1.5 items-center gap-0.5">
-                    {Array.from({ length: Math.min(count, 4) }, (_, i) => <span key={i} className={`size-1 rounded-full ${on ? 'bg-gold-400' : 'bg-gold-300'}`} />)}
-                  </span>
-                </button>
-              </li>
-            )
-          })}
-        </ol>
-        <button aria-label="Next week" className="flex size-9 shrink-0 items-center justify-center rounded-full text-neutral-500 hover:bg-white" onClick={() => setSelected(addDays(selected, 7))}>
-          <ChevronRight className="size-5" />
-        </button>
+      {error && <p className="text-sm text-flag">{error.message}</p>}
+
+      <div className={`waffle-cal relative rounded-2xl border border-neutral-200 bg-white ${narrow ? 'is-narrow' : ''}`}>
+        {isFetching && <div className="absolute inset-x-0 top-0 z-10 h-0.5 animate-pulse rounded-t-2xl bg-gold-400" aria-hidden />}
+        <FullCalendar
+          ref={calRef}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView={FC_VIEW[initial.view]}
+          initialDate={initial.date}
+          headerToolbar={false}
+          firstDay={1}
+          height="auto"
+          events={events}
+          eventContent={(arg) => <EventChip arg={arg} narrow={narrow} />}
+          eventClick={onEventClick}
+          dateClick={onDateClick}
+          datesSet={onDatesSet}
+          navLinks
+          navLinkDayClick={(date) => api()?.changeView(FC_VIEW.day, date)}
+          nowIndicator
+          allDaySlot={false}
+          slotMinTime="06:00:00"
+          slotMaxTime="21:00:00"
+          scrollTime="08:00:00"
+          slotDuration="00:30:00"
+          expandRows
+          dayMaxEvents={narrow ? 2 : 3}
+          eventDisplay="block"
+          displayEventEnd={false}
+          eventTimeFormat={{ hour: 'numeric', minute: '2-digit', meridiem: 'short' }}
+          slotLabelFormat={{ hour: 'numeric', meridiem: 'short' }}
+          dayHeaderFormat={shown?.view === 'month' ? { weekday: narrow ? 'narrow' : 'short' } : { weekday: narrow ? 'narrow' : 'short', day: 'numeric' }}
+          views={{
+            timeGridDay: { dayHeaderFormat: { weekday: 'long', month: 'short', day: 'numeric' } },
+            dayGridMonth: { eventTimeFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: true, meridiem: 'narrow' } },
+          }}
+        />
       </div>
 
-      <div className="flex flex-col">
-        <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="font-display text-xl font-bold">{appts.length} {appts.length === 1 ? 'appointment' : 'appointments'}</h2>
-          {!isToday && <button className="text-sm font-semibold text-gold-700 hover:underline" onClick={() => setSelected(today)}>Back to today</button>}
-        </div>
-        {isPending && <WaffleLoader className="self-center py-10" />}
-        {error && <p className="text-sm text-flag">{error.message}</p>}
-        {!isPending && !error && appts.length === 0 && (
-          <Card className="text-center text-sm text-neutral-500">
-            {view === 'mine' ? 'Nothing booked for you.' : 'Nothing booked.'}{' '}
-            <Link to={`/appointments/new?date=${toDateParam(selected)}`} className="font-semibold text-gold-700 hover:underline">Book an appointment</Link>
-          </Card>
-        )}
-        <ol className="flex flex-col">
-          {appts.map((a, i) => (
-            <li key={a.id}>
-              {i > 0 && <GapLine prev={appts[i - 1]} next={a} />}
-              <AppointmentRow appt={a} status={statusOf(a)} showTrainer={view === 'all'} />
-            </li>
-          ))}
-        </ol>
-      </div>
+      <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-neutral-600" aria-label="Legend">
+        {LEGEND.map((l) => (
+          <li key={l.status} className="flex items-center gap-1.5">
+            <span className={`wc-swatch wc-${l.status}`} /> {l.label}
+          </li>
+        ))}
+        <li className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-flag" /> Safety flag</li>
+        <li className="text-neutral-500">Tap an empty slot to book.</li>
+      </ul>
 
-      {isToday && (
+      {isTodayShown && (
         <details className="group rounded-2xl border border-neutral-200 bg-white p-4">
           <summary className="flex cursor-pointer list-none items-center justify-between font-display text-lg font-bold [&::-webkit-details-marker]:hidden">
             Logged today
@@ -201,47 +241,60 @@ export function CalendarPage() {
   )
 }
 
-/** Time between one appointment ending and the next starting (travel time between back-to-back lessons). */
-function GapLine({ prev, next }: { prev: Appointment; next: Appointment }) {
-  const mins = Math.round((next.start.getTime() - (prev.start.getTime() + prev.minutes * 60_000)) / 60_000)
-  const h = Math.floor(mins / 60)
-  const m = mins % 60
-  const label = mins <= 0 ? 'Back to back' : `${h ? `${h} hr ` : ''}${m ? `${m} min` : ''}`.trim() + ' between'
+/** One appointment on the calendar: time, dog (with a red dot if flagged) and trainer. */
+function EventChip({ arg, narrow }: { arg: EventContentArg; narrow: boolean }) {
+  const p = arg.event.extendedProps as EventProps
+  const month = arg.view.type === 'dayGridMonth'
+  const tiny = narrow && arg.view.type === 'timeGridWeek'
+  const label = `${arg.timeText} ${arg.event.title} with ${p.trainer}${p.location ? `, ${p.location}` : ''}${p.flagged ? ', safety flag' : ''}${p.status === 'logged' ? ', logged' : p.status === 'needs-log' ? ', needs log' : ''}`
+  const dog = (
+    <span className="flex min-w-0 items-center gap-1 font-bold">
+      {p.flagged && <span className="size-1.5 shrink-0 rounded-full bg-flag" />}
+      <span className="truncate">{arg.event.title}</span>
+      {p.status === 'logged' && <span aria-hidden className="shrink-0">✓</span>}
+    </span>
+  )
+
+  if (month) {
+    // Dog name wins the space; the trainer truncates first.
+    return (
+      <span className="wc-chip flex min-w-0 items-center gap-1" title={label} aria-label={label}>
+        {!narrow && <span className="shrink-0 tabular-nums opacity-70">{arg.timeText}</span>}
+        <span className="flex max-w-full shrink-0 items-center gap-1 font-bold">
+          {p.flagged && <span className="size-1.5 shrink-0 rounded-full bg-flag" />}
+          <span className="truncate">{arg.event.title}</span>
+          {p.status === 'logged' && <span aria-hidden className="shrink-0">✓</span>}
+        </span>
+        {!narrow && <span className="min-w-0 truncate opacity-70">· {p.trainer}</span>}
+      </span>
+    )
+  }
   return (
-    <div className="flex items-center gap-3 py-1 pl-[34px]">
-      <span className="h-6 border-l-2 border-dashed border-neutral-300" />
-      <span className={`text-xs font-semibold ${mins <= 15 ? 'text-gold-700' : 'text-neutral-500'}`}>{label}</span>
-    </div>
+    <span className={`wc-chip flex h-full min-w-0 flex-col overflow-hidden leading-tight ${tiny ? 'text-[10px]' : ''}`} title={label} aria-label={label}>
+      {!tiny && <span className="tabular-nums opacity-70">{arg.timeText}</span>}
+      {dog}
+      <span className="truncate opacity-80">
+        {p.trainer}
+        {arg.view.type === 'timeGridDay' && p.location && <span className="opacity-75"> · {p.location}</span>}
+      </span>
+    </span>
   )
 }
 
-function AppointmentRow({ appt: a, status, showTrainer }: { appt: Appointment; status: Status; showTrainer: boolean }) {
-  const highlight = status === 'Now' || status === 'Up next'
+function Segmented<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: [T, string][]; onChange: (v: T) => void }) {
   return (
-    <Link
-      to={`/dogs/${a.dog.id}/summary?appointment=${a.id}`}
-      className={`flex items-center gap-3 rounded-2xl border bg-white p-3.5 transition hover:-translate-y-px hover:shadow-[0_12px_30px_-18px_rgba(100,61,20,.45)] ${highlight ? 'border-gold-400 shadow-[0_0_0_3px_var(--color-gold-100)]' : 'border-neutral-200'} ${status === 'Logged' ? 'opacity-75' : ''}`}
-    >
-      <div className="w-[60px] shrink-0">
-        <div className="text-sm font-bold">{timeLabel(a.start)}</div>
-        <div className="text-xs text-neutral-500">{a.minutes} min</div>
-      </div>
-      <span className={`w-1 self-stretch rounded-full ${a.dog.active_flags ? 'bg-flag' : 'bg-gold-400'}`} />
-      <DogAvatar name={a.dog.name} size="sm" />
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="font-bold">{a.dog.name}</span>
-          <PaymentDot status={a.dog.payment_status} />
-          <FlagBadge count={a.dog.active_flags} />
-          {status && <span className="ml-auto"><Pill tone={statusTone[status]}>{status}</Pill></span>}
-        </div>
-        <div className="truncate text-sm text-neutral-600">
-          {a.dog.owner_name}
-          {showTrainer && <> · {a.trainerName ?? 'Unassigned'}</>}
-        </div>
-        {a.location && <div className="flex items-center gap-1 truncate text-xs text-neutral-500"><PinIcon className="size-3 shrink-0" />{a.location}</div>}
-        {a.notes && <div className="truncate text-xs text-neutral-500 italic">{a.notes}</div>}
-      </div>
-    </Link>
+    <div role="group" aria-label={label} className="inline-flex rounded-full bg-white p-1 ring-1 ring-neutral-200">
+      {options.map(([v, text]) => (
+        <button
+          key={v}
+          type="button"
+          aria-pressed={value === v}
+          onClick={() => onChange(v)}
+          className={`min-h-9 rounded-full px-3.5 text-sm font-semibold transition-colors ${value === v ? 'bg-neutral-900 text-white' : 'text-neutral-600 hover:bg-neutral-100'}`}
+        >
+          {text}
+        </button>
+      ))}
+    </div>
   )
 }
