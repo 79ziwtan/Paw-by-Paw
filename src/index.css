@@ -137,7 +137,7 @@ h1 {
 .waffle-cal .fc-timegrid-event.fc-event:focus-visible { outline: 2px solid var(--color-gold-600); outline-offset: 1px; }
 .waffle-cal .fc-timegrid-event.wc-now { background: var(--color-neutral-900); border-left-color: var(--color-gold-400); color: #fff; }
 .waffle-cal .fc-timegrid-event.wc-needs-log { background: #fff1e4; border-left-color: #f97316; }
-.waffle-cal .fc-timegrid-event.wc-logged { background: var(--color-neutral-100); border-left-color: var(--color-paid); color: var(--color-neutral-600); }
+.waffle-cal .fc-timegrid-event.wc-logged { background: #effbf3; border-left-color: var(--color-paid); color: var(--color-neutral-800); }
 
 /* Empty space is tappable (books at that time): show it on hover. */
 .waffle-cal .fc-timegrid-slot-lane:hover,

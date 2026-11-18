@@ -281,7 +281,6 @@ function EventContent({ arg, narrow }: { arg: EventContentArg; narrow: boolean }
   const p = arg.event.extendedProps as EventProps
   const label = `${arg.timeText} ${arg.event.title} with ${p.trainer}${p.location ? `, ${p.location}` : ''}${p.flagged ? ', safety flag' : ''}${p.status === 'logged' ? ', logged' : p.status === 'needs-log' ? ', needs log' : ''}`
   const flag = p.flagged && <FlagIcon className="size-3 shrink-0 text-flag" aria-hidden />
-  const done = p.status === 'logged' && <span aria-hidden className="shrink-0 text-paid">✓</span>
 
   // Month: one slim line, dot · time · dog. No box, no trainer (Google-style).
   if (arg.view.type === 'dayGridMonth') {
@@ -291,7 +290,6 @@ function EventContent({ arg, narrow }: { arg: EventContentArg; narrow: boolean }
         <span className="wc-extra shrink-0 tabular-nums text-neutral-600">{arg.timeText}</span>
         <span className="truncate font-semibold text-neutral-900">{arg.event.title}</span>
         {flag && <span className="wc-extra flex">{flag}</span>}
-        {done && <span className="wc-extra flex">{done}</span>}
       </span>
     )
   }
@@ -305,7 +303,6 @@ function EventContent({ arg, narrow }: { arg: EventContentArg; narrow: boolean }
         <span className="truncate font-bold">{arg.event.title}</span>
         {/* Phone week columns are ~45px: the name wins; the flag shows in Day view and on the card. */}
         {!compact && flag}
-        {!compact && done}
       </span>
       <span className="wc-sub truncate">{p.trainer}</span>
       {showTime && (
