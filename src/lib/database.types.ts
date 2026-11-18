@@ -55,6 +55,44 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"appointments": {
+                  Row: {
+                    "created_at": string,"created_by": string | null,"dog_id": string,"duration_minutes": number,"id": string,"location": string,"notes": string,"starts_at": string,"trainer_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"created_by"?: string | null,"dog_id": string,"duration_minutes": number,"id"?: string,"location"?: string,"notes"?: string,"starts_at": string,"trainer_id"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by"?: string | null,"dog_id"?: string,"duration_minutes"?: number,"id"?: string,"location"?: string,"notes"?: string,"starts_at"?: string,"trainer_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "appointments_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "staff"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "appointments_dog_id_fkey"
+      columns: ["dog_id"]
+isOneToOne: false
+      referencedRelation: "dog_summary"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "appointments_dog_id_fkey"
+      columns: ["dog_id"]
+isOneToOne: false
+      referencedRelation: "dogs"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "appointments_trainer_id_fkey"
+      columns: ["trainer_id"]
+isOneToOne: false
+      referencedRelation: "staff"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"behavior_tags": {
                   Row: {
                     "created_at": string,"id": string,"label": string,"org_id": string | null
@@ -525,17 +563,23 @@ isOneToOne: false
                   ]
                 },"sessions": {
                   Row: {
-                    "created_at": string,"dog_id": string,"external_notes": string,"id": string,"internal_notes": string,"next_step": string,"occurred_at": string,"package_id": string | null,"rating": number | null,"staff_id": string | null,"takes_food": boolean | null
+                    "appointment_id": string | null,"created_at": string,"dog_id": string,"external_notes": string,"id": string,"internal_notes": string,"next_step": string,"occurred_at": string,"package_id": string | null,"rating": number | null,"staff_id": string | null,"takes_food": boolean | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"dog_id": string,"external_notes"?: string,"id"?: string,"internal_notes"?: string,"next_step"?: string,"occurred_at"?: string,"package_id"?: string | null,"rating"?: number | null,"staff_id"?: string | null,"takes_food"?: boolean | null
+                    "appointment_id"?: string | null,"created_at"?: string,"dog_id": string,"external_notes"?: string,"id"?: string,"internal_notes"?: string,"next_step"?: string,"occurred_at"?: string,"package_id"?: string | null,"rating"?: number | null,"staff_id"?: string | null,"takes_food"?: boolean | null
                   }
                   Update: {
-                    "created_at"?: string,"dog_id"?: string,"external_notes"?: string,"id"?: string,"internal_notes"?: string,"next_step"?: string,"occurred_at"?: string,"package_id"?: string | null,"rating"?: number | null,"staff_id"?: string | null,"takes_food"?: boolean | null
+                    "appointment_id"?: string | null,"created_at"?: string,"dog_id"?: string,"external_notes"?: string,"id"?: string,"internal_notes"?: string,"next_step"?: string,"occurred_at"?: string,"package_id"?: string | null,"rating"?: number | null,"staff_id"?: string | null,"takes_food"?: boolean | null
                   }
                   Relationships: [
                     {
+      foreignKeyName: "sessions_appointment_id_fkey"
+      columns: ["appointment_id"]
+isOneToOne: true
+      referencedRelation: "appointments"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "sessions_dog_id_fkey"
       columns: ["dog_id"]
 isOneToOne: false
@@ -742,7 +786,7 @@ isOneToOne: false
 { Args: { "p": string }; Returns: boolean
                            },
 "log_session":
-{ Args: { "p_behaviors"?: Json,"p_count_package"?: boolean,"p_dog_id": string,"p_external_notes"?: string,"p_flag"?: Json,"p_homework"?: Json,"p_internal_notes"?: string,"p_occurred_at"?: string,"p_rating"?: number,"p_stage"?: Json,"p_takes_food"?: boolean }; Returns: string
+{ Args: { "p_appointment_id"?: string,"p_behaviors"?: Json,"p_count_package"?: boolean,"p_dog_id": string,"p_external_notes"?: string,"p_flag"?: Json,"p_homework"?: Json,"p_internal_notes"?: string,"p_occurred_at"?: string,"p_rating"?: number,"p_stage"?: Json,"p_takes_food"?: boolean }; Returns: string
                            },
 "record_activity":
 { Args: { "p_action": string,"p_actor"?: string,"p_at"?: string,"p_changes"?: (string)[],"p_table": string,"r": Json }; Returns: undefined
@@ -767,6 +811,9 @@ isOneToOne: false
                            },
 "update_session":
 { Args: { "p_behaviors": Json,"p_external_notes": string,"p_internal_notes": string,"p_occurred_at": string,"p_rating": number,"p_session_id": string,"p_takes_food": boolean }; Returns: undefined
+                           },
+"valid_appointment_trainer":
+{ Args: { "t": string }; Returns: boolean
                            }
           }
           Enums: {

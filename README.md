@@ -19,7 +19,7 @@ Production build: `npm run build` (output in `dist/`). One Netlify site serves b
 To wipe the database back to the demo data: `npm run db:reset`.
 
 **Trainer flow (mid-fidelity prototype):** Calendar → tap appointment → Dog summary card → Log session (about a minute) → (optional) share update.
-The calendar is a **mockup**: appointments are generated from your dogs (`src/features/calendar/mock.ts`); there is no real Google Calendar sync yet.
+The calendar shows real **appointments** (dog, trainer, start time, length, location, notes). Book one with **+ New appointment**; trainers see their own by default (**Mine**), owners and admins see everyone's (**All**). Opening an appointment leads to the dog summary card and **Log session**, and the logged session links back to its appointment. The demo data has appointments this week and next. Google Calendar sync is **coming soon** (the button is shown but disabled).
 
 **Send** (owner profile links) opens the owner's link in a new tab so you can share it. Texting it to the owner isn't built yet.
 

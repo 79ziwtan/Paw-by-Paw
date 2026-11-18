@@ -1,8 +1,9 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { BackLink } from '../../components/BackLink'
 import { Button, Card, CheckIcon, chipClass, chipOff, chipOn, DogAvatar, FlagIcon, inputClass, Logo, selectClass, ShareIcon } from '../../components/ui'
 import { useAuth } from '../auth/AuthProvider'
+import { timeLabel, useAppointment } from '../calendar/api'
 import { useDogSummary } from '../dogs/api'
 import { cleanTasks, HomeworkInput } from '../homework/HomeworkInput'
 import { useBehaviorTags } from '../org/api'
@@ -23,6 +24,10 @@ const FLAG_NOTES = ['Lunged at a dog', 'Growled', 'Mouthed / nipped', 'Resource 
 export function LogSessionPage() {
   const { dogId = '' } = useParams()
   const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const { data: appt } = useAppointment(params.get('appointment'))
+  // Ignore a stale link: wrong dog, or the appointment already has its log.
+  const appointment = appt && appt.dog_id === dogId && !appt.sessions ? appt : null
   const { staff } = useAuth()
   const { data: dog } = useDogSummary(dogId)
   const { data: tags } = useBehaviorTags()
@@ -113,6 +118,7 @@ export function LogSessionPage() {
         countPackage: !!openPackage && countPackage,
         homework: cleanTasks(homework),
         nextStep,
+        appointmentId: appointment?.id,
       })
       setSaved(true)
     } catch (err) {
@@ -148,7 +154,7 @@ export function LogSessionPage() {
               className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-5 font-semibold text-neutral-800 hover:bg-neutral-100 disabled:opacity-50"
             />
           )}
-          <Link to={`/dogs/${dogId}/summary`} replace className="py-2 text-sm font-semibold text-neutral-500 hover:underline">View {dog?.name}'s card</Link>
+          <Link to={`/dogs/${dogId}/summary${appointment ? `?appointment=${appointment.id}` : ''}`} replace className="py-2 text-sm font-semibold text-neutral-500 hover:underline">View {dog?.name}'s card</Link>
         </div>
       </section>
     )
@@ -170,6 +176,12 @@ export function LogSessionPage() {
               <input type="datetime-local" className="rounded-lg border border-neutral-200 bg-white px-1.5" value={when} max={openedAt} onChange={(e) => setWhen(e.target.value)} />
             )}
           </p>
+          {appointment && (
+            <p className="text-sm font-medium text-gold-700">
+              For the {new Date(appointment.starts_at).toLocaleDateString(undefined, { weekday: 'short' })} {timeLabel(new Date(appointment.starts_at))} appointment
+              {appointment.location && ` · ${appointment.location}`}
+            </p>
+          )}
           </div>
         </div>
       </header>

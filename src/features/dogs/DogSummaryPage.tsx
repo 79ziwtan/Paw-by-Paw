@@ -5,6 +5,7 @@ import { Card, ClockIcon, DogAvatar, Eyebrow, MeasureTile, PageLoader, PaidStatu
 import { formatAge, formatPhone } from '../../lib/format'
 import { HOME } from '../../lib/paths'
 import type { Views } from '../../lib/supabase'
+import { timeLabel, useAppointment } from '../calendar/api'
 import { usePlanStages } from '../sessions/api'
 import { MEASURE_FIELDS, tileValue, type Measures } from '../sessions/measures'
 import { useActiveFlags, useDogSummary } from './api'
@@ -33,11 +34,12 @@ export function DogSummaryPage() {
   const [params] = useSearchParams()
   const { data: dog, isPending, error } = useDogSummary(dogId)
   const { data: flags = [] } = useActiveFlags(dogId)
+  const appointmentId = params.get('appointment')
+  const { data: appt } = useAppointment(appointmentId)
 
   if (isPending) return <PageLoader />
   if (error) return <p className="text-flag">{error.message}</p>
 
-  const at = params.get('at')
   const last = ((dog.last_sessions ?? []) as LastSession[]).slice(0, 2)
   const nextStep = last.find((s) => s.next_step)?.next_step
 
@@ -47,12 +49,18 @@ export function DogSummaryPage() {
 
       {flags.map((f) => <SafetyFlag key={f.id} flag={f} readOnly={!!dog.archived_at} />)}
 
-      {at && (
-        <div className="flex items-center gap-2.5 rounded-2xl bg-neutral-900 px-4 py-2.5 text-sm text-neutral-100">
-          <ClockIcon className="size-4 text-gold-400" />
-          <span className="font-bold text-gold-300">{new Date(at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</span>
-          <span className="truncate">{params.get('kind')} · {params.get('place')}</span>
-          <span className="ml-auto shrink-0 text-xs text-neutral-400">{params.get('min')} min</span>
+      {appt && appt.dog_id === dogId && (
+        <div className="flex flex-col gap-1 rounded-2xl bg-neutral-900 px-4 py-2.5 text-sm text-neutral-100">
+          <div className="flex items-center gap-2.5">
+            <ClockIcon className="size-4 shrink-0 text-gold-400" />
+            <span className="shrink-0 font-bold text-gold-300">
+              {new Date(appt.starts_at).toLocaleDateString(undefined, { weekday: 'short' })} {timeLabel(new Date(appt.starts_at))}
+            </span>
+            <span className="truncate">{[appt.location, appt.trainer?.display_name].filter(Boolean).join(' · ')}</span>
+            <span className="ml-auto shrink-0 text-xs text-neutral-400">{appt.duration_minutes} min</span>
+            {appt.sessions && <Pill tone="green">Logged</Pill>}
+          </div>
+          {appt.notes && <p className="pl-6.5 text-xs text-neutral-300">{appt.notes}</p>}
         </div>
       )}
 
@@ -99,7 +107,8 @@ export function DogSummaryPage() {
       {last.length === 0 && <Card className="text-center text-sm text-neutral-500">First session! Nothing logged yet.</Card>}
       {last.map((s) => <LastSessionCard key={s.id} session={s} />)}
 
-      <ActionBar dog={dog} />
+      {/* Only link the log to the appointment while it's still unlogged (one log per appointment). */}
+      <ActionBar dog={dog} appointmentId={appt && appt.dog_id === dogId && !appt.sessions ? appt.id : null} />
     </section>
   )
 }
@@ -154,12 +163,16 @@ function Note({ label, children }: { label: string; children: ReactNode }) {
   )
 }
 
-function ActionBar({ dog }: { dog: Views<'dog_summary'> }) {
+function ActionBar({ dog, appointmentId }: { dog: Views<'dog_summary'>; appointmentId: string | null }) {
   return (
     <div className="fixed inset-x-0 bottom-16 z-10 border-t border-neutral-200 bg-white/95 p-3 backdrop-blur">
       <div className="mx-auto flex max-w-3xl gap-2.5">
         <Link to={`/dogs/${dog.id}`} className={`${secondaryLinkClass} text-sm`}>Full profile</Link>
-        {!dog.archived_at && <Link to={`/dogs/${dog.id}/log`} className={`${primaryLinkClass} flex-1`}>Log session</Link>}
+        {!dog.archived_at && (
+          <Link to={`/dogs/${dog.id}/log${appointmentId ? `?appointment=${appointmentId}` : ''}`} className={`${primaryLinkClass} flex-1`}>
+            Log session
+          </Link>
+        )}
       </div>
     </div>
   )

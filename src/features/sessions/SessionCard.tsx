@@ -96,6 +96,13 @@ export function SessionCard({ session: s, showDog = false, hideHomework = false 
         </ul>
       )}
 
+      {s.appointment && (
+        <Link to={`/dogs/${s.dog_id}/summary?appointment=${s.appointment.id}`} className="self-start text-xs font-semibold text-gold-700 hover:underline">
+          From appointment · {new Date(s.appointment.starts_at).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })}
+          {s.appointment.location && ` · ${s.appointment.location}`}
+        </Link>
+      )}
+
       {s.next_step && (
         <div className="text-sm">
           <span className="font-medium">Next step: </span>

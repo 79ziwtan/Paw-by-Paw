@@ -69,10 +69,16 @@ insert into flags (dog_id, severity, note, created_by) values
   ('dddddddd-0000-0000-0000-000000000001', 'high', 'Reactivity toward other dogs within 10 feet.', '11111111-1111-1111-1111-111111111111'),
   ('dddddddd-0000-0000-0000-000000000004', 'med', 'Nipped a visitor''s hand during greeting.', '11111111-1111-1111-1111-111111111111');
 
+-- The appointment the seeded Biscuit session was logged for (so "From appointment" shows on its card).
+insert into appointments (id, dog_id, trainer_id, starts_at, duration_minutes, location, notes, created_by) values
+  ('ffffffff-0000-0000-0000-000000000001', 'dddddddd-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111',
+   ((current_date - 2) + time '10:00') at time zone 'America/New_York', 60, 'Piedmont Park', 'Loose-leash turns near the dog park.',
+   '11111111-1111-1111-1111-111111111111');
+
 with s as (
-  insert into sessions (dog_id, staff_id, occurred_at, rating, takes_food, internal_notes, external_notes) values
-    ('dddddddd-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', now() - interval '2 days', 4, true,
-     'Owner hasn''t practiced turns much.', 'Biscuit practiced checking in and changing direction before the leash became tight.')
+  insert into sessions (dog_id, staff_id, occurred_at, rating, takes_food, internal_notes, external_notes, appointment_id) values
+    ('dddddddd-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', ((current_date - 2) + time '10:55') at time zone 'America/New_York', 4, true,
+     'Owner hasn''t practiced turns much.', 'Biscuit practiced checking in and changing direction before the leash became tight.', 'ffffffff-0000-0000-0000-000000000001')
   returning id
 )
 insert into session_behaviors (session_id, tag_id, measures)
@@ -164,3 +170,22 @@ insert into homework_tasks (update_id, position, text, completed_at) values
   ('eeeeeeee-0000-0000-0000-000000000004', 2, 'Ask guests to ignore Milo for the first 2 minutes', null),
   ('eeeeeeee-0000-0000-0000-000000000005', 1, 'Mat settle: 3 sessions of 2 minutes', now() - interval '13 days'),
   ('eeeeeeee-0000-0000-0000-000000000005', 2, 'Ring doorbell, reward on mat, 5 reps', null);
+
+-- Scheduled appointments for this week and next (Mon-Sat; Sunday off). Times are Atlanta local.
+-- Weekdays have 3-4 lessons, Saturdays 2. Dogs, trainers (OrgTrainer / OrgOwner) and places rotate
+-- so the calendar's Mine/All toggle shows a difference.
+insert into appointments (dog_id, trainer_id, starts_at, duration_minutes, location, notes, created_by)
+select
+  ('dddddddd-0000-0000-0000-00000000000' || (((d * 3 + slot) % 5) + 1))::uuid,
+  case when (d + slot) % 2 = 0 then '22222222-2222-2222-2222-222222222222' else '11111111-1111-1111-1111-111111111111' end::uuid,
+  ((date_trunc('week', current_date)::date + d) + (array['08:30', '10:00', '13:00', '15:30'])[slot + 1]::time)
+    at time zone 'America/New_York',
+  case when (d + slot) % 3 = 0 then 45 else 60 end,
+  (array['Client home', 'Main facility', 'Piedmont Park'])[((d + slot) % 3) + 1],
+  (array['', 'Bring the long line.', '', 'Owner asked about jumping on guests.', '', 'Practice with a second dog if available.'])[((d * 2 + slot) % 6) + 1],
+  '33333333-3333-3333-3333-333333333333'
+from generate_series(0, 12) d
+cross join generate_series(0, 3) slot
+where d % 7 <> 6                                   -- no Sundays
+  and (d % 7 <> 5 or slot < 2)                     -- Saturdays: 2 lessons
+  and (d % 2 = 0 or slot < 3);                     -- odd days: 3 lessons

@@ -47,6 +47,7 @@ export function useActiveFlags(dogId: string) {
 export function useDog(dogId: string) {
   return useQuery({
     queryKey: ['dog', dogId],
+    enabled: !!dogId,
     queryFn: async () => {
       const { data, error } = await supabase.from('dogs').select('*, trainer:staff ( display_name )').eq('id', dogId).single()
       if (error) throw error

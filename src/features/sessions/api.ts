@@ -10,6 +10,7 @@ export const SESSION_SELECT = `
           id, dog_id, occurred_at, rating, takes_food, internal_notes, external_notes, next_step, package_id,
           dogs ( id, name, household_id ),
           staff ( display_name ),
+          appointment:appointments ( id, starts_at, location ),
           session_behaviors ( id, measures, note, behavior_tags ( label ) ),
           flags ( id, severity, note, resolved_at ),
           stage_events ( id, from_status, to_status, reason, plan_stages ( name ) ),
@@ -97,6 +98,8 @@ export type LogSessionInput = {
   homework: string[]
   /** "Next step" for the following lesson (shown on the summary card). */
   nextStep?: string
+  /** The calendar appointment this session was logged for. */
+  appointmentId?: string
 }
 
 export function useLogSession() {
@@ -115,6 +118,7 @@ export function useLogSession() {
         p_stage: (i.stage ?? undefined) as Json | undefined,
         p_count_package: i.countPackage,
         p_homework: i.homework,
+        p_appointment_id: i.appointmentId,
       })
       if (error) throw error
       // Prototype: next_step is set right after the RPC rather than inside it.
@@ -126,7 +130,7 @@ export function useLogSession() {
     },
     onSuccess: (_id, i) =>
       Promise.all(
-        [['sessions'], ['dog_summary'], ['flags', i.dogId], ['plan_stages', i.dogId], ['open_package', i.dogId], ['household'], ['homework'], ['activity']].map(
+        [['sessions'], ['appointments'], ['dog_summary'], ['flags', i.dogId], ['plan_stages', i.dogId], ['open_package', i.dogId], ['household'], ['homework'], ['activity']].map(
           (queryKey) => qc.invalidateQueries({ queryKey }),
         ),
       ),

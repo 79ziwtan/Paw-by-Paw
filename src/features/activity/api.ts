@@ -30,6 +30,7 @@ export type ActivityRow = NonNullable<ReturnType<typeof useActivity>['data']>['p
  */
 export const ACTIVITY_TABLES: Record<string, { noun: string; filter?: string }> = {
   sessions: { noun: 'session log', filter: 'Session logs' },
+  appointments: { noun: 'appointment', filter: 'Appointments' },
   behavior_tags: { noun: 'tag', filter: 'Tags' },
   homework_tasks: { noun: 'homework', filter: 'Homework' },
   plan_stages: { noun: 'plan stage', filter: 'Plans' },
